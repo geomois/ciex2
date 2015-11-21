@@ -56,6 +56,9 @@ public class DefaultDriver extends AbstractDriver {
         System.out.println(sensors.getSpeed() +"speedIn");
         System.out.println(sensors.getAngleToTrackAxis() + "AngleToTrackAxis");
         System.out.println(sensors.getTrackEdgeSensors()[0] + "TrackEdgeSensors");
+        System.out.println(sensors.getTrackEdgeSensors()[1] + "TrackEdgeSensors");
+        System.out.println(sensors.getTrackEdgeSensors()[2] + "TrackEdgeSensors");
+        
 
     }
 
