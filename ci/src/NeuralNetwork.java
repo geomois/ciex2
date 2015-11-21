@@ -2,7 +2,9 @@ import java.io.*;
 
 public class NeuralNetwork implements Serializable {
 
-	NeuralNetwork(){ }
+	NeuralNetwork(){ 
+		
+	}
 
 	private static final long serialVersionUID = -88L;
 
@@ -11,7 +13,8 @@ public class NeuralNetwork implements Serializable {
 		ObjectOutputStream out = null;
 		try {
 			//create the memory folder manually
-			out = new ObjectOutputStream(new FileOutputStream("/users/edwinlima/git/ci/memory/mydriver.mem"));
+//			out = new ObjectOutputStream(new FileOutputStream("/users/edwinlima/git/ci/memory/mydriver.mem"));
+			out = new ObjectOutputStream(new FileOutputStream("E:\\eclipse java\\eclipse workspace\\git\\ci\\memory\\mydriver.mem"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -28,7 +31,7 @@ public class NeuralNetwork implements Serializable {
 		 // Read from disk using FileInputStream
 		 FileInputStream f_in = null;
 		 try {
-			 f_in = new FileInputStream("/users/edwinlima/git/ci/memory/mydriver.mem");
+			 f_in = new FileInputStream("E:\\eclipse java\\eclipse workspace\\git\\ci\\memory\\mydriver.mem");
 		 } catch (FileNotFoundException e) {
 			 e.printStackTrace();
 		 }

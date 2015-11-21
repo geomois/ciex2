@@ -17,7 +17,7 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
 
     public void run(boolean continue_from_checkpoint) { }
 
-    public void trainNeuralNetwork(){
+    public static void trainNeuralNetwork(){
         NeuralNetwork neuralNetwork = new NeuralNetwork();
         //neuralNetwork = trainNeuralNetwork(neuralNetwork);
         neuralNetwork.storeGenome();
@@ -43,8 +43,8 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
 
         //Set path to torcs.properties
 //        TorcsConfiguration.getInstance().initialize(new File("/users/edwinlima/git/ci/src/torcs.properties"));
-        TorcsConfiguration.getInstance().initialize(new File("C:\\Users\\George\\git\\ciEx2\\ci\\torcs.properties"));
-//        TorcsConfiguration.getInstance().initialize(new File("E:\\eclipse java\\eclipse workspace\\git\\ciEx2\\ci\\torcs.properties"));
+//        TorcsConfiguration.getInstance().initialize(new File("C:\\Users\\George\\git\\ciEx2\\ci\\torcs.properties"));
+        TorcsConfiguration.getInstance().initialize(new File("E:\\eclipse java\\eclipse workspace\\git\\ciEx2\\ci\\torcs.properties"));
 
         /*
 		 *
@@ -65,10 +65,10 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
             new DefaultRace().showBestRace();
         } else if(args.length > 0 && args[0].equals("-human")){
             new DefaultRace().raceBest();
-       // } else if(args.length > 0 && args[0].equals("-generateData")){
-            //generateData();
-      //  } else if(args.length > 0 && args[0].equals("-train")){
-            //trainNeuralNetwork();
+        } else if(args.length > 0 && args[0].equals("-generateData")){
+            generateData();
+        } else if(args.length > 0 && args[0].equals("-train")){
+            trainNeuralNetwork();
         } else if(args.length > 0 && args[0].equals("-continue")){
             if(DriversUtils.hasCheckpoint()){
                 DriversUtils.loadCheckpoint().run(true);
@@ -79,4 +79,8 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
             algorithm.run();
         }
     }
+
+	private static void generateData() {
+		
+	}
 }
