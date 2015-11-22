@@ -3,7 +3,6 @@ import cicontest.algorithm.abstracts.AbstractAlgorithm;
 import cicontest.algorithm.abstracts.AbstractRace;
 import cicontest.algorithm.abstracts.DriversUtils;
 import cicontest.torcs.controller.Driver;
-import cicontest.torcs.controller.Human;
 import race.TorcsConfiguration;
 
 public class DefaultDriverAlgorithm extends AbstractAlgorithm {
@@ -27,7 +26,6 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
             DefaultRace race = new DefaultRace();
             race.setTrack( AbstractRace.DefaultTracks.getTrack(0));
             race.laps = 1;
-
             //for speedup set withGUI to false
             results = race.runRace(drivers, true);
 
@@ -39,6 +37,19 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
             //DriversUtils.clearCheckpoint();
     }
 
+    public void train() {
+            //init NN
+            DefaultDriverGenome genome = new  DefaultDriverGenome();
+            drivers[0] = genome;
+            //Start a race
+            DefaultRace race = new DefaultRace();
+            race.setTrack( AbstractRace.DefaultTracks.getTrack(0));
+            race.laps = 1;
+            //for speedup set withGUI to false
+            results = race.runRace(drivers, true);
+            // Save genome/nn
+            DriversUtils.storeGenome(drivers[0]);
+    }
     public static void main(String[] args) {
 
         //Set path to torcs.properties
@@ -46,6 +57,7 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
 		/*
 		 *
 		 * Start without arguments to run the algorithm
+		 * Start with -train train NN
 		 * Start with -continue to continue a previous run
 		 * Start with -show to show the best found
 		 * Start with -show-race to show a race with 10 copies of the best found
@@ -56,7 +68,9 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
         DriversUtils.registerMemory(algorithm.getDriverClass());
         if(args.length > 0 && args[0].equals("-show")){
             new DefaultRace().showBest();
-        } else if(args.length > 0 && args[0].equals("-show-race")){
+        }else if(args.length > 0 && args[0].equals("-train")){
+        	algorithm.train();
+    	}else if(args.length > 0 && args[0].equals("-show-race")){
             new DefaultRace().showBestRace();
         } else if(args.length > 0 && args[0].equals("-human")){
             new DefaultRace().raceBest();
