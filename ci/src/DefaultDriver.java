@@ -17,8 +17,7 @@ public class DefaultDriver extends AbstractDriver {
 
     NeuralNetwork neuralNetwork = new NeuralNetwork();
     ArrayList<ArrayList<Double>> input;
-    ArrayList<Double> speedOutput;
-    ArrayList<Double> steeringOutput;
+    ArrayList<ArrayList<Double>> output;
     DefaultDriver() {
         initialize();
        // neuralNetwork = neuralNetwork.loadGenome();
@@ -32,8 +31,7 @@ public class DefaultDriver extends AbstractDriver {
        this.enableExtras(new AutomatedRecovering());
        this.enableExtras(new ABS());
        input=new ArrayList<ArrayList<Double>>();
-       speedOutput=new ArrayList<Double>();
-       steeringOutput=new ArrayList<Double>();
+       output=new ArrayList<ArrayList<Double>>();
     }
 
     private Double calculateSpeed(SensorModel sensors){
@@ -78,12 +76,14 @@ public class DefaultDriver extends AbstractDriver {
         temp.add(sensors.getTrackEdgeSensors()[10]);
         temp.add(sensors.getTrackEdgeSensors()[9]);
         input.add(temp);
-        speedOutput.add(sensors.getSpeed());
-        steeringOutput.add(action.steering);
+        ArrayList<Double> temp2=new ArrayList<Double>();
+        temp2.add(sensors.getSpeed());
+        temp2.add(action.steering);
+        output.add(temp2);
     }
 
 	public String getDriverName() {
-        return "simple example 2";
+        return "XVII";
     }
 
     public void controlQualification(Action action, SensorModel sensors) { }
@@ -105,4 +105,12 @@ public class DefaultDriver extends AbstractDriver {
     public double getBraking(SensorModel sensorModel){
         return 0;
     }
+
+	public ArrayList<ArrayList<Double>> getInput() {
+		return input;
+	}
+
+	public ArrayList<ArrayList<Double>> getOutput() {
+		return output;
+	}
 }

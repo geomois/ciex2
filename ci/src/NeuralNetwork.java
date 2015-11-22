@@ -15,7 +15,7 @@ public class NeuralNetwork implements Serializable {
 //	Setting hidden nodes to be 2 can be related to acceleration and braking
 //	Setting hidden nodes to be 3 can be related to turn right or left or go straight
 	private static int hiddenLNo=2;
-	private static int outputLNo=1; //DO NOT CHANGE VALUE =1
+	private static int outputLNo=2;
 	private static double learningRate=0.1;
 	private static double bias=0;
 	
@@ -35,12 +35,12 @@ public class NeuralNetwork implements Serializable {
 	
 	private static final long serialVersionUID = -88L;
 	
-	public void trainNetwork(ArrayList<ArrayList<Double>> input,ArrayList<Double> output) {
+	public void trainNetwork(ArrayList<ArrayList<Double>> input,ArrayList<ArrayList<Double>> output) {
 		for(int i=0;i<input.size();i++){
 			Double[] tempInput=new Double[input.get(i).size()];
 			tempInput=input.get(i).toArray(tempInput);
-			Double[] tempOutput=new Double[1];
-			tempOutput[0]=output.get(i);
+			Double[] tempOutput=new Double[output.get(i).size()];
+			tempOutput=output.get(i).toArray(tempOutput);
 			train(tempInput,tempOutput);
 		}
 	}
