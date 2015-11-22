@@ -15,7 +15,7 @@ public class NeuralNetwork implements Serializable {
 //	Setting hidden nodes to be 2 can be related to acceleration and braking
 //	Setting hidden nodes to be 3 can be related to turn right or left or go straight
 	private static int hiddenLNo=2;
-	private static int outputLNo=1;
+	private static int outputLNo=1; //DO NOT CHANGE VALUE =1
 	private static double learningRate=0.1;
 	private static double bias=0;
 	
@@ -23,18 +23,29 @@ public class NeuralNetwork implements Serializable {
 		inputNodes=new ArrayList<Double>();
 		hiddenNodes=new ArrayList<Double>();
 		outputNodes=new ArrayList<Double>();
+		error=new ArrayList<Double>();
 		for(int i=0; i<hiddenLNo;i++){
 			hiddenNodes.add((double) 0);
 		}
 		for(int i=0; i<outputLNo;i++){
 			outputNodes.add((double) 0);
-			error.add(0.0);
+			error.add((double) 0);
 		}
 	}
 	
 	private static final long serialVersionUID = -88L;
-
-	public void train(double[] input, double[] output){
+	
+	public void trainNetwork(ArrayList<ArrayList<Double>> input,ArrayList<Double> output) {
+		for(int i=0;i<input.size();i++){
+			Double[] tempInput=new Double[input.get(i).size()];
+			tempInput=input.get(i).toArray(tempInput);
+			Double[] tempOutput=new Double[1];
+			tempOutput[0]=output.get(i);
+			train(tempInput,tempOutput);
+		}
+	}
+	
+	private void train(Double[] input, Double[] output){
 //		The +1 refers to the bias
 		for(int i=0;i<input.length+1;i++){
 			inputNodes.add(input[i]);
@@ -45,7 +56,7 @@ public class NeuralNetwork implements Serializable {
 		backProp(input,output);
 	}
 	
-	private void forwardProp(double[] input, double[] output) {
+	private void forwardProp(Double[] input, Double[] output) {
 		for(int i=0; i<hiddenLNo;i++){
 			for(int j=0;j<inputNodes.size()+1;j++){
 				if (j==inputNodes.size()-1) {
@@ -72,7 +83,7 @@ public class NeuralNetwork implements Serializable {
 		}
 	}
 	
-	private void backProp(double[] input, double[] output) {
+	private void backProp(Double[] input, Double[] output) {
 //		newWeight=oldWeight+ learningRate*input*output*(1-output)*error
 		for(int i=0; i<outputLNo;i++){
 //			Assuming that all hidden nodes are connected to all the output nodes
@@ -153,4 +164,6 @@ public class NeuralNetwork implements Serializable {
 		 }
 		 return null;
 	 }
+
+	
 	}

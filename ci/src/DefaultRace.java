@@ -13,7 +13,6 @@ public class DefaultRace extends AbstractRace {
 		}
 		return runQualification(driversList, withGUI);
 	}
-
 	
 	public int[] runRace(DefaultDriverGenome[] drivers, boolean withGUI){
 		int size = Math.min(10, drivers.length);
@@ -25,8 +24,6 @@ public class DefaultRace extends AbstractRace {
 		return runRace(driversList, withGUI, true);
 	}
 
-	
-	
 	public void showBest(){
 		if(DriversUtils.getStoredGenome() == null ){
 			System.err.println("No best-genome known");
