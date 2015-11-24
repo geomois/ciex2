@@ -1,3 +1,4 @@
+package ci;
 
 import java.util.ArrayList;
 
@@ -12,6 +13,12 @@ public class DefaultDriverGenome implements IGenome {
     }
 	public void trainNN(ArrayList<ArrayList<Double>> input, ArrayList<ArrayList<Double>> output) {
 		myNN.trainNetwork(input, output);
+	}
+	
+	public Double[] getNNValue(ArrayList<Double> input){
+			Double[] temp=new Double[input.size()];
+			temp=myNN.getValues(input.toArray(temp));
+			return temp;
 	}
 }
 

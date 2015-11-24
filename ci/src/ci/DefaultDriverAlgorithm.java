@@ -1,3 +1,4 @@
+package ci;
 import java.io.File;
 import cicontest.algorithm.abstracts.AbstractAlgorithm;
 import cicontest.algorithm.abstracts.AbstractRace;

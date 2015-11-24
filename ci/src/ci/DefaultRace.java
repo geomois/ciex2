@@ -1,3 +1,4 @@
+package ci;
 import cicontest.algorithm.abstracts.AbstractRace;
 import cicontest.algorithm.abstracts.DriversUtils;
 import cicontest.torcs.controller.Driver;
@@ -26,10 +27,10 @@ public class DefaultRace extends AbstractRace {
 
 	public int[] trainGenome(DefaultDriverGenome[] drivers, boolean withGUI){
 		int size = Math.min(10, drivers.length);
-		DefaultDriver[] driversList = new DefaultDriver[size];
+		trainingDriver[] driversList = new trainingDriver[size];
 		for(int i=0; i<size; i++){
-			driversList[i] = new DefaultDriver();
-			driversList[i].loadGenome(drivers[i]);
+			driversList[i] = new trainingDriver();
+//			driversList[i].loadGenome(drivers[i]);
 		}
 		int[] t=runRace(driversList, withGUI, true);
 		drivers[0].trainNN(driversList[0].getInput(),driversList[0].getOutput());
