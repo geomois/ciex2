@@ -12,8 +12,8 @@ public class NeuralNetwork implements Serializable {
 	private ArrayList<Double> outputNodes;
 	private ArrayList<Double> errorOutput;
 	private ArrayList<Double> sumErrorDerivWeight;
-	private double[][] w1;
-	private double[][] w2;
+	private Double[][] w1;
+	private Double[][] w2;
 	// Setting hidden nodes to be 2 can be related to acceleration and braking
 	// Setting hidden nodes to be 3 can be related to turn right or left or go
 	// straight
@@ -30,8 +30,10 @@ public class NeuralNetwork implements Serializable {
 		sumErrorDerivWeight = new ArrayList<Double>();
 		for (int i = 0; i < hiddenLNo; i++) {
 			hiddenNodes.add((double) 0);
-			// Bias sumErrorDeriv will be calculated separately
-			sumErrorDerivWeight.add((double) 0);
+			for (int j = 0; j < outputLNo; j++) {
+				// Bias sumErrorDeriv will be calculated separately
+				sumErrorDerivWeight.add((double) 0);
+			}
 		}
 		for (int i = 0; i < outputLNo; i++) {
 			outputNodes.add((double) 0);
@@ -43,8 +45,8 @@ public class NeuralNetwork implements Serializable {
 
 	public void trainNetwork(ArrayList<ArrayList<Double>> input, ArrayList<ArrayList<Double>> output) {
 		// The +1 refers to the bias
-		initializeWeights(input.get(0).size() + 1, hiddenLNo, w1);
-		initializeWeights(hiddenLNo + 1, outputLNo, w2);
+		w1=initializeWeights(input.get(0).size() + 1, hiddenLNo, w1);
+		w2=initializeWeights(hiddenLNo + 1, outputLNo, w2);
 		for (int i = 0; i < input.size(); i++) {
 			Double[] tempInput = new Double[input.get(i).size()];
 			tempInput = input.get(i).toArray(tempInput);
@@ -56,16 +58,17 @@ public class NeuralNetwork implements Serializable {
 
 	private void train(Double[] input, Double[] output) {
 		inputNodes.clear();
-		for (int i = 0; i < input.length + 1; i++) {
+		for (int i = 0; i < input.length; i++) {
 			inputNodes.add(input[i]);
 		}
+		inputNodes.add(bias);
 		forwardProp(input, output);
 		backProp(input, output);
 	}
 
 	private ArrayList<Double> forwardProp(Double[] input, Double[] output) {
 		for (int i = 0; i < hiddenLNo; i++) {
-			for (int j = 0; j < inputNodes.size() + 1; j++) {
+			for (int j = 0; j < inputNodes.size(); j++) {
 				if (j == inputNodes.size() - 1) {
 					// Bias term
 					hiddenNodes.set(i, hiddenNodes.get(i) + w1[j][i] * bias);
@@ -112,7 +115,7 @@ public class NeuralNetwork implements Serializable {
 		}
 
 		for (int i = 0; i < hiddenLNo; i++) {
-			for (int j = 0; j < inputNodes.size() + 1; j++) {
+			for (int j = 0; j < inputNodes.size(); j++) {
 				double temp = hiddenNodes.get(i);
 				if (j == inputNodes.size() - 1) {
 					w1[j][i] = w1[j][i] + learningRate * bias * temp * (1 - temp) * sumErrorDerivWeight.get(i);
@@ -135,13 +138,14 @@ public class NeuralNetwork implements Serializable {
 	}
 	
 	// Weight matrix= w[number inputs][number outputs]
-	private void initializeWeights(int length, int length2, double[][] w) {
-		w = new double[length][length2];
+	private Double[][] initializeWeights(int length, int length2, Double[][] w) {
+		w = new Double[length][length2];
 		for (int i = 0; i < length; i++) {
 			for (int j = 0; j < length2; j++) {
 				w[i][j] = (double) Math.random();
 			}
 		}
+		return w;
 	}
 
 	// Store the state of this neural network
