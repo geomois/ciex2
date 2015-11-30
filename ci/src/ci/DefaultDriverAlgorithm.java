@@ -21,6 +21,7 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
         if(!continue_from_checkpoint){
             //init NN
             DefaultDriverGenome genome = new  DefaultDriverGenome();
+            genome.loadSavedNN();
             drivers[0] = genome;
 
             //Start a race
@@ -40,6 +41,7 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
 
     public void train() {
             //init NN
+			int nTracks = 2;
             DefaultDriverGenome genome = new  DefaultDriverGenome();
             drivers[0] = genome;
             //Start a race
