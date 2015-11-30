@@ -31,11 +31,7 @@ public class DefaultRace extends AbstractRace {
 		for(int i=0; i<size; i++){
 			driversList[i] = new trainingDriver();
 			drivers[i].setDriver(driversList[i]);
-//			driversList[i].loadGenome(drivers[i]);
 		}
-		
-		//int[] t=runRace(driversList, withGUI, true);
-		//drivers[0].trainNN(driversList[0].getInput(),driversList[0].getOutput());
 		return runRace(driversList, withGUI, true);
 	}
 	public void showBest(){

@@ -12,8 +12,8 @@ public class NeuralNetwork implements Serializable {
 	private ArrayList<Double> outputNodes;
 	private ArrayList<Double> errorOutput;
 	private ArrayList<Double> sumErrorDerivWeight;
-	private Double[][] w1;
-	private Double[][] w2;
+	private Double[][] w1=null;
+	private Double[][] w2=null;
 	// Setting hidden nodes to be 2 can be related to acceleration and braking
 	// Setting hidden nodes to be 3 can be related to turn right or left or go
 	// straight
@@ -44,9 +44,11 @@ public class NeuralNetwork implements Serializable {
 	private static final long serialVersionUID = -88L;
 
 	public void trainNetwork(ArrayList<ArrayList<Double>> input, ArrayList<ArrayList<Double>> output) {
-		// The +1 refers to the bias
-		w1=initializeWeights(input.get(0).size() + 1, hiddenLNo, w1);
-		w2=initializeWeights(hiddenLNo + 1, outputLNo, w2);
+		if (w1==null && w2==null) {
+			// The +1 refers to the bias
+			w1 = initializeWeights(input.get(0).size() + 1, hiddenLNo, w1);
+			w2 = initializeWeights(hiddenLNo + 1, outputLNo, w2);
+		}
 		for (int i = 0; i < input.size(); i++) {
 			Double[] tempInput = new Double[input.get(i).size()];
 			tempInput = input.get(i).toArray(tempInput);
