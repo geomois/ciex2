@@ -31,5 +31,8 @@ public class DefaultDriverGenome implements IGenome {
 		return myTD;
 	}
 	
+	public void loadSavedNN(){
+		myNN=myNN.loadGenome();
+	}
 }
 

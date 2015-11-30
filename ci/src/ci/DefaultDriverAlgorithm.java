@@ -21,6 +21,8 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
         if(!continue_from_checkpoint){
             //init NN
             DefaultDriverGenome genome = new  DefaultDriverGenome();
+//          Loads the saved trained NN
+            genome.loadSavedNN();
             drivers[0] = genome;
 
             //Start a race
@@ -62,7 +64,7 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
 
         //Set path to torcs.properties
 //        TorcsConfiguration.getInstance().initialize(new File("C:/yoel/java/ciex2/ci/torcs.properties"));
-    	TorcsConfiguration.getInstance().initialize(new File("C:/yoel/java/ciex2/ci/torcs.properties"));
+    	TorcsConfiguration.getInstance().initialize(new File("C:\\Users\\George\\git\\ci\\ci\\torcs.properties"));
 		/*
 		 *
 		 * Start without arguments to run the algorithm
