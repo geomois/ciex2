@@ -41,30 +41,35 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
     }
 
     public void train() {
-    		int i;
-    		int nTracks = 2;
+    		int nTracks = 3;
             //init NN
             DefaultDriverGenome genome = new  DefaultDriverGenome();
             drivers[0] = genome;
             //Start a race
-            DefaultRace race = new DefaultRace();
-            for(i = 0; i < nTracks-1; i++){
-	            race.setTrack( AbstractRace.DefaultTracks.getTrack(i));
-	            race.laps = 1;
+            
+            for(int i = 0; i < nTracks; i++){
 	            //for speedup set withGUI to false
+            	DefaultRace race = new DefaultRace();
+                race.laps = 1;
+            	race.setTrack( AbstractRace.DefaultTracks.getTrack(i));
+	            System.out.println("Start lap " + (i+1) + " of " + nTracks);
+	            race.trainGenome(drivers, true);
 	           
-	            results = race.trainGenome(drivers, true);
+	            drivers[0].addIO(drivers[0].getDriver().getInput(),drivers[0].getDriver().getOutput());
+	          
+	            race = null;
+	            System.out.println("End lap " + (i+1) + " of " + nTracks);
             }
-       
+            drivers[0].trainNN();
             // Save genome/nn
-            drivers[0].trainNN(drivers[0].getDriver().getInput(),drivers[0].getDriver().getOutput());
-            DriversUtils.storeGenome(drivers[0]);
+            
+            
     }
     public static void main(String[] args) {
 
         //Set path to torcs.properties
-//        TorcsConfiguration.getInstance().initialize(new File("C:/yoel/java/ciex2/ci/torcs.properties"));
-    	TorcsConfiguration.getInstance().initialize(new File("C:\\Users\\George\\git\\ci\\ci\\torcs.properties"));
+        TorcsConfiguration.getInstance().initialize(new File("C:/yoel/java/ciex2/ci/torcs.properties"));
+    	//TorcsConfiguration.getInstance().initialize(new File("C:\\Users\\George\\git\\ci\\ci\\torcs.properties"));
 		/*
 		 *
 		 * Start without arguments to run the algorithm

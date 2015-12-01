@@ -13,12 +13,12 @@ import cicontest.torcs.controller.extras.AutomatedClutch;
 import cicontest.torcs.controller.extras.AutomatedGearbox;
 import cicontest.torcs.controller.extras.AutomatedRecovering;
 
+
 public class trainingDriver extends AbstractDriver {
 
-	DefaultDriverGenome ddg;
     NeuralNetwork NN;
-    ArrayList<ArrayList<Double>> input;
-    ArrayList<ArrayList<Double>> output;
+    ArrayList<double[]> input;
+    ArrayList<double[]> output;
     trainingDriver() {
         initialize();
     }
@@ -31,12 +31,16 @@ public class trainingDriver extends AbstractDriver {
        this.enableExtras(new AutomatedGearbox());
        this.enableExtras(new AutomatedRecovering());
        this.enableExtras(new ABS());
-       input=new ArrayList<ArrayList<Double>>();
-       output=new ArrayList<ArrayList<Double>>();
+       input=new ArrayList<double[]>();
+       output=new ArrayList<double[]>();
     }
     @Override
     public void control(Action action, SensorModel sensors) {
         // Example of a bot that drives pretty well; you can use this to generate data
+    	
+       double outputs[] = new double[3];
+               
+       input.add(sensors.getTrackEdgeSensors());
     	action.steering = DriversUtils.alignToTrackAxis(sensors, 0.5);
         if(sensors.getSpeed() > 60.0D) {
             action.accelerate = 0.0D;
@@ -58,26 +62,12 @@ public class trainingDriver extends AbstractDriver {
             action.brake = 0.0D;
         
         }
-//        System.out.println(action.steering +"steering");
-//        System.out.println(action.accelerate + "acceleration");
-//        System.out.println(action.brake + "brake");
-//
-//        System.out.println(sensors.getSpeed() +"speedIn");
-//        System.out.println(sensors.getAngleToTrackAxis() + "AngleToTrackAxis");
-//        System.out.println(sensors.getTrackEdgeSensors()[10] + "TrackEdgeSensors");
-//        System.out.println(sensors.getTrackEdgeSensors()[9] + "TrackEdgeSensors");
-//        System.out.println(sensors.getTrackEdgeSensors()[8] + "TrackEdgeSensors");
-//        System.out.println(sensors.getTrackPosition() + "trackposition");
         
-        ArrayList<Double> temp=new ArrayList<Double>();
-        temp.add(sensors.getTrackEdgeSensors()[8]);
-        temp.add(sensors.getTrackEdgeSensors()[10]);
-        temp.add(sensors.getTrackEdgeSensors()[9]);
-        input.add(temp);
-        ArrayList<Double> temp2=new ArrayList<Double>();
-        temp2.add(sensors.getSpeed());
-        temp2.add(action.steering);
-        output.add(temp2);
+        outputs[0] = action.accelerate;
+        outputs[1] = action.brake;
+        outputs[2] = (action.steering+1.0D)/2.0D;
+       
+        output.add(outputs);
     }
 
 	public String getDriverName() {
@@ -104,11 +94,11 @@ public class trainingDriver extends AbstractDriver {
         return 0;
     }
 
-	public ArrayList<ArrayList<Double>> getInput() {
+	public ArrayList<double[]> getInput() {
 		return input;
 	}
 
-	public ArrayList<ArrayList<Double>> getOutput() {
+	public ArrayList<double[]> getOutput() {
 		return output;
 	}
 }

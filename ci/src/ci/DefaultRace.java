@@ -27,7 +27,7 @@ public class DefaultRace extends AbstractRace {
 
 	public int[] trainGenome(DefaultDriverGenome[] drivers, boolean withGUI){
 		int size = Math.min(10, drivers.length);
-		trainingDriver[] driversList = new trainingDriver[size];
+		trainingDriver[] driversList = new trainingDriver[1];
 		for(int i=0; i<size; i++){
 			driversList[i] = new trainingDriver();
 			drivers[i].setDriver(driversList[i]);

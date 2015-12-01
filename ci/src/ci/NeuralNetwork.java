@@ -1,154 +1,133 @@
 package ci;
 import java.io.*;
-import java.util.ArrayList;
 
 public class NeuralNetwork implements Serializable {
 
-	// We could build it more abstractly in order to be able to add/remove nodes
-	// and layers easily
-
-	private ArrayList<Double> inputNodes;
-	private ArrayList<Double> hiddenNodes;
-	private ArrayList<Double> outputNodes;
-	private ArrayList<Double> errorOutput;
-	private ArrayList<Double> sumErrorDerivWeight;
-	private Double[][] w1=null;
-	private Double[][] w2=null;
-	// Setting hidden nodes to be 2 can be related to acceleration and braking
-	// Setting hidden nodes to be 3 can be related to turn right or left or go
-	// straight
-	private static int hiddenLNo = 2;
-	private static int outputLNo = 2;
+	
 	private static double learningRate = 0.1;
-	private static double bias = 1; // Activates the sigmoid
+	
+	private int nInputs, nHidden, nOutput; 
+	private double[/* i */] input, hidden, output;
+	private double[/* j */][/* i */] weightL1, weigthL2;  
 
-	public NeuralNetwork() {
-		inputNodes = new ArrayList<Double>();
-		hiddenNodes = new ArrayList<Double>();
-		outputNodes = new ArrayList<Double>();
-		errorOutput = new ArrayList<Double>();
-		sumErrorDerivWeight = new ArrayList<Double>();
-		for (int i = 0; i < hiddenLNo; i++) {
-			hiddenNodes.add((double) 0);
-			for (int j = 0; j < outputLNo; j++) {
-				// Bias sumErrorDeriv will be calculated separately
-				sumErrorDerivWeight.add((double) 0);
-			}
-		}
-		for (int i = 0; i < outputLNo; i++) {
-			outputNodes.add((double) 0);
-			errorOutput.add((double) 0);
-		}
-	}
+
+	public NeuralNetwork(int nInput, int nHidden, int nOutput) {
+		this.nInputs = nInput;
+        this.nHidden = nHidden;
+        this.nOutput = nOutput;
+
+        input = new double[nInput+1];
+        hidden = new double[nHidden+1];
+        output = new double[nOutput+1];
+
+        weightL1 = new double[nHidden+1][nInput+1];
+        weigthL2 = new double[nOutput+1][nHidden+1];
+
+        // Initialize weigths
+        generateRandomWeights();
+    }
+	private void generateRandomWeights() {
+	        
+	        for(int j=1; j<=nHidden; j++)
+	            for(int i=0; i<=nInputs; i++) {
+	                weightL1[j][i] = Math.random() - 0.5;
+	        }
+	
+	        for(int j=1; j<=nOutput; j++)
+	            for(int i=0; i<=nHidden; i++) {
+	                weigthL2[j][i] = Math.random() - 0.5;
+	        }
+	    }
 
 	private static final long serialVersionUID = -88L;
 
-	public void trainNetwork(ArrayList<ArrayList<Double>> input, ArrayList<ArrayList<Double>> output) {
-		if (w1==null && w2==null) {
-			// The +1 refers to the bias
-			w1 = initializeWeights(input.get(0).size() + 1, hiddenLNo, w1);
-			w2 = initializeWeights(hiddenLNo + 1, outputLNo, w2);
-		}
-		for (int i = 0; i < input.size(); i++) {
-			Double[] tempInput = new Double[input.get(i).size()];
-			tempInput = input.get(i).toArray(tempInput);
-			Double[] tempOutput = new Double[output.get(i).size()];
-			tempOutput = output.get(i).toArray(tempOutput);
-			train(tempInput, tempOutput);
-		}
-	}
+    /**
+     * Train the network with given a pattern.
+     * The pattern is passed through the network and the weights are adjusted
+     * by backpropagation, considering the desired output.
+     *
+     * @param pattern the pattern to be learned
+     * @param desiredOutput the desired output for pattern
+     * @return the network output before weights adjusting
+     */
+    public double[] train(double[] pattern, double[] desiredOutput) {
+        double[] output = passNet(pattern);
+        backpropagation(desiredOutput);
+        return output;
+    }
 
-	private void train(Double[] input, Double[] output) {
-		inputNodes.clear();
-		for (int i = 0; i < input.length; i++) {
-			inputNodes.add(input[i]);
-		}
-		inputNodes.add(bias);
-		forwardProp(input, output);
-		backProp(input, output);
-	}
 
-	private ArrayList<Double> forwardProp(Double[] input, Double[] output) {
-		for (int i = 0; i < hiddenLNo; i++) {
-			for (int j = 0; j < inputNodes.size(); j++) {
-				if (j == inputNodes.size() - 1) {
-					// Bias term
-					hiddenNodes.set(i, hiddenNodes.get(i) + w1[j][i] * bias);
-				} else {
-					hiddenNodes.set(i, hiddenNodes.get(i) + w1[j][i] * input[j]);
-				}
-			}
-			double temp = hiddenNodes.get(i);
-			hiddenNodes.set(i, (1 / (1 + Math.exp(temp))));
-		}
-		for (int i = 0; i < outputLNo; i++) {
-			for (int j = 0; j < hiddenLNo + 1; j++) {
-				if (j == hiddenLNo) {
-					outputNodes.set(i, outputNodes.get(i) + w2[j][i] * bias);
-				} else {
-					outputNodes.set(i, outputNodes.get(i) + w2[j][i] * hiddenNodes.get(j));
-				}
-			}
-			double temp = outputNodes.get(i);
-			outputNodes.set(i, (1 / (1 + Math.exp(temp))));
-			if(output!=null)
-				errorOutput.set(i, output[i] - outputNodes.get(i));
-		}
-		return outputNodes;
-	}
+    /**
+     * Passes a pattern through the network. Activatinon functions are logistics.
+     *
+     * @param pattern pattern to be passed through the network
+     * @return the network output for this pattern
+     */
+    public double[] passNet(double[] pattern) {
 
-	private void backProp(Double[] input, Double[] output) {
-		// newWeight=oldWeigth+learningRate*input*(output*(1-output))(derivative of sigmoid)*error
-		for (int i = 0; i < outputLNo; i++) {
-			// Assuming that all hidden nodes are connected to all the output nodes
-			for (int j = 0; j < hiddenLNo + 1; j++) {
-				double temp = outputNodes.get(i);
-				if (j == hiddenLNo) {
-					w2[j][i] = w2[j][i] + learningRate * bias * temp * (1 - temp) * errorOutput.get(i);
-				} else {
-					w2[j][i] = w2[j][i] + learningRate * hiddenNodes.get(j) * temp * (1 - temp) * errorOutput.get(i);
-				}
-				// Calculating Ód_k*w_jk where d_k=g'*error
-				// I am not sure if we should use the old or the updated weight
-				// here I use the updated
-				sumErrorDerivWeight.set(j,
-						sumErrorDerivWeight.get(i) + (temp * (1 - temp) * errorOutput.get(i) * w2[j][i]));
-			}
-		}
+        for(int i=0; i<nInputs; i++) {
+            input[i+1] = pattern[i];
+        }
+        
+        // Set bias
+        input[0] = 1.0;
+        hidden[0] = 1.0;
 
-		for (int i = 0; i < hiddenLNo; i++) {
-			for (int j = 0; j < inputNodes.size(); j++) {
-				double temp = hiddenNodes.get(i);
-				if (j == inputNodes.size() - 1) {
-					w1[j][i] = w1[j][i] + learningRate * bias * temp * (1 - temp) * sumErrorDerivWeight.get(i);
-				} else {
-					w1[j][i] = w1[j][i]
-							+ learningRate * inputNodes.get(j) * temp * (1 - temp) * sumErrorDerivWeight.get(i);
-				}
-			}
-		}
-	}
+        // Passing through hidden layer
+        for(int j=1; j<=nHidden; j++) {
+            hidden[j] = 0.0;
+            for(int i=0; i<=nInputs; i++) {
+                hidden[j] += weightL1[j][i] * input[i];
+            }
+            hidden[j] = 1.0/(1.0+Math.exp(-hidden[j]));
+        }
+    
+        // Passing through output layer
+        for(int j=1; j<=nOutput; j++) {
+            output[j] = 0.0;
+            for(int i=0; i<=nHidden; i++) {
+                output[j] += weigthL2[j][i] * hidden[i];
+       	    }
+            output[j] = 1.0/(1+0+Math.exp(-output[j]));
+        }
 
-	public Double[] getValues(Double[] input){
-		if(w1!=null && w2!=null){
-			Double[] temp=new Double[outputLNo];
-			temp=this.forwardProp(input, null).toArray(temp);
-			return temp;
-		}else{
-			return null;
-		}
-	}
-	
-	// Weight matrix= w[number inputs][number outputs]
-	private Double[][] initializeWeights(int length, int length2, Double[][] w) {
-		w = new Double[length][length2];
-		for (int i = 0; i < length; i++) {
-			for (int j = 0; j < length2; j++) {
-				w[i][j] = (double) Math.random();
-			}
-		}
-		return w;
-	}
+        return output;
+    }
+
+
+    /**
+     * This method adjust weigths considering error backpropagation. The desired
+     * output is compared with the last network output and weights are adjusted
+     * using the choosen learn rate.
+     *
+     * @param desiredOutput desired output for the last given pattern
+     */
+    private void backpropagation(double[] desiredOutput) {
+
+        double[] errorL2 = new double[nOutput+1];
+        double[] errorL1 = new double[nHidden+1];
+        double Esum = 0.0;
+
+        for(int i=1; i<=nOutput; i++)  // Layer 2 error gradient
+            errorL2[i] = output[i] * (1.0-output[i]) * (desiredOutput[i-1]-output[i]);
+	    
+               
+        for(int i=0; i<=nHidden; i++) {  // Layer 1 error gradient
+            for(int j=1; j<=nOutput; j++)
+                Esum += weigthL2[j][i] * errorL2[j];
+
+            errorL1[i] = hidden[i] * (1.0-hidden[i]) * Esum;
+            Esum = 0.0;
+        }
+             
+        for(int j=1; j<=nOutput; j++)
+            for(int i=0; i<=nHidden; i++)
+                weigthL2[j][i] += learningRate * errorL2[j] * hidden[i];
+         
+        for(int j=1; j<=nHidden; j++)
+            for(int i=0; i<=nInputs; i++) 
+                weightL1[j][i] += learningRate * errorL1[j] * input[i];
+    }
 
 	// Store the state of this neural network
 	public void storeGenome() {
@@ -157,10 +136,10 @@ public class NeuralNetwork implements Serializable {
 			// create the memory folder manually
 			// out = new ObjectOutputStream(new
 			// FileOutputStream("/users/edwinlima/git/ci/memory/mydriver.mem"));
-//			out = new ObjectOutputStream(new FileOutputStream("C:/yoel/java/ciex2/ci/memory/driveryoel.mem"));
+			out = new ObjectOutputStream(new FileOutputStream("C:/yoel/java/ciex2/ci/memory/driveryoel.mem"));
 //			 out = new ObjectOutputStream(new FileOutputStream("E:\\eclipse
 //			 java\\eclipse workspace\\git\\ci\\memory\\mydriver.mem"));
-			out = new ObjectOutputStream(new FileOutputStream("C:\\Users\\George\\git\\ci\\ci\\memory\\mydriver.mem"));
+			//out = new ObjectOutputStream(new FileOutputStream("C:\\Users\\George\\git\\ci\\ci\\memory\\mydriver.mem"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -172,17 +151,17 @@ public class NeuralNetwork implements Serializable {
 	}
 
 	// Load a neural network from memory
-	public NeuralNetwork loadGenome() {
+	public static NeuralNetwork loadGenome() {
 
 		// Read from disk using FileInputStream
 		FileInputStream f_in = null;
 		try {
 			// f_in = new
 			// FileInputStream("/users/edwinlima/git/ci/memory/mydriver.mem");
-//			f_in = new FileInputStream("C:/yoel/java/ciex2/ci/memory/driveryoel.mem");
+        	f_in = new FileInputStream("C:/yoel/java/ciex2/ci/memory/driveryoel.mem");
 			// f_in = new FileInputStream("E:\\eclipse java\\eclipse
 			// workspace\\git\\ci\\memory\\mydriver.mem");
-			f_in = new FileInputStream("C:\\Users\\George\\git\\ci\\ci\\memory\\mydriver.mem");
+			//f_in = new FileInputStream("C:\\Users\\George\\git\\ci\\ci\\memory\\mydriver.mem");
 			
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
@@ -205,5 +184,9 @@ public class NeuralNetwork implements Serializable {
 			e.printStackTrace();
 		}
 		return null;
+	}
+	public double[] getValues(double[] input) {
+		// TODO Auto-generated method stub
+		return this.passNet(input);
 	}
 }

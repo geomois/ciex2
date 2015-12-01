@@ -14,7 +14,6 @@ import cicontest.torcs.controller.extras.AutomatedRecovering;
 public class DefaultDriver extends AbstractDriver {
 
 //    private NeuralNetwork neuralNetwork = new NeuralNetwork();
-    private ArrayList<Double> input;
 	private DefaultDriverGenome driverGenome;
     DefaultDriver() {
         initialize();
@@ -29,25 +28,20 @@ public class DefaultDriver extends AbstractDriver {
        this.enableExtras(new AutomatedGearbox());
        this.enableExtras(new AutomatedRecovering());
        this.enableExtras(new ABS());
-       input=new ArrayList<Double>();
     }
 
     @Override
     public void control(Action action, SensorModel sensors) {
+    	double [] NNOutput;
        
-    	Double [] NNOutput=new Double[2];
-        input.add(sensors.getTrackEdgeSensors()[8]);
-        input.add(sensors.getTrackEdgeSensors()[10]);
-        input.add(sensors.getTrackEdgeSensors()[9]);
+    	NNOutput=driverGenome.getNNValue(sensors.getTrackEdgeSensors());
+       
+    	action.accelerate = NNOutput[1];
+    	action.brake      = NNOutput[2];
+    	action.steering   =(NNOutput[3]*2.0D)-1.0D;
     	
-    	NNOutput=driverGenome.getNNValue(input);
     	
-    	if(sensors.getSpeed()<NNOutput[0])
-    		action.accelerate=1;
-    	else if(sensors.getSpeed()>NNOutput[0])
-    		action.brake=-1;
-    	
-    	action.steering=NNOutput[1];
+
     }
 
 	public String getDriverName() {
