@@ -54,7 +54,7 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
 	            results = race.trainGenome(drivers, true);
 	            drivers[0].trainNN(drivers[0].getDriver().getInput(),drivers[0].getDriver().getOutput());
             }
-//            drivers[0].saveNN();
+            drivers[0].saveNN();
             // Save genome/nn
             DriversUtils.storeGenome(drivers[0]);
     }

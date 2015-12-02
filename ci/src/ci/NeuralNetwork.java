@@ -63,8 +63,12 @@ public class NeuralNetwork implements Serializable {
 
 	private void train(Double[] input, Double[] output) {
 		inputNodes.clear();
+		outputNodes.clear();
 		for (int i = 0; i < input.length; i++) {
 			inputNodes.add(input[i]);
+		}
+		for (int i = 0; i < output.length; i++) {
+			outputNodes.add(output[i]);
 		}
 		inputNodes.add(bias);
 		forwardProp(input, output);
