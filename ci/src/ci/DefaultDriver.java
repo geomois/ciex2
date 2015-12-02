@@ -45,14 +45,16 @@ public class DefaultDriver extends AbstractDriver {
     	}
     	NNOutput=driverGenome.getNNValue(input);
     	Double desiredSpeed=NNOutput[0];
+    	Double desiredSteering=NNOutput[1];
     	System.out.println(desiredSpeed.toString());
+//    	System.out.println(desiredSteering.toString());
     	if(sensors.getSpeed() > desiredSpeed) {
             action.accelerate = 0.0D;
             action.brake = 0.0D;
         }
         if(sensors.getSpeed() > desiredSpeed+10.0D) {
             action.accelerate = 0.0D;
-            action.brake = 0.6D;
+            action.brake = 0.9D;
         }
         if(sensors.getSpeed() <= desiredSpeed) {
             action.accelerate = (desiredSpeed - sensors.getSpeed()/4) / desiredSpeed;
@@ -68,7 +70,7 @@ public class DefaultDriver extends AbstractDriver {
 //    		action.brake=0.5D;
     	
     	action.steering=DriversUtils.alignToTrackAxis(sensors,0.5D);
-//    	action.steering=NNOutput[1];
+//    	action.steering=NNOutput[1]*0.7D;
     }
 
 	public String getDriverName() {
