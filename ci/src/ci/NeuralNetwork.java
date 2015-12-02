@@ -21,7 +21,7 @@ public class NeuralNetwork implements Serializable {
 	private static int outputLNo = 2;
 	private static int Adding=0;
 	private static double learningRate = 0.1;
-	private static double bias = 1; // Activates the sigmoid
+	private static double bias = 0; // Activates the sigmoid
 
 	public NeuralNetwork() {
 		inputNodes = new ArrayList<Double>();
@@ -73,30 +73,32 @@ public class NeuralNetwork implements Serializable {
 	}
 
 	private ArrayList<Double> forwardProp(Double[] input, Double[] output) {
+		
 		for (int i = 0; i < hiddenLNo; i++) {
 			for (int j = 0; j < inputNodes.size(); j++) {
-				if (j == inputNodes.size() - 1) {
-					// Bias term
+				if (j ==inputNodes.size()-1) {
 					hiddenNodes.set(i, hiddenNodes.get(i) + w1[j][i] * bias);
 				} else {
 					hiddenNodes.set(i, hiddenNodes.get(i) + w1[j][i] * input[j]);
 				}
 			}
-			double temp = hiddenNodes.get(i);
-			hiddenNodes.set(i, (1 / (1 + Math.exp(temp))));
+			
+			double temp = (1 / (1 + Math.exp(-hiddenNodes.get(i))));
+			hiddenNodes.set(i, (1 / temp));
 		}
 		for (int i = 0; i < outputLNo; i++) {
 			for (int j = 0; j < hiddenLNo + 1; j++) {
-				if (j == hiddenLNo) {
+				if (j ==hiddenNodes.size()) {
 					outputNodes.set(i, outputNodes.get(i) + w2[j][i] * bias);
 				} else {
 					outputNodes.set(i, outputNodes.get(i) + w2[j][i] * hiddenNodes.get(j));
 				}
 			}
-			double temp = outputNodes.get(i);
-			outputNodes.set(i, (1 / (1 + Math.exp(temp))));
-			if(output!=null)
-				errorOutput.set(i, output[i] - outputNodes.get(i));
+			outputNodes.set(i, (1 / (1 + Math.exp(-outputNodes.get(i)))));
+			if(output!=null){
+				double temp = outputNodes.get(i);
+				errorOutput.set(i, temp*(1.0D-temp) *(output[i] -temp));
+			}
 		}
 		return outputNodes;
 	}
@@ -123,7 +125,7 @@ public class NeuralNetwork implements Serializable {
 		for (int i = 0; i < hiddenLNo; i++) {
 			for (int j = 0; j < inputNodes.size(); j++) {
 				double temp = hiddenNodes.get(i);
-				if (j == inputNodes.size() - 1) {
+				if (j == inputNodes.size()-1) {
 					w1[j][i] = w1[j][i] + learningRate * bias * temp * (1 - temp) * sumErrorDerivWeight.get(i);
 				} else {
 					w1[j][i] = w1[j][i]
@@ -136,57 +138,58 @@ public class NeuralNetwork implements Serializable {
 	public Double[] getValues(Double[] input){
 		if(w1!=null && w2!=null){
 			Double[] temp=new Double[outputLNo];
-			hiddenNodes.clear();
-			outputNodes.clear();
-			inputNodes.clear();
-			for (int i = 0; i < input.length; i++) {
-				inputNodes.add(input[i]);
-			}
-			inputNodes.add(bias);
-			for (int i = 0; i < hiddenLNo; i++) {
-				hiddenNodes.add((double) 0);
-			}
-			for (int i = 0; i < outputLNo; i++) {
-				outputNodes.add((double) 0);
-			}
-			
-			for (int i = 0; i < hiddenLNo; i++) {
-				for (int j = 0; j < inputNodes.size(); j++) {
-					if (j == inputNodes.size() - 1) {
-						// Bias term
-						hiddenNodes.set(i, hiddenNodes.get(i) + w1[j][i] * bias);
-					} else {
-						hiddenNodes.set(i, hiddenNodes.get(i) + w1[j][i] * input[j]);
-					}
-				}
-//				double yo = hiddenNodes.get(i);
-//				hiddenNodes.set(i, (1 / (1 + Math.exp(yo))));
-			}
-			for (int i = 0; i < outputLNo; i++) {
-				for (int j = 0; j < hiddenLNo + 1; j++) {
-					if (i==0) {
+//			hiddenNodes.clear();
+//			outputNodes.clear();
+//			inputNodes.clear();
+//			for (int i = 0; i < input.length; i++) {
+//				inputNodes.add(input[i]);
+//			}
+//			inputNodes.add(bias);
+//			for (int i = 0; i < hiddenLNo; i++) {
+//				hiddenNodes.add((double) 0);
+//			}
+//			for (int i = 0; i < outputLNo; i++) {
+//				outputNodes.add((double) 0);
+//			}
+//			
+//			for (int i = 0; i < hiddenLNo; i++) {
+//				for (int j = 0; j < inputNodes.size(); j++) {
+//					if (j == inputNodes.size() - 1) {
+//						// Bias term
+//						hiddenNodes.set(i, hiddenNodes.get(i) + w1[j][i] * bias);
+//					} else {
+//						hiddenNodes.set(i, hiddenNodes.get(i) + w1[j][i] * input[j]);
+//					}
+//				}
+////				double yo = hiddenNodes.get(i);
+////				hiddenNodes.set(i, (1 / (1 + Math.exp(yo))));
+//			}
+//			for (int i = 0; i < outputLNo; i++) {
+//				for (int j = 0; j < hiddenLNo + 1; j++) {
+//					if (i==0) {
+////						if (j == hiddenLNo) {
+////							outputNodes.set(i, Math.abs(outputNodes.get(i) + w2[j][i] * bias));
+////						} else {
+////							outputNodes.set(i, Math.abs(outputNodes.get(i) + w2[j][i] * hiddenNodes.get(j)));
+////						} 
 //						if (j == hiddenLNo) {
-//							outputNodes.set(i, Math.abs(outputNodes.get(i) + w2[j][i] * bias));
+//							outputNodes.set(i, outputNodes.get(i) + w2[j][i] * bias);
 //						} else {
-//							outputNodes.set(i, Math.abs(outputNodes.get(i) + w2[j][i] * hiddenNodes.get(j)));
+//							outputNodes.set(i, outputNodes.get(i) + w2[j][i] * hiddenNodes.get(j));
 //						} 
-						if (j == hiddenLNo) {
-							outputNodes.set(i, outputNodes.get(i) + w2[j][i] * bias);
-						} else {
-							outputNodes.set(i, outputNodes.get(i) + w2[j][i] * hiddenNodes.get(j));
-						} 
-					}else{
-//						Steering
-						if (j == hiddenLNo) {
-							outputNodes.set(i, outputNodes.get(i) + w2[j][i] * bias);
-						} else {
-							outputNodes.set(i, outputNodes.get(i) + w2[j][i] * hiddenNodes.get(j));
-						} 
-					}
-				}
-				outputNodes.set(i,Math.abs(outputNodes.get(i)));
-			}
-			temp=outputNodes.toArray(temp);
+//					}else{
+////						Steering
+//						if (j == hiddenLNo) {
+//							outputNodes.set(i, outputNodes.get(i) + w2[j][i] * bias);
+//						} else {
+//							outputNodes.set(i, outputNodes.get(i) + w2[j][i] * hiddenNodes.get(j));
+//						} 
+//					}
+//				}
+//				outputNodes.set(i,Math.abs(outputNodes.get(i)));
+//			}
+//			temp=outputNodes.toArray(temp);
+			temp=this.forwardProp(input, null).toArray(temp);
 			return temp;
 		}else{
 			return null;
@@ -211,8 +214,8 @@ public class NeuralNetwork implements Serializable {
 			// create the memory folder manually
 			// out = new ObjectOutputStream(new
 			// FileOutputStream("/users/edwinlima/git/ci/memory/mydriver.mem"));
-//			out = new ObjectOutputStream(new FileOutputStream("C:\\Users\\George\\git\\ci\\ci\\memory\\mydriver.mem"));
-			 out = new ObjectOutputStream(new FileOutputStream("C:\\Users\\11126957\\Desktop\\memory\\mydriver.mem"));
+			out = new ObjectOutputStream(new FileOutputStream("C:\\Users\\George\\git\\ci\\ci\\memory\\mydriver.mem"));
+//			 out = new ObjectOutputStream(new FileOutputStream("C:\\Users\\11126957\\Desktop\\memory\\mydriver.mem"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -231,8 +234,8 @@ public class NeuralNetwork implements Serializable {
 		try {
 			// f_in = new
 			// FileInputStream("/users/edwinlima/git/ci/memory/mydriver.mem");
-//			f_in = new FileInputStream("C:\\Users\\George\\git\\ci\\ci\\memory\\mydriver.mem");
-			f_in = new FileInputStream("C:\\Users\\11126957\\Desktop\\memory\\mydriver.mem");
+			f_in = new FileInputStream("C:\\Users\\George\\git\\ci\\ci\\memory\\mydriver.mem");
+//			f_in = new FileInputStream("C:\\Users\\11126957\\Desktop\\memory\\mydriver.mem");
 			// f_in = new FileInputStream("E:\\eclipse java\\eclipse
 			// workspace\\git\\ci\\memory\\mydriver.mem");
 		} catch (FileNotFoundException e) {
