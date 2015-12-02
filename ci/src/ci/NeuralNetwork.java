@@ -54,7 +54,10 @@ public class NeuralNetwork implements Serializable {
 			tempInput = input.get(i).toArray(tempInput);
 			Double[] tempOutput = new Double[output.get(i).size()];
 			tempOutput = output.get(i).toArray(tempOutput);
-			train(tempInput, tempOutput);
+			
+			for (int j = 0; j < 100; j++) {
+				train(tempInput, tempOutput);
+			}
 		}
 	}
 
