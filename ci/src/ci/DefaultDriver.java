@@ -44,21 +44,21 @@ public class DefaultDriver extends AbstractDriver {
     		input.add(sensors.getTrackEdgeSensors()[i]);
     	}
     	NNOutput=driverGenome.getNNValue(input);
-    	Double speed=NNOutput[0];
-    	System.out.println(speed.toString());
-    	if(sensors.getSpeed() > speed) {
+    	Double desiredSpeed=NNOutput[0];
+    	System.out.println(desiredSpeed.toString());
+    	if(sensors.getSpeed() > desiredSpeed) {
             action.accelerate = 0.0D;
             action.brake = 0.0D;
         }
-        if(sensors.getSpeed() > speed+10.0D) {
+        if(sensors.getSpeed() > desiredSpeed+10.0D) {
             action.accelerate = 0.0D;
-            action.brake = 1.0D;
+            action.brake = 0.6D;
         }
-        if(sensors.getSpeed() <= speed) {
-            action.accelerate = (150.0D - sensors.getSpeed()) / 150.0D;
+        if(sensors.getSpeed() <= desiredSpeed) {
+            action.accelerate = (desiredSpeed - sensors.getSpeed()/4) / desiredSpeed;
             action.brake = 0.0D;
         }
-        if(sensors.getSpeed() < 60D) {
+        if(sensors.getSpeed() < (desiredSpeed*3/4)) {
             action.accelerate = 1.0D;
             action.brake = 0.0D;
         }
