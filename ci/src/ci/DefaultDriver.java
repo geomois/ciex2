@@ -37,10 +37,12 @@ public class DefaultDriver extends AbstractDriver {
        
     	Double [] NNOutput=new Double[2];
     	input.clear();
-        input.add(sensors.getTrackEdgeSensors()[8]);
-        input.add(sensors.getTrackEdgeSensors()[10]);
-        input.add(sensors.getTrackEdgeSensors()[9]);
-    	
+//        input.add(sensors.getTrackEdgeSensors()[8]);
+//        input.add(sensors.getTrackEdgeSensors()[10]);
+//        input.add(sensors.getTrackEdgeSensors()[9]);
+    	for(int i=0;i<sensors.getTrackEdgeSensors().length;i++){
+    		input.add(sensors.getTrackEdgeSensors()[i]);
+    	}
     	NNOutput=driverGenome.getNNValue(input);
     	Double speed=NNOutput[0];
     	System.out.println(speed.toString());
