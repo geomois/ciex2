@@ -1,5 +1,11 @@
 package ci;
 
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 
 import cicontest.torcs.genome.IGenome;
@@ -10,7 +16,11 @@ public class DefaultDriverGenome implements IGenome {
     private trainingDriver myTD;
     private ArrayList<double[]> inputs  = new ArrayList<double[]>();
     private ArrayList<double[]> outputs = new ArrayList<double[]>();
+	private int nTracks = 0;
     
+    public void numTracksStored(){
+    	System.out.println("Tracks stored: " + nTracks );
+    }
     public NeuralNetwork getMyNN() {
         return myNN;
     }
@@ -46,6 +56,47 @@ public class DefaultDriverGenome implements IGenome {
 	}
 	public void loadSavedNN(){
 		myNN=NeuralNetwork.loadGenome();
+	}
+	public void storeGenome() {
+		
+		ObjectOutputStream out = null;
+		try {
+			// create the memory folder manually
+			// out = new ObjectOutputStream(new
+			// FileOutputStream("/users/edwinlima/git/ci/memory/mydriver.mem"));
+			out = new ObjectOutputStream(new FileOutputStream("C:/yoel/java/ciex2/ci/memory/genome.mem"));
+//			 out = new ObjectOutputStream(new FileOutputStream("E:\\eclipse
+//			 java\\eclipse workspace\\git\\ci\\memory\\mydriver.mem"));
+			//out = new ObjectOutputStream(new FileOutputStream("C:\\Users\\George\\git\\ci\\ci\\memory\\mydriver.mem"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		try {
+			nTracks++;
+			out.writeObject(this);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static DefaultDriverGenome loadGenome() {
+
+		// Read from disk using FileInputStream
+		FileInputStream f_in = null;
+		ObjectInputStream obj_in = null;
+		try {
+
+        	f_in = new FileInputStream("C:/yoel/java/ciex2/ci/memory/genome.mem");
+        	obj_in = new ObjectInputStream(f_in);
+        	return (DefaultDriverGenome) obj_in.readObject();
+		} catch (FileNotFoundException e) {
+		} catch (IOException e) {
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
+		return null;
 	}
 }
 

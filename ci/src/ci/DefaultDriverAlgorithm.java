@@ -41,26 +41,29 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
     }
 
     public void train() {
-    		int nTracks = 3;
+    		
             //init NN
-            DefaultDriverGenome genome = new  DefaultDriverGenome();
+            DefaultDriverGenome genome = DefaultDriverGenome.loadGenome();
+            if (genome == null)
+            	genome = new  DefaultDriverGenome();
             drivers[0] = genome;
             //Start a race
             
-            for(int i = 0; i < nTracks; i++){
-	            //for speedup set withGUI to false
-            	DefaultRace race = new DefaultRace();
-                race.laps = 1;
-            	race.setTrack( AbstractRace.DefaultTracks.getTrack(i));
-	            System.out.println("Start lap " + (i+1) + " of " + nTracks);
-	            race.trainGenome(drivers, true);
-	           
-	            drivers[0].addIO(drivers[0].getDriver().getInput(),drivers[0].getDriver().getOutput());
-	          
-	            race = null;
-	            System.out.println("End lap " + (i+1) + " of " + nTracks);
-            }
-            drivers[0].trainNN();
+            genome.numTracksStored();
+          
+            //for speedup set withGUI to false
+        	DefaultRace race = new DefaultRace();
+            race.laps = 1;
+        	race.setTrack( AbstractRace.DefaultTracks.getTrack(0));
+            System.out.println("Start lap");
+            race.trainGenome(drivers, true);
+           
+            drivers[0].addIO(drivers[0].getDriver().getInput(),drivers[0].getDriver().getOutput());
+
+            drivers[0].storeGenome();
+            System.out.println("End lap");
+            
+            //drivers[0].trainNN();
             // Save genome/nn
             
             
@@ -86,6 +89,8 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
             new DefaultRace().showBest();
         }else if(args.length > 0 && args[0].equals("-train")){
         	algorithm.train();
+        }else if(args.length > 0 && args[0].equals("-trainNN")){
+        	algorithm.trainNN();
     	}else if(args.length > 0 && args[0].equals("-show-race")){
             new DefaultRace().showBestRace();
         } else if(args.length > 0 && args[0].equals("-human")){
@@ -100,5 +105,10 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
             algorithm.run();
         }
     }
+
+	private void trainNN() {
+		 DefaultDriverGenome genome = DefaultDriverGenome.loadGenome();
+		 genome.trainNN();
+	}
 
 }

@@ -1,6 +1,7 @@
 package ci;
 
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 import cicontest.algorithm.abstracts.AbstractDriver;
@@ -14,9 +15,13 @@ import cicontest.torcs.controller.extras.AutomatedGearbox;
 import cicontest.torcs.controller.extras.AutomatedRecovering;
 
 
-public class trainingDriver extends AbstractDriver {
+public class trainingDriver extends AbstractDriver implements Serializable{
 
-    NeuralNetwork NN;
+    /**
+	 * 
+	 */
+	private static final long serialVersionUID = 1L;
+	NeuralNetwork NN;
     ArrayList<double[]> input;
     ArrayList<double[]> output;
     trainingDriver() {
