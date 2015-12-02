@@ -43,7 +43,7 @@ public class DefaultDriver extends AbstractDriver {
     	NNOutput=driverGenome.getNNValue(input);
     	
     	if(sensors.getSpeed()<NNOutput[0])
-    		action.accelerate=1;
+    		action.accelerate=0.5D;
     	else if(sensors.getSpeed()>NNOutput[0])
     		action.brake=-1;
     	
