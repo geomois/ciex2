@@ -18,8 +18,8 @@ public class NeuralNetwork implements Serializable {
 	// Setting hidden nodes to be 3 can be related to turn right or left or go
 	// straight
 	private static int hiddenLNo = 2;
-	private static int outputLNo = 1;
-	private static int Adding=1;
+	private static int outputLNo = 2;
+	private static int Adding=0;
 	private static double learningRate = 0.1;
 	private static double bias = 1; // Activates the sigmoid
 
