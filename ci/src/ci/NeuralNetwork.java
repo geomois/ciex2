@@ -21,7 +21,7 @@ public class NeuralNetwork implements Serializable {
 	private static int outputLNo = 2;
 	private static int Adding=0;
 	private static double learningRate = 0.1;
-	private static double bias = 0; // Activates the sigmoid
+	private static double bias = 1; // Activates the sigmoid
 
 	public NeuralNetwork() {
 		inputNodes = new ArrayList<Double>();
@@ -83,8 +83,8 @@ public class NeuralNetwork implements Serializable {
 				}
 			}
 			
-			double temp = (1 / (1 + Math.exp(-hiddenNodes.get(i))));
-			hiddenNodes.set(i, (1 / temp));
+			double temp = (1.0 / (1.0 + Math.exp(-hiddenNodes.get(i))));
+			hiddenNodes.set(i, temp);
 		}
 		for (int i = 0; i < outputLNo; i++) {
 			for (int j = 0; j < hiddenLNo + 1; j++) {
@@ -94,7 +94,7 @@ public class NeuralNetwork implements Serializable {
 					outputNodes.set(i, outputNodes.get(i) + w2[j][i] * hiddenNodes.get(j));
 				}
 			}
-			outputNodes.set(i, (1 / (1 + Math.exp(-outputNodes.get(i)))));
+			outputNodes.set(i, (1.0 / (1.0 + Math.exp(-outputNodes.get(i)))));
 			if(output!=null){
 				double temp = outputNodes.get(i);
 				errorOutput.set(i, temp*(1.0D-temp) *(output[i] -temp));
@@ -110,15 +110,15 @@ public class NeuralNetwork implements Serializable {
 			for (int j = 0; j < hiddenLNo + 1; j++) {
 				double temp = outputNodes.get(i);
 				if (j == hiddenLNo) {
-					w2[j][i] = w2[j][i] + learningRate * bias * temp * (1 - temp) * error[i];
+					w2[j][i] = w2[j][i] + learningRate * bias * temp * (1.0 - temp) * error[i];
 				} else {
-					w2[j][i] = w2[j][i] + learningRate * hiddenNodes.get(j) * temp * (1 - temp) * error[i];
+					w2[j][i] = w2[j][i] + learningRate * hiddenNodes.get(j) * temp * (1.0 - temp) * error[i];
 				}
 				// Calculating Ód_k*w_jk where d_k=g'*error
 				// I am not sure if we should use the old or the updated weight
 				// here I use the updated
 				sumErrorDerivWeight.set(j,
-						sumErrorDerivWeight.get(i) + (temp * (1 - temp) * error[i] * w2[j][i]));
+						sumErrorDerivWeight.get(i) + (temp * (1.0 - temp) * error[i] * w2[j][i]));
 			}
 		}
 
@@ -126,10 +126,10 @@ public class NeuralNetwork implements Serializable {
 			for (int j = 0; j < inputNodes.size(); j++) {
 				double temp = hiddenNodes.get(i);
 				if (j == inputNodes.size()-1) {
-					w1[j][i] = w1[j][i] + learningRate * bias * temp * (1 - temp) * sumErrorDerivWeight.get(i);
+					w1[j][i] = w1[j][i] + learningRate * bias * temp * (1.0 - temp) * sumErrorDerivWeight.get(i);
 				} else {
 					w1[j][i] = w1[j][i]
-							+ learningRate * inputNodes.get(j) * temp * (1 - temp) * sumErrorDerivWeight.get(i);
+							+ learningRate * inputNodes.get(j) * temp * (1.0 - temp) * sumErrorDerivWeight.get(i);
 				}
 			}
 		}
