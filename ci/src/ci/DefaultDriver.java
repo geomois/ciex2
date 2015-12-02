@@ -36,18 +36,37 @@ public class DefaultDriver extends AbstractDriver {
     public void control(Action action, SensorModel sensors) {
        
     	Double [] NNOutput=new Double[2];
+    	input.clear();
         input.add(sensors.getTrackEdgeSensors()[8]);
         input.add(sensors.getTrackEdgeSensors()[10]);
         input.add(sensors.getTrackEdgeSensors()[9]);
     	
     	NNOutput=driverGenome.getNNValue(input);
+    	Double speed=NNOutput[0];
+    	System.out.println(speed.toString());
+    	if(sensors.getSpeed() > speed) {
+            action.accelerate = 0.0D;
+            action.brake = 0.0D;
+        }
+        if(sensors.getSpeed() > speed+10.0D) {
+            action.accelerate = 0.0D;
+            action.brake = 1.0D;
+        }
+        if(sensors.getSpeed() <= speed) {
+            action.accelerate = (150.0D - sensors.getSpeed()) / 150.0D;
+            action.brake = 0.0D;
+        }
+        if(sensors.getSpeed() < 60D) {
+            action.accelerate = 1.0D;
+            action.brake = 0.0D;
+        }
+//    	if(sensors.getSpeed()<NNOutput[0])
+//    		action.accelerate=0.5D;
+//    	else if(sensors.getSpeed()>NNOutput[0])
+//    		action.brake=0.5D;
     	
-    	if(sensors.getSpeed()<NNOutput[0])
-    		action.accelerate=0.5D;
-    	else if(sensors.getSpeed()>NNOutput[0])
-    		action.brake=-1;
-    	
-    	action.steering=NNOutput[1];
+    	action.steering=DriversUtils.alignToTrackAxis(sensors,0.5D);
+//    	action.steering=NNOutput[1];
     }
 
 	public String getDriverName() {
