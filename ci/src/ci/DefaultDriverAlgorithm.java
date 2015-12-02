@@ -46,13 +46,15 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
             drivers[0] = genome;
             //Start a race
             DefaultRace race = new DefaultRace();
-            for(int i = 0; i < nTracks-1; i++){
-	            race.setTrack( AbstractRace.DefaultTracks.getTrack(i));
+            for(int i = 0; i < nTracks; i++){
+	            race.setTrack( AbstractRace.DefaultTracks.getTrack(0));
 	            race.laps = 1;
 	            //for speedup set withGUI to false
 	           
 	            results = race.trainGenome(drivers, true);
+	            drivers[0].trainNN(drivers[0].getDriver().getInput(),drivers[0].getDriver().getOutput());
             }
+//            drivers[0].saveNN();
             // Save genome/nn
             DriversUtils.storeGenome(drivers[0]);
     }

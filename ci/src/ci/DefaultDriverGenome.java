@@ -21,6 +21,7 @@ public class DefaultDriverGenome implements IGenome {
 			temp=myNN.getValues(input.toArray(temp));
 			return temp;
 	}
+	
 	public void setDriver(trainingDriver trainingDriver) {
 		myTD = trainingDriver;
 		
@@ -32,6 +33,10 @@ public class DefaultDriverGenome implements IGenome {
 	
 	public void loadSavedNN(){
 		myNN=myNN.loadGenome();
+	}
+	
+	public void saveNN(){
+		myNN.storeGenome();
 	}
 }
 
