@@ -63,16 +63,14 @@ public class NeuralNetwork implements Serializable {
 
 	private void train(Double[] input, Double[] output) {
 		inputNodes.clear();
-		outputNodes.clear();
+//		outputNodes.clear();
+//		errorOutput.clear();
 		for (int i = 0; i < input.length; i++) {
 			inputNodes.add(input[i]);
 		}
-		for (int i = 0; i < output.length; i++) {
-			outputNodes.add(output[i]);
-		}
 		inputNodes.add(bias);
 		forwardProp(input, output);
-		backProp(input, output);
+		backProp(input, errorOutput.toArray(new Double[errorOutput.size()]));
 	}
 
 	private ArrayList<Double> forwardProp(Double[] input, Double[] output) {
@@ -104,22 +102,22 @@ public class NeuralNetwork implements Serializable {
 		return outputNodes;
 	}
 
-	private void backProp(Double[] input, Double[] output) {
+	private void backProp(Double[] input, Double[] error) {
 		// newWeight=oldWeigth+learningRate*input*(output*(1-output))(derivative of sigmoid)*error
 		for (int i = 0; i < outputLNo; i++) {
 			// Assuming that all hidden nodes are connected to all the output nodes
 			for (int j = 0; j < hiddenLNo + 1; j++) {
 				double temp = outputNodes.get(i);
 				if (j == hiddenLNo) {
-					w2[j][i] = w2[j][i] + learningRate * bias * temp * (1 - temp) * errorOutput.get(i);
+					w2[j][i] = w2[j][i] + learningRate * bias * temp * (1 - temp) * error[i];
 				} else {
-					w2[j][i] = w2[j][i] + learningRate * hiddenNodes.get(j) * temp * (1 - temp) * errorOutput.get(i);
+					w2[j][i] = w2[j][i] + learningRate * hiddenNodes.get(j) * temp * (1 - temp) * error[i];
 				}
 				// Calculating Ód_k*w_jk where d_k=g'*error
 				// I am not sure if we should use the old or the updated weight
 				// here I use the updated
 				sumErrorDerivWeight.set(j,
-						sumErrorDerivWeight.get(i) + (temp * (1 - temp) * errorOutput.get(i) * w2[j][i]));
+						sumErrorDerivWeight.get(i) + (temp * (1 - temp) * error[i] * w2[j][i]));
 			}
 		}
 
@@ -140,6 +138,34 @@ public class NeuralNetwork implements Serializable {
 		if(w1!=null && w2!=null){
 			Double[] temp=new Double[outputLNo];
 			temp=this.forwardProp(input, null).toArray(temp);
+//			
+//			for (int i = 0; i < hiddenLNo; i++) {
+//				for (int j = 0; j < inputNodes.size(); j++) {
+//					if (j == inputNodes.size() - 1) {
+//						// Bias term
+//						hiddenNodes.set(i, hiddenNodes.get(i) + w1[j][i] * bias);
+//					} else {
+//						hiddenNodes.set(i, hiddenNodes.get(i) + w1[j][i] * input[j]);
+//					}
+//				}
+//				double temp = hiddenNodes.get(i);
+//				hiddenNodes.set(i, (1 / (1 + Math.exp(temp))));
+//			}
+//			for (int i = 0; i < outputLNo; i++) {
+//				for (int j = 0; j < hiddenLNo + 1; j++) {
+//					if (j == hiddenLNo) {
+//						outputNodes.set(i, outputNodes.get(i) + w2[j][i] * bias);
+//					} else {
+//						outputNodes.set(i, outputNodes.get(i) + w2[j][i] * hiddenNodes.get(j));
+//					}
+//				}
+//				double temp = outputNodes.get(i);
+//				outputNodes.set(i, (1 / (1 + Math.exp(temp))));
+//				if(output!=null)
+//					errorOutput.set(i, output[i] - outputNodes.get(i));
+//			}
+			
+			
 			return temp;
 		}else{
 			return null;
@@ -164,8 +190,8 @@ public class NeuralNetwork implements Serializable {
 			// create the memory folder manually
 			// out = new ObjectOutputStream(new
 			// FileOutputStream("/users/edwinlima/git/ci/memory/mydriver.mem"));
-//			out = new ObjectOutputStream(new FileOutputStream("C:\\Users\\George\\git\\ci\\ci\\memory\\mydriver.mem"));
-			 out = new ObjectOutputStream(new FileOutputStream("C:\\Users\\11126957\\Desktop\\memory\\mydriver.mem"));
+			out = new ObjectOutputStream(new FileOutputStream("C:\\Users\\George\\git\\ci\\ci\\memory\\mydriver.mem"));
+//			 out = new ObjectOutputStream(new FileOutputStream("C:\\Users\\11126957\\Desktop\\memory\\mydriver.mem"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -184,8 +210,8 @@ public class NeuralNetwork implements Serializable {
 		try {
 			// f_in = new
 			// FileInputStream("/users/edwinlima/git/ci/memory/mydriver.mem");
-//			f_in = new FileInputStream("C:\\Users\\George\\git\\ci\\ci\\memory\\mydriver.mem");
-			f_in = new FileInputStream("C:\\Users\\11126957\\Desktop\\memory\\mydriver.mem");
+			f_in = new FileInputStream("C:\\Users\\George\\git\\ci\\ci\\memory\\mydriver.mem");
+//			f_in = new FileInputStream("C:\\Users\\11126957\\Desktop\\memory\\mydriver.mem");
 			// f_in = new FileInputStream("E:\\eclipse java\\eclipse
 			// workspace\\git\\ci\\memory\\mydriver.mem");
 		} catch (FileNotFoundException e) {
