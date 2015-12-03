@@ -37,20 +37,20 @@ public class trainingDriver extends AbstractDriver {
     @Override
     public void control(Action action, SensorModel sensors) {
         // Example of a bot that drives pretty well; you can use this to generate data
-        action.steering = DriversUtils.alignToTrackAxis(sensors, 0.5);
-        if(sensors.getSpeed() > 60.0D) {
+        action.steering = DriversUtils.alignToTrackAxis(sensors, 1);
+        if(sensors.getSpeed() > 100.0D) {
             action.accelerate = 0.0D;
             action.brake = 0.0D;
         }
-        if(sensors.getSpeed() > 80.0D) {
+        if(sensors.getSpeed() > 110.0D) {
             action.accelerate = 0.0D;
             action.brake = -1.0D;
         }
-        if(sensors.getSpeed() <= 60.0D) {
-            action.accelerate = (100.0D - sensors.getSpeed()) / 100.0D;
+        if(sensors.getSpeed() <= 100.0D) {
+            action.accelerate = (150.0D - sensors.getSpeed()) / 150.0D;
             action.brake = 0.0D;
         }
-        if(sensors.getSpeed() < 30.0D) {
+        if(sensors.getSpeed() < 50.0D) {
             action.accelerate = 1.0D;
             action.brake = 0.0D;
         }

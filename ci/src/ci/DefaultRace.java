@@ -20,6 +20,7 @@ public class DefaultRace extends AbstractRace {
 		DefaultDriver[] driversList = new DefaultDriver[size];
 		for(int i=0; i<size; i++){
 			driversList[i] = new DefaultDriver();
+			drivers[i].setDriver(driversList[i]);
 			driversList[i].loadGenome(drivers[i]);
 		}
 		return runRace(driversList, withGUI, true);
@@ -30,7 +31,7 @@ public class DefaultRace extends AbstractRace {
 		trainingDriver[] driversList = new trainingDriver[size];
 		for(int i=0; i<size; i++){
 			driversList[i] = new trainingDriver();
-			drivers[i].setDriver(driversList[i]);
+//			drivers[i].setDriver(driversList[i]);
 		}
 		return runRace(driversList, withGUI, true);
 	}
