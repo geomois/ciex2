@@ -24,7 +24,6 @@ public class DefaultDriverGenome implements IGenome {
 	
 	public void setDriver(trainingDriver trainingDriver) {
 		myTD = trainingDriver;
-		
 	}
 	public trainingDriver getDriver() {
 		// TODO Auto-generated method stub
