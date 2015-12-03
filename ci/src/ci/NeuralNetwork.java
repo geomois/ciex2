@@ -57,7 +57,7 @@ public class NeuralNetwork implements Serializable {
 			Double[] tempOutput = new Double[output.get(i).size()];
 			tempOutput = output.get(i).toArray(tempOutput);
 
-			for (int j = 0; j < 50; j++) {
+			for (int j = 0; j < 1; j++) {
 				train(tempInput, tempOutput);
 			}
 		}
@@ -156,6 +156,22 @@ public class NeuralNetwork implements Serializable {
 	public Double[] getValues(Double[] input) {
 		if (w1 != null && w2 != null) {
 			Double[] temp = new Double[outputLNo];
+			inputNodes.clear();
+			hiddenNodes.clear();
+			outputNodes.clear();
+			for (int i = 0; i < input.length; i++) {
+				inputNodes.add(input[i]);
+			}
+			for (int i = 0; i < hiddenLNo; i++) {
+				hiddenNodes.add((double) 0);
+				for (int j = 0; j < outputLNo + Adding; j++) {
+					// Bias sumErrorDeriv will be calculated separately
+					sumErrorDerivWeight.add((double) 0);
+				}
+			}
+			for (int i = 0; i < outputLNo; i++)
+				outputNodes.add((double) 0);
+			inputNodes.add(bias);
 			// hiddenNodes.clear();
 			// outputNodes.clear();
 			// inputNodes.clear();
@@ -236,9 +252,8 @@ public class NeuralNetwork implements Serializable {
 			// create the memory folder manually
 			// out = new ObjectOutputStream(new
 			// FileOutputStream("/users/edwinlima/git/ci/memory/mydriver.mem"));
-			out = new ObjectOutputStream(new FileOutputStream("C:\\Users\\George\\git\\ci\\ci\\memory\\mydriver.mem"));
-			// out = new ObjectOutputStream(new
-			// FileOutputStream("C:\\Users\\11126957\\Desktop\\memory\\mydriver.mem"));
+//			out = new ObjectOutputStream(new FileOutputStream("C:\\Users\\George\\git\\ci\\ci\\memory\\mydriver.mem"));
+			 out = new ObjectOutputStream(new FileOutputStream("C:\\Users\\11126957\\git\\ciex2\\ci\\memory\\mydriver.mem"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -257,11 +272,10 @@ public class NeuralNetwork implements Serializable {
 		try {
 			// f_in = new
 			// FileInputStream("/users/edwinlima/git/ci/memory/mydriver.mem");
-			f_in = new FileInputStream("C:\\Users\\George\\git\\ci\\ci\\memory\\mydriver.mem");
+//			f_in = new FileInputStream("C:\\Users\\George\\git\\ci\\ci\\memory\\mydriver.mem");
 			// f_in = new
 			// FileInputStream("C:\\Users\\11126957\\Desktop\\memory\\mydriver.mem");
-			// f_in = new FileInputStream("E:\\eclipse java\\eclipse
-			// workspace\\git\\ci\\memory\\mydriver.mem");
+			 f_in = new FileInputStream("C:\\Users\\11126957\\git\\ciex2\\ci\\memory\\mydriver.mem");
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
