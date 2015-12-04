@@ -4,7 +4,11 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.AbstractQueue;
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
+import java.util.concurrent.ArrayBlockingQueue;
 
 import cicontest.algorithm.abstracts.AbstractDriver;
 import cicontest.algorithm.abstracts.DriversUtils;
@@ -25,6 +29,7 @@ public class DefaultDriver extends AbstractDriver {
 	private ArrayList<Double> steeringAr;
 	private DefaultDriverGenome driverGenome;
 	private double prevSteering;
+	private Queue<Double> moSteer;
 
 	DefaultDriver() {
 		initialize();
@@ -44,6 +49,7 @@ public class DefaultDriver extends AbstractDriver {
 		speedAr = new ArrayList<Double>();
 		steeringAr = new ArrayList<Double>();
 		prevSteering = 0.0;
+		moSteer=new LinkedList<Double>();
 	}
 
 	@Override
@@ -85,7 +91,9 @@ public class DefaultDriver extends AbstractDriver {
 			desiredSpeed += 55;
 			bias = 0.0;
 		}
-		Double currentSteer = DriversUtils.alignToTrackAxis(sensors, 0.2D) + bias;
+		Double currentSteer = DriversUtils.alignToTrackAxis(sensors, 0.3D) + bias;
+		Double dif1 = dif;
+
 		dif = Math.abs(prevSteering) - Math.abs(currentSteer);
 		if (dif > 0.3)
 			if ((prevSteering > 0 && currentSteer < 0) || (prevSteering < 0 && currentSteer > 0))
@@ -96,10 +104,10 @@ public class DefaultDriver extends AbstractDriver {
 			if ((prevSteering > 0 && currentSteer < 0) || (prevSteering < 0 && currentSteer > 0))
 				currentSteer = currentSteer * 0.09;
 		// TODO: take in considaration the mean of the last 3-5 steerings
-		prevSteering = currentSteer;
+		this.addPrevSteering(currentSteer);
 
 		action.steering = currentSteer * 1.02;
-		System.out.println(bias.toString() + " " + dif + " " + Double.toString(action.steering));
+		System.out.println(bias.toString() + " " + dif1 + " " + Double.toString(sensors.getTrackPosition()));
 		if (sensors.getSpeed() > desiredSpeed) {
 			action.accelerate = 0.0D;
 			action.brake = 0.0D;
@@ -112,7 +120,7 @@ public class DefaultDriver extends AbstractDriver {
 			action.accelerate = (desiredSpeed - sensors.getSpeed() / 5) / desiredSpeed;
 			action.brake = 0.0D;
 		}
-		if (sensors.getSpeed() < (desiredSpeed * 5/6)) {
+		if (sensors.getSpeed() < (desiredSpeed * 5 / 6)) {
 			action.accelerate = 1.0D;
 			action.brake = 0.0D;
 		}
@@ -122,6 +130,18 @@ public class DefaultDriver extends AbstractDriver {
 		steeringAr.add(action.steering);
 	}
 
+	private void addPrevSteering(double current){
+		if (moSteer.size()==3) {
+			moSteer.remove();
+		}
+		moSteer.add(current);
+		prevSteering=0;
+		for(Double d:moSteer){
+			prevSteering+=d;
+		}
+		prevSteering=prevSteering/(double)moSteer.size();
+	}
+	
 	public String getDriverName() {
 		return "XVII";
 	}
