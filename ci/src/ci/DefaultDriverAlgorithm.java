@@ -52,7 +52,7 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
 		// Start a race
 		DefaultRace race = new DefaultRace();
 		if (!file) {
-			int nTracks = 5;
+			int nTracks = 1;
 			for (int i = 0; i < nTracks; i++) {
 				race.setTrack(AbstractRace.DefaultTracks.getTrack(0));
 				race.laps = 1;
