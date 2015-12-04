@@ -19,8 +19,8 @@ public class NeuralNetwork implements Serializable {
 	// Setting hidden nodes to be 3 can be related to turn right or left or go
 	// straight
 	private static int hiddenLNo = 2;
-	private static int outputLNo = 1;
-	private static int Adding = 1;
+	private static int outputLNo = 2;
+	private static int Adding = 0;
 	private static double learningRate = 0.1;
 	private static double bias = 1; // Activates the sigmoid
 	private double maxSpeed;
@@ -69,8 +69,8 @@ public class NeuralNetwork implements Serializable {
 			Double[] tempOutput = new Double[output.get(i).size()];
 			tempOutput = output.get(i).toArray(tempOutput);
 
-			train(tempInput, scale(tempOutput, -1.0, 1.0, Dmin, Dmax));
-//			train(tempInput, tempOutput);
+//			train(tempInput, scale(tempOutput, -1.0, 1.0, Dmin, Dmax));
+			train(tempInput, tempOutput);
 		}
 		outputNodes.clear();
 		hiddenNodes.clear();
@@ -96,7 +96,7 @@ public class NeuralNetwork implements Serializable {
 			outputNodes.add((double) 0);
 		inputNodes.add(bias);
 		forwardProp(input, output);
-		for (int i = 0; i < 100; i++) {
+		for (int i = 0; i <1; i++) {
 			backProp(input, output);
 		}
 	}
@@ -214,8 +214,8 @@ public class NeuralNetwork implements Serializable {
 				outputNodes.add((double) 0);
 			inputNodes.add(bias);
 			temp = this.forwardProp(input, null).toArray(temp);
-			Double t = scale(temp, Dmin, Dmax, -1.0, 1.0)[0];
-			temp[0] = scale(temp, Dmin, Dmax, -1.0, 1.0)[0];
+			System.out.println(temp[0].toString());
+			temp[0] = scale(temp, Dmin, Dmax, 0.0, 1.0)[0];
 			// temp[1] = scale(temp,,)[0];
 			return temp;
 		} else {
