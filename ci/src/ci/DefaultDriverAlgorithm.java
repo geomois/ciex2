@@ -36,7 +36,7 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
 			race.laps = 1;
 			// for speedup set withGUI to false
 			results = race.runRace(drivers, true);
-			saveToFile(drivers[0].getDriver().getInput(),drivers[0].getDriver().speed(),drivers[0].getDriver().getSteering());
+			saveToFile(((DefaultDriver) drivers[0].getDriver()).getInput(),((DefaultDriver) drivers[0].getDriver()).speed(),((DefaultDriver) drivers[0].getDriver()).getSteering());
 			// Save genome/nn
 			DriversUtils.storeGenome(drivers[0]);
 		}

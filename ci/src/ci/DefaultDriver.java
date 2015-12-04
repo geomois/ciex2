@@ -65,43 +65,54 @@ public class DefaultDriver extends AbstractDriver {
 		Double dif = input.get(0).doubleValue() - input.get(input.size() - 1).doubleValue();
 		if (dif > 0.7 && dif < 2.0) {
 			bias = -0.08;
+			desiredSpeed += 40.0;
 		} else if (dif < -0.7 && dif > -2.0) {
 			bias = 0.08;
-		} else if (dif < -3.0) {
+			desiredSpeed += 40.0;
+		} else if (dif < -3.0 && dif > -5.0) {
+			desiredSpeed += 20.0;
 			bias = 0.1;
-		} else if (dif > 3.0) {
+		} else if (dif > 3.0 && dif < 5.0) {
+			desiredSpeed += 20.0;
 			bias = -0.1;
+		} else if (dif < -5.0) {
+			desiredSpeed += 15.0;
+			bias = 0.12;
+		} else if (dif > 5.0) {
+			desiredSpeed += 15.0;
+			bias = -0.12;
 		} else {
+			desiredSpeed += 55;
 			bias = 0.0;
 		}
 		Double currentSteer = DriversUtils.alignToTrackAxis(sensors, 0.2D) + bias;
-		dif=Math.abs(prevSteering) - Math.abs(currentSteer);
-		if (dif > 0.4)
+		dif = Math.abs(prevSteering) - Math.abs(currentSteer);
+		if (dif > 0.3)
 			if ((prevSteering > 0 && currentSteer < 0) || (prevSteering < 0 && currentSteer > 0))
 				currentSteer = currentSteer * 0.06;
 			else
-				currentSteer = currentSteer * 0.7;
-		else if(dif>0.1)
+				currentSteer = currentSteer * 0.5;
+		else if (dif > 0.1)
 			if ((prevSteering > 0 && currentSteer < 0) || (prevSteering < 0 && currentSteer > 0))
 				currentSteer = currentSteer * 0.09;
-//		TODO: take in considaration the mean of the last 3-5 steerings
+		// TODO: take in considaration the mean of the last 3-5 steerings
 		prevSteering = currentSteer;
 
-		action.steering = currentSteer;
+		action.steering = currentSteer * 1.02;
 		System.out.println(bias.toString() + " " + dif + " " + Double.toString(action.steering));
 		if (sensors.getSpeed() > desiredSpeed) {
 			action.accelerate = 0.0D;
 			action.brake = 0.0D;
 		}
-		if (sensors.getSpeed() > desiredSpeed + 10.0D) {
+		if (sensors.getSpeed() > desiredSpeed + 5.0) {
 			action.accelerate = 0.0D;
-			action.brake = 0.6D;
+			action.brake = 1.0D;
 		}
 		if (sensors.getSpeed() <= desiredSpeed) {
-			action.accelerate = (desiredSpeed - sensors.getSpeed() / 4) / desiredSpeed;
+			action.accelerate = (desiredSpeed - sensors.getSpeed() / 5) / desiredSpeed;
 			action.brake = 0.0D;
 		}
-		if (sensors.getSpeed() < (desiredSpeed * 3 / 4)) {
+		if (sensors.getSpeed() < (desiredSpeed * 5/6)) {
 			action.accelerate = 1.0D;
 			action.brake = 0.0D;
 		}
