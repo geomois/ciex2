@@ -29,7 +29,7 @@ public class DefaultDriver extends AbstractDriver {
 
 	public void loadGenome(IGenome genome) {
 		driverGenome = (DefaultDriverGenome) genome;
-		TopSpeed=driverGenome.getMyNN().getMaxSpeed();
+//		TopSpeed=driverGenome.getMyNN().getMaxSpeed();
 	}
 
 	public void initialize() {
@@ -50,12 +50,12 @@ public class DefaultDriver extends AbstractDriver {
 			input.add(sensors.getTrackEdgeSensors()[i]);
 		}
 		NNOutput = driverGenome.getNNValue(input);
-		desiredSpeed = NNOutput[0];
+		desiredSpeed = NNOutput[1]*150.0;
 		
 		
 		
 		action.steering = getSteering(0.0,sensors) * 1.02;
-		desiredSpeed = NNOutput[0];
+		desiredSpeed = NNOutput[1]*150.0;
 		System.out.println(desiredSpeed.toString());
 		if (sensors.getSpeed() > desiredSpeed) {
 			action.accelerate = 0.0D;

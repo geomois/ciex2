@@ -6,14 +6,14 @@ import cicontest.torcs.genome.IGenome;
 
 public class DefaultDriverGenome implements IGenome {
     private static final long serialVersionUID = 6534186543165341653L;
-    private NeuralNetwork myNN = new NeuralNetwork();
+    private NeuralNetwork myNN = new NeuralNetwork(19,4,2);
 	private trainingDriver myTD;
     
     public NeuralNetwork getMyNN() {
         return myNN;
     }
 	public void trainNN(ArrayList<ArrayList<Double>> input, ArrayList<ArrayList<Double>> output) {
-		myNN.trainNetwork(input, output);
+		myNN.train(input, output);
 	}
 	
 	public Double[] getNNValue(ArrayList<Double> input){
