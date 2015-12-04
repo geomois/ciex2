@@ -48,7 +48,7 @@ public class DefaultDriver extends AbstractDriver {
 			input.add(sensors.getTrackEdgeSensors()[i]);
 		}
 		NNOutput = driverGenome.getNNValue(input);
-		Double desiredSpeed = NNOutput[0]* TopSpeed;
+		Double desiredSpeed = NNOutput[0];
 		Double steering=getSteering(NNOutput[1],sensors);
 		
 		System.out.println(desiredSpeed.toString());

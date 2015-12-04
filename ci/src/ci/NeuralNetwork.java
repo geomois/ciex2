@@ -24,6 +24,8 @@ public class NeuralNetwork implements Serializable {
 	private static double learningRate = 0.1;
 	private static double bias = 1; // Activates the sigmoid
 	private double maxSpeed;
+	private Double Dmin;
+	private Double Dmax;
 
 	public NeuralNetwork() {
 		inputNodes = new ArrayList<Double>();
@@ -42,6 +44,8 @@ public class NeuralNetwork implements Serializable {
 			outputNodes.add((double) 0);
 			errorOutput.add((double) 0);
 		}
+		Dmin=0.0;
+		Dmax=0.0;
 	}
 
 	private static final long serialVersionUID = -88L;
@@ -52,6 +56,13 @@ public class NeuralNetwork implements Serializable {
 			w1 = initializeWeights(input.get(0).size() + 1, hiddenLNo, w1);
 			w2 = initializeWeights(hiddenLNo + 1, outputLNo, w2);
 		}
+		
+		for (int i = 0; i < input.size(); i++) {
+			Double[] tempOutput = new Double[output.get(i).size()];
+			tempOutput = output.get(i).toArray(tempOutput);
+			MinMax(tempOutput);
+		}
+		
 		for (int i = 0; i < input.size(); i++) {
 			Double[] tempInput = new Double[input.get(i).size()];
 			tempInput = input.get(i).toArray(tempInput);
@@ -59,7 +70,7 @@ public class NeuralNetwork implements Serializable {
 			tempOutput = output.get(i).toArray(tempOutput);
 
 			for (int j = 0; j < 1; j++) {
-				train(tempInput, scale(tempOutput, -1.0, 1.0));
+				train(tempInput, scale(tempOutput, -1.0, 1.0,Dmin,Dmax));
 			}
 		}
 		outputNodes.clear();
@@ -155,14 +166,8 @@ public class NeuralNetwork implements Serializable {
 		}
 	}
 
-	private Double[] scale(Double[] input, double min, double max) {
-		Double Dmin;
-		Double Dmax;
-		Double[] out = new Double[input.length];
-
-		Dmin = input[0];
-		Dmax = input[0];
-		for (int i = 1; i < input.length; i++) {
+	private void MinMax(Double[] input){
+		for (int i = 0; i < input.length; i+=2) {
 			if (input[i] < Dmin) {
 				Dmin = input[i];
 			}
@@ -170,11 +175,11 @@ public class NeuralNetwork implements Serializable {
 				Dmax = input[i];
 			}
 		}
-		if(Dmax>maxSpeed){
-			maxSpeed=Dmax;
-		}
-
-		for (int i = 0; i < input.length; i++) {
+	}
+	private Double[] scale(Double[] input, double min, double max,double Dmin, double Dmax) {
+		Double[] out = input.clone();
+		
+		for (int i = 0; i < input.length; i+=2) {
 			out[i] = min + (max -min) * (input[i] - Dmin) / (Dmax - Dmin);
 		}
 		return out;
@@ -200,7 +205,8 @@ public class NeuralNetwork implements Serializable {
 				outputNodes.add((double) 0);
 			inputNodes.add(bias);
 			temp = this.forwardProp(input, null).toArray(temp);
-//			temp[0] = scale(temp,0.0,maxSpeed)[0];
+			Double t=scale(temp,Dmin,Dmax,-1.0,1.0)[0];
+//			temp[0] = scale(temp,Dmin,Dmax,-1.0,1.0)[0];
 //			temp[1] = scale(temp,,)[0];
 			return temp;
 		} else {
