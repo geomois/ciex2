@@ -19,8 +19,8 @@ public class NeuralNetwork implements Serializable {
 	// Setting hidden nodes to be 3 can be related to turn right or left or go
 	// straight
 	private static int hiddenLNo = 8;
-	private static int outputLNo = 2;
-	private static int Adding = 0;
+	private static int outputLNo = 1;
+	private static int Adding = 1;
 	private static double learningRate = 0.1;
 	private static double bias = 1; // Activates the sigmoid
 	private double maxSpeed;
@@ -44,8 +44,8 @@ public class NeuralNetwork implements Serializable {
 			outputNodes.add((double) 0);
 			errorOutput.add((double) 0);
 		}
-		Dmin=0.0;
-		Dmax=0.0;
+		Dmin = 0.0;
+		Dmax = 0.0;
 	}
 
 	private static final long serialVersionUID = -88L;
@@ -56,22 +56,21 @@ public class NeuralNetwork implements Serializable {
 			w1 = initializeWeights(input.get(0).size() + 1, hiddenLNo, w1);
 			w2 = initializeWeights(hiddenLNo + 1, outputLNo, w2);
 		}
-		
+
 		for (int i = 0; i < input.size(); i++) {
 			Double[] tempOutput = new Double[output.get(i).size()];
 			tempOutput = output.get(i).toArray(tempOutput);
 			MinMax(tempOutput);
 		}
-		
+
 		for (int i = 0; i < input.size(); i++) {
 			Double[] tempInput = new Double[input.get(i).size()];
 			tempInput = input.get(i).toArray(tempInput);
 			Double[] tempOutput = new Double[output.get(i).size()];
 			tempOutput = output.get(i).toArray(tempOutput);
 
-			for (int j = 0; j < 1; j++) {
-				train(tempInput, scale(tempOutput, -1.0, 1.0,Dmin,Dmax));
-			}
+			train(tempInput, scale(tempOutput, -1.0, 1.0, Dmin, Dmax));
+//			train(tempInput, tempOutput);
 		}
 		outputNodes.clear();
 		hiddenNodes.clear();
@@ -97,7 +96,9 @@ public class NeuralNetwork implements Serializable {
 			outputNodes.add((double) 0);
 		inputNodes.add(bias);
 		forwardProp(input, output);
-		backProp(input, errorOutput.toArray(new Double[errorOutput.size()]));
+		for (int i = 0; i < 100; i++) {
+			backProp(input, output);
+		}
 	}
 
 	private ArrayList<Double> forwardProp(Double[] input, Double[] output) {
@@ -124,32 +125,35 @@ public class NeuralNetwork implements Serializable {
 			}
 			double temp1 = (1.0 / (1.0 + Math.exp(-outputNodes.get(i))));
 			outputNodes.set(i, temp1);
-			if (output != null) {
-				double temp2 = outputNodes.get(i);
-				// TODO:investigate error
-				errorOutput.set(i, temp2 * (1.0D - temp2) * (output[i] - temp2));
-			}
 		}
 		return outputNodes;
 	}
 
-	private void backProp(Double[] input, Double[] error) {
-		// newWeight=oldWeigth+learningRate*input*(output*(1-output))(derivative
-		// of sigmoid)*error
+	private void backProp(Double[] input, Double[] output) {
 		for (int i = 0; i < outputLNo; i++) {
-			// Assuming that all hidden nodes are connected to all the output
-			// nodes
+			if (output != null) {
+				double temp2 = outputNodes.get(i);
+				// TODO:investigate error
+				errorOutput.set(i, temp2 * (1.0D - temp2) * (output[i] - temp2));
+
+//				 temp2=(1.0 / (1.0 + Math.exp(-output[i])));
+//				 errorOutput.set(i, temp2 * (1.0D - temp2) * (output[i] -
+//				 temp2));
+			}
+			// newWeight=oldWeigth+learningRate*input*(output*(1-output))(derivative
+			// of sigmoid)*error
 			for (int j = 0; j < hiddenLNo + 1; j++) {
 				double temp = outputNodes.get(i);
 				if (j == hiddenLNo) {
-					w2[j][i] = w2[j][i] + learningRate * bias * temp * (1.0 - temp) * error[i];
+					w2[j][i] = w2[j][i] + learningRate * bias * temp * (1.0 - temp) * errorOutput.get(i);
 				} else {
-					w2[j][i] = w2[j][i] + learningRate * hiddenNodes.get(j) * temp * (1.0 - temp) * error[i];
+					w2[j][i] = w2[j][i] + learningRate * hiddenNodes.get(j) * temp * (1.0 - temp) * errorOutput.get(i);
 				}
 				// Calculating Ód_k*w_jk where d_k=g'*error
 				// I am not sure if we should use the old or the updated weight
 				// here I use the updated
-				sumErrorDerivWeight.set(j, sumErrorDerivWeight.get(i) + (temp * (1.0 - temp) * error[i] * w2[j][i]));
+				sumErrorDerivWeight.set(j,
+						sumErrorDerivWeight.get(i) + (temp * (1.0 - temp) * errorOutput.get(i) * w2[j][i]));
 			}
 		}
 
@@ -166,8 +170,12 @@ public class NeuralNetwork implements Serializable {
 		}
 	}
 
-	private void MinMax(Double[] input){
-		for (int i = 0; i < input.length; i+=2) {
+	public double getMaxSpeed() {
+		return Dmax;
+	}
+
+	private void MinMax(Double[] input) {
+		for (int i = 0; i < input.length; i += 2) {
 			if (input[i] < Dmin) {
 				Dmin = input[i];
 			}
@@ -176,11 +184,12 @@ public class NeuralNetwork implements Serializable {
 			}
 		}
 	}
-	private Double[] scale(Double[] input, double min, double max,double Dmin, double Dmax) {
+
+	private Double[] scale(Double[] input, double min, double max, double Dmin, double Dmax) {
 		Double[] out = input.clone();
-		
-		for (int i = 0; i < input.length; i+=2) {
-			out[i] = min + (max -min) * (input[i] - Dmin) / (Dmax - Dmin);
+
+		for (int i = 0; i < input.length; i += 2) {
+			out[i] = min + (max - min) * (input[i] - Dmin) / (Dmax - Dmin);
 		}
 		return out;
 	}
@@ -205,9 +214,9 @@ public class NeuralNetwork implements Serializable {
 				outputNodes.add((double) 0);
 			inputNodes.add(bias);
 			temp = this.forwardProp(input, null).toArray(temp);
-			Double t=scale(temp,Dmin,Dmax,-1.0,1.0)[0];
-//			temp[0] = scale(temp,Dmin,Dmax,-1.0,1.0)[0];
-//			temp[1] = scale(temp,,)[0];
+			Double t = scale(temp, Dmin, Dmax, -1.0, 1.0)[0];
+			temp[0] = scale(temp, Dmin, Dmax, -1.0, 1.0)[0];
+			// temp[1] = scale(temp,,)[0];
 			return temp;
 		} else {
 			return null;

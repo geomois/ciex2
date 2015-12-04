@@ -54,17 +54,6 @@ public class trainingDriver extends AbstractDriver {
             action.accelerate = 1.0D;
             action.brake = 0.0D;
         }
-//        System.out.println(action.steering +"steering");
-//        System.out.println(action.accelerate + "acceleration");
-//        System.out.println(action.brake + "brake");
-//
-//        System.out.println(sensors.getSpeed() +"speedIn");
-//        System.out.println(sensors.getAngleToTrackAxis() + "AngleToTrackAxis");
-//        System.out.println(sensors.getTrackEdgeSensors()[10] + "TrackEdgeSensors");
-//        System.out.println(sensors.getTrackEdgeSensors()[9] + "TrackEdgeSensors");
-//        System.out.println(sensors.getTrackEdgeSensors()[8] + "TrackEdgeSensors");
-//        System.out.println(sensors.getTrackPosition() + "trackposition");
-        
         
         ArrayList<Double> temp=new ArrayList<Double>();
 //        temp.add(sensors.getTrackEdgeSensors()[8]);
