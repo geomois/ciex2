@@ -239,7 +239,7 @@ public class NeuralNetwork implements Serializable {
 				outputNodes.add((double) 0);
 			inputNodes.add(bias);
 			temp = this.forwardProp(input, null).toArray(temp);
-			System.out.println(temp[0].toString());
+//			System.out.println(temp[0].toString());
 			temp = scale(temp, Dmin, Dmax, 0.0, 1.0);
 			// temp[1] = scale(temp,,)[0];
 			return temp;
