@@ -55,7 +55,7 @@ public class DefaultDriver extends AbstractDriver {
 		
 		
 		action.steering = getSteering(0.0,sensors) * 1.02;
-		desiredSpeed = NNOutput[0];
+//		desiredSpeed = NNOutput[0];
 		System.out.println(desiredSpeed.toString());
 		if (sensors.getSpeed() > desiredSpeed) {
 			action.accelerate = 0.0D;
@@ -81,24 +81,24 @@ public class DefaultDriver extends AbstractDriver {
 		Double dif = sensors.getTrackEdgeSensors()[0] - sensors.getTrackEdgeSensors()[18];
 		if (dif > 0.7 && dif < 2.0) {
 			bias = -0.08;
-			desiredSpeed += 40.0;
+			desiredSpeed += 10.0;
 		} else if (dif < -0.7 && dif > -2.0) {
 			bias = 0.08;
-			desiredSpeed += 40.0;
+			desiredSpeed += 10.0;
 		} else if (dif < -3.0 && dif > -5.0) {
-			desiredSpeed += 20.0;
+			desiredSpeed += 5.0;
 			bias = 0.1;
 		} else if (dif > 3.0 && dif < 5.0) {
-			desiredSpeed += 20.0;
+			desiredSpeed += 5.0;
 			bias = -0.1;
 		} else if (dif < -5.0) {
-			desiredSpeed += 15.0;
+			desiredSpeed -= 20.0;
 			bias = 0.12;
 		} else if (dif > 5.0) {
-			desiredSpeed += 15.0;
+			desiredSpeed -= 20.0;
 			bias = -0.12;
 		} else {
-			desiredSpeed += 55;
+			desiredSpeed += 20;
 			bias = 0.0;
 		}
 		Double currentSteer = DriversUtils.alignToTrackAxis(sensors, 0.3D) + bias;

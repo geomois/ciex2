@@ -292,10 +292,10 @@ public class NeuralNetwork implements Serializable {
 		try {
 			// f_in = new
 			// FileInputStream("/users/edwinlima/git/ci/memory/mydriver.mem");
-			f_in = new
+//			f_in = new
 			// FileInputStream("C:/Users/George/git/ciex2/ci/memory/mydriver.mem");
-			// f_in = new
-			FileInputStream("C:\\Users\\11126957\\Desktop\\memory\\mydriver.mem");
+			 f_in = new
+			FileInputStream("C:/Users/11126957/git/ciex2/ci/memory\\mydriver.mem");
 			// f_in = new
 			// FileInputStream("C:\\Users\\11126957\\git\\ciex2\\ci\\memory\\mydriver.mem");
 		} catch (FileNotFoundException e) {
