@@ -42,6 +42,7 @@ public class MeTheDriver extends AbstractDriver{
 		this.enableExtras(new AutomatedRecovering());
 		this.enableExtras(new ABS());
 		input = new ArrayList<ArrayList<Double>>();
+		output=new ArrayList<ArrayList<Double>>();
 		f=new fooFrame();
 //		new Thread(f).start();
 	}
@@ -53,15 +54,12 @@ public class MeTheDriver extends AbstractDriver{
 		
 		
 		ArrayList<Double> temp = new ArrayList<Double>();
-		// temp.add(sensors.getTrackEdgeSensors()[8]);
-		// temp.add(sensors.getTrackEdgeSensors()[10]);
-		// temp.add(sensors.getTrackEdgeSensors()[9]);
 		for (int i = 0; i < sensors.getTrackEdgeSensors().length; i++) {
 			temp.add(sensors.getTrackEdgeSensors()[i]);
 		}
 		input.add(temp);
 		ArrayList<Double> temp2 = new ArrayList<Double>();
-		temp2.add(sensors.getSpeed());
+		temp2.add(action.accelerate);
 		temp2.add(action.steering);
 		output.add(temp2);
 		

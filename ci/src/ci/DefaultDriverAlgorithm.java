@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.ArrayList;
 
 import cicontest.algorithm.abstracts.AbstractAlgorithm;
@@ -49,6 +50,8 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
 	public void train(boolean file) {
 		DefaultDriverGenome genome = new DefaultDriverGenome();
 		drivers[0] = genome;
+		ArrayList<ArrayList<Double>> inputDataToTrain = new ArrayList<ArrayList<Double>>();
+		ArrayList<ArrayList<Double>> outputDataToTrain = new ArrayList<ArrayList<Double>>();
 		// Start a race
 		DefaultRace race = new DefaultRace();
 		if (!file) {
@@ -59,9 +62,10 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
 				// for speedup set withGUI to false
 
 				results = race.trainGenome(drivers, true);
-				drivers[0].trainNN(((trainingDriver) drivers[0].getDriver()).getInput(),
-						((trainingDriver) drivers[0].getDriver()).getOutput());
+				inputDataToTrain.addAll(((trainingDriver) drivers[0].getDriver()).getInput());
+				outputDataToTrain.addAll(((trainingDriver) drivers[0].getDriver()).getOutput());
 			}
+			drivers[0].trainNN(inputDataToTrain, outputDataToTrain);
 		} else {
 			ArrayList<ArrayList<Double>> temp = new ArrayList<ArrayList<Double>>();
 			ArrayList<ArrayList<Double>> output = new ArrayList<ArrayList<Double>>();
@@ -160,22 +164,36 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
 	}
 
 	private void meRun() {
-		// init NN
 		DefaultDriverGenome genome = new DefaultDriverGenome();
-		genome.loadSavedNN();
 		drivers[0] = genome;
-
+		ArrayList<ArrayList<Double>> inputDataToTrain = new ArrayList<ArrayList<Double>>();
+		ArrayList<ArrayList<Double>> outputDataToTrain = new ArrayList<ArrayList<Double>>();
 		// Start a race
 		DefaultRace race = new DefaultRace();
-		race.setTrack(AbstractRace.DefaultTracks.getTrack(0));
-		race.laps = 1;
-		// for speedup set withGUI to false
-		results = race.meRunRace(drivers, true);
+		int nTracks = 1;
+		for (int i = 0; i < nTracks; i++) {
+			race.setTrack(AbstractRace.DefaultTracks.getTrack(0));
+			race.laps = 1;
+			results = race.meRunRace(drivers, true);
+			try {
+				BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+				String s;
+				System.out.println("Save? :");
+				while ((s = br.readLine()) != null) {System.out.println("Save? :");}
+				if (s.equals("y")) {
+					inputDataToTrain.addAll(((trainingDriver) drivers[0].getDriver()).getInput());
+					outputDataToTrain.addAll(((trainingDriver) drivers[0].getDriver()).getOutput());
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+		}
+		drivers[0].trainNN(inputDataToTrain, outputDataToTrain);
 
+		drivers[0].saveNN();
 		// Save genome/nn
 		DriversUtils.storeGenome(drivers[0]);
-		// create a checkpoint this allows you to continue this run later
-		DriversUtils.createCheckpoint(this);
 	}
 
 }

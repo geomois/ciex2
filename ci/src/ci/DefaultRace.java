@@ -30,7 +30,7 @@ public class DefaultRace extends AbstractRace {
 		MeTheDriver[] driversList = new MeTheDriver[size];
 		for(int i=0; i<size; i++){
 			driversList[i] = new MeTheDriver();
-			driversList[i].loadGenome(drivers[i]);
+			drivers[i].setDriver(driversList[i]);
 		}
 		return runRace(driversList, withGUI, true);
 	}
