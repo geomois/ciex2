@@ -56,7 +56,7 @@ public class fooFrame extends JFrame implements Runnable, KeyListener {
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		int id = e.getID();
+		int id = e.getKeyCode();
 		if (id == KeyEvent.VK_RIGHT) {
 			steeringKey = 0.0;
 		} else if (id == KeyEvent.VK_LEFT) {

@@ -18,17 +18,13 @@ import cicontest.torcs.controller.extras.AutomatedClutch;
 import cicontest.torcs.controller.extras.AutomatedGearbox;
 import cicontest.torcs.controller.extras.AutomatedRecovering;
 
-public class MeTheDriver extends AbstractDriver implements KeyListener {
+public class MeTheDriver extends AbstractDriver{
 
 	private static Double TopSpeed;
 	// private NeuralNetwork neuralNetwork = new NeuralNetwork();
-	private ArrayList<Double> input;
+	private ArrayList<ArrayList<Double>> input;
 	private DefaultDriverGenome driverGenome;
-	private Double prevSteering;
-	private Double desiredSpeed;
-	private Queue<Double> moSteer;
-	private double steeringKey;
-	private double speedKey;
+	ArrayList<ArrayList<Double>> output;
 	fooFrame f;
 
 	MeTheDriver() {
@@ -45,11 +41,7 @@ public class MeTheDriver extends AbstractDriver implements KeyListener {
 		this.enableExtras(new AutomatedGearbox());
 		this.enableExtras(new AutomatedRecovering());
 		this.enableExtras(new ABS());
-		input = new ArrayList<Double>();
-		prevSteering = 0.0;
-		moSteer = new LinkedList<Double>();
-		steeringKey=0.0;
-		speedKey=0.0;
+		input = new ArrayList<ArrayList<Double>>();
 		f=new fooFrame();
 //		new Thread(f).start();
 	}
@@ -58,6 +50,21 @@ public class MeTheDriver extends AbstractDriver implements KeyListener {
 	public void control(Action action, SensorModel sensors) {
 		action.steering = f.getSteering();
 		action.accelerate=f.getSpeed();
+		
+		
+		ArrayList<Double> temp = new ArrayList<Double>();
+		// temp.add(sensors.getTrackEdgeSensors()[8]);
+		// temp.add(sensors.getTrackEdgeSensors()[10]);
+		// temp.add(sensors.getTrackEdgeSensors()[9]);
+		for (int i = 0; i < sensors.getTrackEdgeSensors().length; i++) {
+			temp.add(sensors.getTrackEdgeSensors()[i]);
+		}
+		input.add(temp);
+		ArrayList<Double> temp2 = new ArrayList<Double>();
+		temp2.add(sensors.getSpeed());
+		temp2.add(action.steering);
+		output.add(temp2);
+		
 	}
 
 	public String getDriverName() {
@@ -88,37 +95,12 @@ public class MeTheDriver extends AbstractDriver implements KeyListener {
 		return 0;
 	}
 
-	@Override
-	public void keyTyped(KeyEvent e) {
-		// TODO Auto-generated method stub
 
+	public ArrayList<ArrayList<Double>> getInput() {
+		return input;
 	}
 
-	@Override
-	public void keyPressed(KeyEvent e) {
-		int id = e.getID();
-		if (id == KeyEvent.VK_RIGHT) {
-			steeringKey = 1.0;
-		} else if (id == KeyEvent.VK_LEFT) {
-			steeringKey = -1.0;
-		} else if (id == KeyEvent.VK_DOWN) {
-			this.speedKey = -1.0;
-		} else if (id == KeyEvent.VK_UP) {
-			this.speedKey = 1.0;
-		}
-	}
-
-	@Override
-	public void keyReleased(KeyEvent e) {
-		int id = e.getID();
-		if (id == KeyEvent.VK_RIGHT) {
-			steeringKey = 0.0;
-		} else if (id == KeyEvent.VK_LEFT) {
-			steeringKey = 0.0;
-		} else if (id == KeyEvent.VK_DOWN) {
-			this.speedKey = 0.0;
-		} else if (id == KeyEvent.VK_UP) {
-			this.speedKey = 0.0;
-		}
+	public ArrayList<ArrayList<Double>> getOutput() {
+		return output;
 	}
 }
