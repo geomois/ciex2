@@ -69,7 +69,7 @@ public class NeuralNetwork implements Serializable {
 			Double[] tempOutput = new Double[output.get(i).size()];
 			tempOutput = output.get(i).toArray(tempOutput);
 
-			train(tempInput, scale(tempOutput, -1.0, 1.0, Dmin, Dmax));
+			train(tempInput, scale(tempOutput, 0.0, 1.0, Dmin, Dmax));
 			// train(tempInput, tempOutput);
 		}
 		outputNodes.clear();
@@ -225,7 +225,7 @@ public class NeuralNetwork implements Serializable {
 			inputNodes.add(bias);
 			temp = this.forwardProp(input, null).toArray(temp);
 			System.out.println(temp[0].toString());
-			temp = scale(temp, Dmin, Dmax, -1.0, 1.0);
+			temp = scale(temp, Dmin, Dmax, 0.0, 1.0);
 			// temp[1] = scale(temp,,)[0];
 			return temp;
 		} else {
@@ -251,10 +251,10 @@ public class NeuralNetwork implements Serializable {
 			// create the memory folder manually
 			// out = new ObjectOutputStream(new
 			// FileOutputStream("/users/edwinlima/git/ci/memory/mydriver.mem"));
-			// out = new ObjectOutputStream(new
-			// FileOutputStream("C:\\Users\\George\\git\\ci\\ci\\memory\\mydriver.mem"));
-			out = new ObjectOutputStream(
-					new FileOutputStream("C:\\Users\\11126957\\git\\ciex2\\ci\\memory\\mydriver.mem"));
+			 out = new ObjectOutputStream(new
+			 FileOutputStream("C:/Users/George/git/ciex2/ci/memory/mydriver.mem"));
+//			out = new ObjectOutputStream(
+//					new FileOutputStream("C:\\Users\\11126957\\git\\ciex2\\ci\\memory\\mydriver.mem"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -273,11 +273,11 @@ public class NeuralNetwork implements Serializable {
 		try {
 			// f_in = new
 			// FileInputStream("/users/edwinlima/git/ci/memory/mydriver.mem");
-			// f_in = new
-			// FileInputStream("C:\\Users\\George\\git\\ci\\ci\\memory\\mydriver.mem");
+			 f_in = new
+			 FileInputStream("C:/Users/George/git/ciex2/ci/memory/mydriver.mem");
 			// f_in = new
 			// FileInputStream("C:\\Users\\11126957\\Desktop\\memory\\mydriver.mem");
-			f_in = new FileInputStream("C:\\Users\\11126957\\git\\ciex2\\ci\\memory\\mydriver.mem");
+//			f_in = new FileInputStream("C:\\Users\\11126957\\git\\ciex2\\ci\\memory\\mydriver.mem");
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
