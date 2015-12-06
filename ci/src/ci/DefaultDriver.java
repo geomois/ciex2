@@ -55,7 +55,7 @@ public class DefaultDriver extends AbstractDriver {
 		
 		
 		action.steering = getCurrentSteering(sensors);
-//		desiredSpeed = NNOutput[0];
+		desiredSpeed = NNOutput[0];
 		System.out.println(desiredSpeed.toString());
 		if (sensors.getSpeed() > desiredSpeed) {
 			action.accelerate = 0.0D;

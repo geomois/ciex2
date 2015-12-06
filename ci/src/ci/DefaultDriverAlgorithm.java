@@ -146,6 +146,8 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
 			algorithm.train(false);
 		} else if (args.length > 0 && args[0].equals("-trainfromfile")) {
 			algorithm.train(true);
+		} else if (args.length > 0 && args[0].equals("-accel")) {
+			algorithm.runWithAccel();
 		} else if (args.length > 0 && args[0].equals("-show-race")) {
 			new DefaultRace().showBestRace();
 		} else if (args.length > 0 && args[0].equals("-human")) {
@@ -163,6 +165,27 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
 		}
 	}
 
+	private void runWithAccel() {
+		// init NN
+		DefaultDriverGenome genome = new DefaultDriverGenome();
+		genome.loadSavedNN();
+		drivers[0] = genome;
+
+		// Start a race
+		DefaultRace race = new DefaultRace();
+		race.setTrack(AbstractRace.DefaultTracks.getTrack(0));
+		race.laps = 1;
+		// for speedup set withGUI to false
+		results = race.runWithAccel(drivers, true);
+
+		// Save genome/nn
+		DriversUtils.storeGenome(drivers[0]);
+		// create a checkpoint this allows you to continue this run later
+		DriversUtils.createCheckpoint(this);
+		// DriversUtils.clearCheckpoint();
+
+	}
+
 	private void meRun() {
 		DefaultDriverGenome genome = new DefaultDriverGenome();
 		drivers[0] = genome;
@@ -170,30 +193,39 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
 		ArrayList<ArrayList<Double>> outputDataToTrain = new ArrayList<ArrayList<Double>>();
 		// Start a race
 		DefaultRace race = new DefaultRace();
-		int nTracks = 5;
+		int nTracks = 2;
+		BufferedReader br = null;
 		for (int i = 0; i < nTracks; i++) {
 			race.setTrack(AbstractRace.DefaultTracks.getTrack(0));
 			race.laps = 1;
 			results = race.meRunRace(drivers, true);
 			try {
-				BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+				br = new BufferedReader(new InputStreamReader(System.in));
 				String s;
 				System.out.println("Save? :");
-				while ((s = br.readLine()) != null) {System.out.println("Save? :");}
+				while ((s = br.readLine()) == null) {
+					System.out.println("Save? :");
+				}
 				if (s.equals("y")) {
-					inputDataToTrain.addAll(((trainingDriver) drivers[0].getDriver()).getInput());
-					outputDataToTrain.addAll(((trainingDriver) drivers[0].getDriver()).getOutput());
+					inputDataToTrain.addAll(((MeTheDriver) drivers[0].getDriver()).getInput());
+					outputDataToTrain.addAll(((MeTheDriver) drivers[0].getDriver()).getOutput());
 				}
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			
+		}
+		try {
+			br.close();
+		} catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 		drivers[0].trainNN(inputDataToTrain, outputDataToTrain);
 
 		drivers[0].saveNN();
 		// Save genome/nn
 		DriversUtils.storeGenome(drivers[0]);
+		System.exit(0);
 	}
 
 }

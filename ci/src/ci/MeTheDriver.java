@@ -1,13 +1,6 @@
 package ci;
 
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.Queue;
-
-import javax.swing.JTextField;
-
 import cicontest.algorithm.abstracts.AbstractDriver;
 import cicontest.algorithm.abstracts.DriversUtils;
 import cicontest.torcs.client.Action;
@@ -55,18 +48,19 @@ public class MeTheDriver extends AbstractDriver{
 		if (currentAccel>=0.0) {
 			action.accelerate=currentAccel;
 		}else{
-			
+			action.brake=currentAccel;
 		}
 		ArrayList<Double> temp = new ArrayList<Double>();
 		for (int i = 0; i < sensors.getTrackEdgeSensors().length; i++) {
 			temp.add(sensors.getTrackEdgeSensors()[i]);
 		}
+		temp.add(sensors.getTrackPosition());
 		input.add(temp);
 		ArrayList<Double> temp2 = new ArrayList<Double>();
 		temp2.add(action.accelerate);
-		temp2.add(action.steering);
+//		temp2.add(sensors.getSpeed());
+		temp2.add(0.0);
 		output.add(temp2);
-		
 	}
 
 	public String getDriverName() {
