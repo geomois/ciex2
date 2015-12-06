@@ -2,6 +2,8 @@ package ci;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.LinkedList;
+import java.util.Queue;
 
 public class NeuralNetwork implements Serializable {
 
@@ -26,6 +28,7 @@ public class NeuralNetwork implements Serializable {
 	private double maxSpeed;
 	private Double Dmin;
 	private Double Dmax;
+	private Queue<ArrayList<Double[][]>> lastTrainedWeights;
 
 	public NeuralNetwork() {
 		inputNodes = new ArrayList<Double>();
@@ -33,6 +36,7 @@ public class NeuralNetwork implements Serializable {
 		outputNodes = new ArrayList<Double>();
 		errorOutput = new ArrayList<Double>();
 		sumErrorDerivWeight = new ArrayList<Double>();
+		this.lastTrainedWeights = new LinkedList<ArrayList<Double[][]>>();
 		for (int i = 0; i < hiddenLNo; i++) {
 			hiddenNodes.add((double) 0);
 			for (int j = 0; j < outputLNo + Adding; j++) {
@@ -62,15 +66,26 @@ public class NeuralNetwork implements Serializable {
 			tempOutput = output.get(i).toArray(tempOutput);
 			MinMax(tempOutput);
 		}
+		
+		Double[][] tempInput=new Double[input.size()][input.get(0).size()];
+		Double[][] tempOutput=new Double[output.size()][output.get(0).size()];
+		for(int i=0;i<input.size();i++){
+			tempInput[i] = input.get(i).toArray(tempInput[i]);
+			tempOutput[i] = output.get(i).toArray(tempOutput[i]);
+		}
 
-		for (int i = 0; i < input.size(); i++) {
-			Double[] tempInput = new Double[input.get(i).size()];
-			tempInput = input.get(i).toArray(tempInput);
-			Double[] tempOutput = new Double[output.get(i).size()];
-			tempOutput = output.get(i).toArray(tempOutput);
-
-			train(tempInput, scale(tempOutput, 0.0, 1.0, Dmin, Dmax));
-			// train(tempInput, tempOutput);
+		for (int j = 0; j < 400; j++) {
+			for (int i = 0; i < input.size(); i++) {
+				train(tempInput[i], scale(tempOutput[i], 0.0, 1.0, Dmin, Dmax));
+				// train(tempInput, tempOutput);
+			}
+			if(lastTrainedWeights.size()==10){
+				lastTrainedWeights.remove();
+			}
+			ArrayList<Double[][]> temp=new ArrayList<Double[][]>();
+			temp.add(w1);
+			temp.add(w2);
+			lastTrainedWeights.add(temp);
 		}
 		outputNodes.clear();
 		hiddenNodes.clear();
@@ -79,6 +94,7 @@ public class NeuralNetwork implements Serializable {
 	}
 
 	private void train(Double[] input, Double[] output) {
+
 		inputNodes.clear();
 		hiddenNodes.clear();
 		outputNodes.clear();
@@ -96,10 +112,9 @@ public class NeuralNetwork implements Serializable {
 		for (int i = 0; i < outputLNo; i++)
 			outputNodes.add((double) 0);
 		inputNodes.add(bias);
+
 		forwardProp(input, output);
-		for (int i = 0; i < 1; i++) {
-			backProp(input, output);
-		}
+		backProp(input, output);
 	}
 
 	private ArrayList<Double> forwardProp(Double[] input, Double[] output) {
@@ -131,20 +146,20 @@ public class NeuralNetwork implements Serializable {
 	}
 
 	private void backProp(Double[] input, Double[] output) {
-		double sum=0.0;
-		
+		double sum = 0.0;
+
 		for (int i = 0; i < outputLNo; i++) {
 			double temp2 = outputNodes.get(i);
 			// errorOutput.set(i, output[i] - temp2);
 			errorOutput.set(i, temp2 * (1.0 - temp2) * (output[i] - temp2));
 		}
-		for (int i = 0; i < hiddenLNo+1; i++) {
+		for (int i = 0; i < hiddenLNo + 1; i++) {
 			for (int j = 0; j < outputLNo; j++)
-				sum+=w2[i][j]*errorOutput.get(j);
-			
-			if (i!=hiddenLNo) {
+				sum += w2[i][j] * errorOutput.get(j);
+
+			if (i != hiddenLNo) {
 				sumErrorDerivWeight.set(i, hiddenNodes.get(i) * (1.0 - hiddenNodes.get(i)) * sum);
-			}else{
+			} else {
 				sumErrorDerivWeight.set(i, bias * sum);
 			}
 		}
@@ -155,15 +170,16 @@ public class NeuralNetwork implements Serializable {
 			for (int j = 0; j < hiddenLNo + 1; j++) {
 				double temp = outputNodes.get(i);
 				if (j == hiddenLNo) {
-					w2[j][i] = w2[j][i] + learningRate * bias  * errorOutput.get(i);
+					w2[j][i] = w2[j][i] + learningRate * bias * errorOutput.get(i);
 				} else {
-					w2[j][i] = w2[j][i] + learningRate * hiddenNodes.get(j)  * errorOutput.get(i);
+					w2[j][i] = w2[j][i] + learningRate * hiddenNodes.get(j) * errorOutput.get(i);
 				}
 				// Calculating Ód_k*w_jk where d_k=g'*error
 				// I am not sure if we should use the old or the updated weight
 				// here I use the updated
-//				sumErrorDerivWeight.set(j,
-//						sumErrorDerivWeight.get(i) + (temp * (1.0 - temp) * errorOutput.get(i) * w2[j][i]));
+				// sumErrorDerivWeight.set(j,
+				// sumErrorDerivWeight.get(i) + (temp * (1.0 - temp) *
+				// errorOutput.get(i) * w2[j][i]));
 			}
 		}
 
@@ -171,10 +187,9 @@ public class NeuralNetwork implements Serializable {
 			for (int j = 0; j < inputNodes.size(); j++) {
 				double temp1 = hiddenNodes.get(i);
 				if (j == inputNodes.size() - 1) {
-					w1[j][i] = w1[j][i] + learningRate * bias  * sumErrorDerivWeight.get(i);
+					w1[j][i] = w1[j][i] + learningRate * bias * sumErrorDerivWeight.get(i);
 				} else {
-					w1[j][i] = w1[j][i]
-							+ learningRate * inputNodes.get(j)  * sumErrorDerivWeight.get(i);
+					w1[j][i] = w1[j][i] + learningRate * inputNodes.get(j) * sumErrorDerivWeight.get(i);
 				}
 			}
 		}
@@ -233,6 +248,10 @@ public class NeuralNetwork implements Serializable {
 		}
 	}
 
+	public LinkedList<ArrayList<Double[][]>> getLastTrainWeights() {
+		return (LinkedList<ArrayList<Double[][]>>) lastTrainedWeights;
+	}
+
 	// Weight matrix= w[number inputs][number outputs]
 	private Double[][] initializeWeights(int length, int length2, Double[][] w) {
 		w = new Double[length][length2];
@@ -251,10 +270,10 @@ public class NeuralNetwork implements Serializable {
 			// create the memory folder manually
 			// out = new ObjectOutputStream(new
 			// FileOutputStream("/users/edwinlima/git/ci/memory/mydriver.mem"));
-			 out = new ObjectOutputStream(new
-			 FileOutputStream("C:/Users/George/git/ciex2/ci/memory/mydriver.mem"));
-//			out = new ObjectOutputStream(
-//					new FileOutputStream("C:\\Users\\11126957\\git\\ciex2\\ci\\memory\\mydriver.mem"));
+			// out = new ObjectOutputStream(new
+			// FileOutputStream("C:/Users/George/git/ciex2/ci/memory/mydriver.mem"));
+			out = new ObjectOutputStream(
+					new FileOutputStream("C:\\Users\\11126957\\git\\ciex2\\ci\\memory\\mydriver.mem"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -273,11 +292,12 @@ public class NeuralNetwork implements Serializable {
 		try {
 			// f_in = new
 			// FileInputStream("/users/edwinlima/git/ci/memory/mydriver.mem");
-			 f_in = new
-			 FileInputStream("C:/Users/George/git/ciex2/ci/memory/mydriver.mem");
+			f_in = new
+			// FileInputStream("C:/Users/George/git/ciex2/ci/memory/mydriver.mem");
 			// f_in = new
-			// FileInputStream("C:\\Users\\11126957\\Desktop\\memory\\mydriver.mem");
-//			f_in = new FileInputStream("C:\\Users\\11126957\\git\\ciex2\\ci\\memory\\mydriver.mem");
+			FileInputStream("C:\\Users\\11126957\\Desktop\\memory\\mydriver.mem");
+			// f_in = new
+			// FileInputStream("C:\\Users\\11126957\\git\\ciex2\\ci\\memory\\mydriver.mem");
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}

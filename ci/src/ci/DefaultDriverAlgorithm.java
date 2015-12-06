@@ -66,7 +66,8 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
 			ArrayList<ArrayList<Double>> temp=new ArrayList<ArrayList<Double>>();
 			ArrayList<ArrayList<Double>> output=new ArrayList<ArrayList<Double>>();
 			ArrayList<ArrayList<Double>> input=new ArrayList<ArrayList<Double>>();
-			String path = "C:/Users/George/Desktop/ci train data";
+//			String path = "C:/Users/George/Desktop/ci train data";
+			String path="C:/Users/11126957/Desktop/ci train data";
 			File folder = new File(path);
 			String[] fileNames = folder.list();
 
@@ -119,10 +120,10 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
 	public static void main(String[] args) {
 
 		// Set path to torcs.properties
-		 TorcsConfiguration.getInstance().initialize(new
-		 File("C:/Users/George/git/ciex2/ci/torcs.properties"));
-//		TorcsConfiguration.getInstance()
-//				.initialize(new File("E:\\eclipse java\\eclipse workspace\\ci\\torcs.properties"));
+//		 TorcsConfiguration.getInstance().initialize(new
+//		 File("C:/Users/George/git/ciex2/ci/torcs.properties"));
+		TorcsConfiguration.getInstance()
+				.initialize(new File("E:\\eclipse java\\eclipse workspace\\ci\\torcs.properties"));
 		/*
 		 *
 		 * Start without arguments to run the algorithm Start with -train train
