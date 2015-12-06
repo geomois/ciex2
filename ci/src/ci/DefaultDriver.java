@@ -91,7 +91,7 @@ public class DefaultDriver extends AbstractDriver {
 			desiredSpeed += 55;
 			bias = 0.0;
 		}
-		Double currentSteer = DriversUtils.alignToTrackAxis(sensors, 0.3D) + bias;
+		Double currentSteer = DriversUtils.alignToTrackAxis(sensors, 0.2D) + bias;
 		Double dif1 = dif;
 
 		dif = Math.abs(prevSteering) - Math.abs(currentSteer);
