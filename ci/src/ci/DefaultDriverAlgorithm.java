@@ -63,49 +63,50 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
 						((trainingDriver) drivers[0].getDriver()).getOutput());
 			}
 		} else {
-			ArrayList<ArrayList<Double>> temp=new ArrayList<ArrayList<Double>>();
-			ArrayList<ArrayList<Double>> output=new ArrayList<ArrayList<Double>>();
-			ArrayList<ArrayList<Double>> input=new ArrayList<ArrayList<Double>>();
-//			String path = "C:/Users/George/Desktop/ci train data";
-			String path="C:/Users/11126957/Desktop/ci train data";
+			ArrayList<ArrayList<Double>> temp = new ArrayList<ArrayList<Double>>();
+			ArrayList<ArrayList<Double>> output = new ArrayList<ArrayList<Double>>();
+			ArrayList<ArrayList<Double>> input = new ArrayList<ArrayList<Double>>();
+			// String path = "C:/Users/George/Desktop/ci train data";
+			String path = "C:/Users/11126957/Desktop/ci train data";
 			File folder = new File(path);
 			String[] fileNames = folder.list();
 
 			for (String name : fileNames) {
-				temp=parseTrainingDataFromFile(path+"\\"+name);
-				for(int i=0;i<temp.size();i++){
-					if (i%2==1) {
+				temp = parseTrainingDataFromFile(path + "\\" + name);
+				for (int i = 0; i < temp.size(); i++) {
+					if (i % 2 == 1) {
 						output.add(temp.get(i));
-					}else{
+					} else {
 						input.add(temp.get(i));
 					}
 				}
 			}
-			drivers[0].trainNN(input,output);
+			drivers[0].trainNN(input, output);
 		}
 		drivers[0].saveNN();
 		// Save genome/nn
 		DriversUtils.storeGenome(drivers[0]);
 	}
-	private ArrayList<ArrayList<Double>> parseTrainingDataFromFile(String path){
+
+	private ArrayList<ArrayList<Double>> parseTrainingDataFromFile(String path) {
 		BufferedReader br = null;
 		String CurrentLine;
-		ArrayList<ArrayList<Double>> readOut=new ArrayList<ArrayList<Double>>();
-		ArrayList<Double> temp=new ArrayList<Double>();
+		ArrayList<ArrayList<Double>> readOut = new ArrayList<ArrayList<Double>>();
+		ArrayList<Double> temp = new ArrayList<Double>();
 
 		try {
 			br = new BufferedReader(new FileReader(path));
-			
+
 			try {
 				while ((CurrentLine = br.readLine()) != null) {
-						if (!CurrentLine.isEmpty()) {
-							String[] numbers=CurrentLine.split("\\s+");
-							temp=new ArrayList<Double>();
-							for(String s:numbers)
-								temp.add(Double.parseDouble(s.trim()));
-							readOut.add(temp);
-						}
+					if (!CurrentLine.isEmpty()) {
+						String[] numbers = CurrentLine.split("\\s+");
+						temp = new ArrayList<Double>();
+						for (String s : numbers)
+							temp.add(Double.parseDouble(s.trim()));
+						readOut.add(temp);
 					}
+				}
 				br.close();
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -120,8 +121,8 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
 	public static void main(String[] args) {
 
 		// Set path to torcs.properties
-//		 TorcsConfiguration.getInstance().initialize(new
-//		 File("C:/Users/George/git/ciex2/ci/torcs.properties"));
+		// TorcsConfiguration.getInstance().initialize(new
+		// File("C:/Users/George/git/ciex2/ci/torcs.properties"));
 		TorcsConfiguration.getInstance()
 				.initialize(new File("E:\\eclipse java\\eclipse workspace\\ci\\torcs.properties"));
 		/*
@@ -145,6 +146,8 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
 			new DefaultRace().showBestRace();
 		} else if (args.length > 0 && args[0].equals("-human")) {
 			new DefaultRace().raceBest();
+		} else if (args.length > 0 && args[0].equals("-methedriver")) {
+			algorithm.meRun();
 		} else if (args.length > 0 && args[0].equals("-continue")) {
 			if (DriversUtils.hasCheckpoint()) {
 				DriversUtils.loadCheckpoint().run(true);
@@ -154,6 +157,25 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
 		} else {
 			algorithm.run();
 		}
+	}
+
+	private void meRun() {
+		// init NN
+		DefaultDriverGenome genome = new DefaultDriverGenome();
+		genome.loadSavedNN();
+		drivers[0] = genome;
+
+		// Start a race
+		DefaultRace race = new DefaultRace();
+		race.setTrack(AbstractRace.DefaultTracks.getTrack(0));
+		race.laps = 1;
+		// for speedup set withGUI to false
+		results = race.meRunRace(drivers, true);
+
+		// Save genome/nn
+		DriversUtils.storeGenome(drivers[0]);
+		// create a checkpoint this allows you to continue this run later
+		DriversUtils.createCheckpoint(this);
 	}
 
 }

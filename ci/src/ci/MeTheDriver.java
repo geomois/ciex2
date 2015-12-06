@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.Queue;
 
+import javax.swing.JTextField;
+
 import cicontest.algorithm.abstracts.AbstractDriver;
 import cicontest.algorithm.abstracts.DriversUtils;
 import cicontest.torcs.client.Action;
@@ -27,6 +29,7 @@ public class MeTheDriver extends AbstractDriver implements KeyListener {
 	private Queue<Double> moSteer;
 	private double steeringKey;
 	private double speedKey;
+	fooFrame f;
 
 	MeTheDriver() {
 		initialize();
@@ -47,13 +50,14 @@ public class MeTheDriver extends AbstractDriver implements KeyListener {
 		moSteer = new LinkedList<Double>();
 		steeringKey=0.0;
 		speedKey=0.0;
+		f=new fooFrame();
+//		new Thread(f).start();
 	}
 
 	@Override
 	public void control(Action action, SensorModel sensors) {
-
-		action.steering = steeringKey;
-		action.accelerate=speedKey;
+		action.steering = f.getSteering();
+		action.accelerate=f.getSpeed();
 	}
 
 	public String getDriverName() {
@@ -93,13 +97,13 @@ public class MeTheDriver extends AbstractDriver implements KeyListener {
 	@Override
 	public void keyPressed(KeyEvent e) {
 		int id = e.getID();
-		if (id == KeyEvent.VK_KP_RIGHT) {
+		if (id == KeyEvent.VK_RIGHT) {
 			steeringKey = 1.0;
-		} else if (id == KeyEvent.VK_KP_LEFT) {
+		} else if (id == KeyEvent.VK_LEFT) {
 			steeringKey = -1.0;
-		} else if (id == KeyEvent.VK_KP_DOWN) {
+		} else if (id == KeyEvent.VK_DOWN) {
 			this.speedKey = -1.0;
-		} else if (id == KeyEvent.VK_KP_UP) {
+		} else if (id == KeyEvent.VK_UP) {
 			this.speedKey = 1.0;
 		}
 	}
@@ -107,13 +111,13 @@ public class MeTheDriver extends AbstractDriver implements KeyListener {
 	@Override
 	public void keyReleased(KeyEvent e) {
 		int id = e.getID();
-		if (id == KeyEvent.VK_KP_RIGHT) {
+		if (id == KeyEvent.VK_RIGHT) {
 			steeringKey = 0.0;
-		} else if (id == KeyEvent.VK_KP_LEFT) {
+		} else if (id == KeyEvent.VK_LEFT) {
 			steeringKey = 0.0;
-		} else if (id == KeyEvent.VK_KP_DOWN) {
+		} else if (id == KeyEvent.VK_DOWN) {
 			this.speedKey = 0.0;
-		} else if (id == KeyEvent.VK_KP_UP) {
+		} else if (id == KeyEvent.VK_UP) {
 			this.speedKey = 0.0;
 		}
 	}
