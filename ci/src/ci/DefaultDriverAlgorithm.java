@@ -170,7 +170,7 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
 		ArrayList<ArrayList<Double>> outputDataToTrain = new ArrayList<ArrayList<Double>>();
 		// Start a race
 		DefaultRace race = new DefaultRace();
-		int nTracks = 1;
+		int nTracks = 5;
 		for (int i = 0; i < nTracks; i++) {
 			race.setTrack(AbstractRace.DefaultTracks.getTrack(0));
 			race.laps = 1;

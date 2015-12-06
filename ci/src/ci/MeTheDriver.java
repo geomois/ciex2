@@ -26,6 +26,7 @@ public class MeTheDriver extends AbstractDriver{
 	private DefaultDriverGenome driverGenome;
 	ArrayList<ArrayList<Double>> output;
 	fooFrame f;
+	private double currentAccel=0.0;
 
 	MeTheDriver() {
 		initialize();
@@ -50,9 +51,12 @@ public class MeTheDriver extends AbstractDriver{
 	@Override
 	public void control(Action action, SensorModel sensors) {
 		action.steering = f.getSteering();
-		action.accelerate=f.getSpeed();
-		
-		
+		currentAccel=f.getSpeed();
+		if (currentAccel>=0.0) {
+			action.accelerate=currentAccel;
+		}else{
+			
+		}
 		ArrayList<Double> temp = new ArrayList<Double>();
 		for (int i = 0; i < sensors.getTrackEdgeSensors().length; i++) {
 			temp.add(sensors.getTrackEdgeSensors()[i]);
