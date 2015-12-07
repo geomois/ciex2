@@ -55,7 +55,10 @@ public class MeTheDriver extends AbstractDriver{
 		for (int i = 0; i < sensors.getTrackEdgeSensors().length; i+=2) {
 			temp.add(sensors.getTrackEdgeSensors()[i]);
 		}
-		System.out.println(temp.get(4)+" "+sensors.getTrackPosition()+" "+temp.get(5));
+		double leftFront=temp.get(4);
+		double rightFront=temp.get(5);
+		
+		System.out.println(rightFront+" "+leftFront);
 		temp.add(sensors.getTrackEdgeSensors()[9]);
 		input.add(temp);
 		ArrayList<Double> temp2 = new ArrayList<Double>();
