@@ -25,6 +25,7 @@ public class DefaultDriver extends AbstractDriver {
 	private Queue<Double> moSteer;
 	private Double lapTime;
 	private double prevPosition;
+	private Queue<Double> prevPositions;
 
 	DefaultDriver() {
 		initialize();
@@ -43,6 +44,7 @@ public class DefaultDriver extends AbstractDriver {
 		prevSteering = 0.0;
 		moSteer = new LinkedList<Double>();
 		prevPosition = 0.0;
+		prevPositions=new LinkedList<Double>();
 	}
 
 	@Override
@@ -146,7 +148,9 @@ public class DefaultDriver extends AbstractDriver {
 		double alignment=sensors.getAngleToTrackAxis();
 		// System.out.println(leftFront + " " + sensors.getTrackPosition() + " "
 		// + rightFront);
-		 if((prevPosition> 0.45 && prevPosition< 0.9) || ((prevPosition<-0.45 && prevPosition>-0.9))){
+//		 if((prevPosition> 0.45 && prevPosition< 0.9) || ((prevPosition<-0.45 && prevPosition>-0.9))){
+//		 if((prevPosition> 0.45) || ((prevPosition<-0.45))){
+		if(isChangingCourse()){
 			 if((alignment>(base+0.035) && alignment<(base+0.045)) || (alignment<-(base+0.035) && alignment>-(base+0.045)))
 				 bias=1.1;
 			 else if((alignment>base+0.045 && alignment<base+0.055) || (alignment<-(base+0.045) && alignment>-(base+0.055)))
@@ -158,7 +162,7 @@ public class DefaultDriver extends AbstractDriver {
 			 else if(alignment>base+0.075 || (alignment<-(base+0.075)))
 				 bias=1.5;
 		 }
-		 System.out.println(sensors.getAngleToTrackAxis()+" "+"bias: "+bias);
+		 System.out.println("prevPosition: "+prevPosition+" "+sensors.getAngleToTrackAxis()+" "+"bias: "+bias);
 		
 		
 		if (!(position > 0.45 || position < -0.45)) {
@@ -208,9 +212,18 @@ public class DefaultDriver extends AbstractDriver {
 		}
 
 		prevPosition = position;
+		
+		if(prevPositions.size()==10)
+			prevPositions.remove();
+		
+		prevPositions.add(position);
 		return currentSteer;
 	}
 
+	private boolean isChangingCourse(){
+		
+	}
+	
 	private double getInTrack(double trackPosition) {
 		double steering = 0.0;
 		desiredSpeed -= 30.0;
