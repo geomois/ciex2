@@ -1,12 +1,17 @@
 package ci;
 
 import java.io.BufferedReader;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.sql.Time;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import cicontest.algorithm.abstracts.AbstractAlgorithm;
 import cicontest.algorithm.abstracts.AbstractRace;
@@ -66,6 +71,7 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
 				outputDataToTrain.addAll(((trainingDriver) drivers[0].getDriver()).getOutput());
 			}
 			drivers[0].trainNN(inputDataToTrain, outputDataToTrain);
+			saveToFile(inputDataToTrain, outputDataToTrain);
 		} else {
 			ArrayList<ArrayList<Double>> temp = new ArrayList<ArrayList<Double>>();
 			ArrayList<ArrayList<Double>> output = new ArrayList<ArrayList<Double>>();
@@ -220,12 +226,51 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
+		saveToFile(inputDataToTrain,outputDataToTrain);
 		drivers[0].trainNN(inputDataToTrain, outputDataToTrain);
 
 		drivers[0].saveNN();
 		// Save genome/nn
 		DriversUtils.storeGenome(drivers[0]);
 		System.exit(0);
+	}
+	
+	private void saveToFile(ArrayList<ArrayList<Double>> input, ArrayList<ArrayList<Double>> speed) {
+		try {
+			FileWriter fw;
+			Calendar cal = Calendar.getInstance();
+	        SimpleDateFormat sdf = new SimpleDateFormat("HHmmss");
+
+			File file = new File("C:/Users/11126957/Desktop/ci train data/traindata"+sdf.format(cal.getTime()).toString()+".txt");
+
+			// if file doesnt exists, then create it
+			if (!file.exists()) {
+				file.createNewFile();
+				fw = new FileWriter(file.getAbsoluteFile());
+			} else {
+				fw = new FileWriter(file.getAbsoluteFile(), true);
+			}
+
+			BufferedWriter bw = new BufferedWriter(fw);
+
+			for (int i=0;i<input.size();i++) {
+				for (Double a : input.get(i)) {
+					bw.write(a.toString() + " ");
+				}
+				bw.write("\n");
+				bw.write(speed.get(i).get(0).toString());
+//				bw.write(steering.get(i).toString() + " ");
+				bw.write("\n");
+			}
+
+
+			bw.close();
+
+			System.out.println("Done");
+
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 }
