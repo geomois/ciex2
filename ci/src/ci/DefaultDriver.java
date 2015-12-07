@@ -60,9 +60,10 @@ public class DefaultDriver extends AbstractDriver {
 		// input.add(sensors.getTrackEdgeSensors()[8]);
 		// input.add(sensors.getTrackEdgeSensors()[10]);
 		// input.add(sensors.getTrackEdgeSensors()[9]);
-		for (int i = 0; i < sensors.getTrackEdgeSensors().length; i++) {
+		for (int i = 0; i < sensors.getTrackEdgeSensors().length; i+=2) {
 			input.add(sensors.getTrackEdgeSensors()[i]);
 		}
+		input.add(sensors.getTrackEdgeSensors()[9]);
 
 		NNOutput = driverGenome.getNNValue(input);
 		Double desiredSpeed = NNOutput[0];
