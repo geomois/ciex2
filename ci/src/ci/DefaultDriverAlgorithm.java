@@ -146,8 +146,8 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
 			algorithm.train(false);
 		} else if (args.length > 0 && args[0].equals("-trainfromfile")) {
 			algorithm.train(true);
-		} else if (args.length > 0 && args[0].equals("-accel")) {
-			algorithm.runWithAccel();
+//		} else if (args.length > 0 && args[0].equals("-traintofile")) {
+//			algorithm.();
 		} else if (args.length > 0 && args[0].equals("-show-race")) {
 			new DefaultRace().showBestRace();
 		} else if (args.length > 0 && args[0].equals("-human")) {
@@ -165,26 +165,26 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
 		}
 	}
 
-	private void runWithAccel() {
-		// init NN
-		DefaultDriverGenome genome = new DefaultDriverGenome();
-		genome.loadSavedNN();
-		drivers[0] = genome;
-
-		// Start a race
-		DefaultRace race = new DefaultRace();
-		race.setTrack(AbstractRace.DefaultTracks.getTrack(0));
-		race.laps = 1;
-		// for speedup set withGUI to false
-		results = race.runWithAccel(drivers, true);
-
-		// Save genome/nn
-		DriversUtils.storeGenome(drivers[0]);
-		// create a checkpoint this allows you to continue this run later
-		DriversUtils.createCheckpoint(this);
-		// DriversUtils.clearCheckpoint();
-
-	}
+//	private void runWithAccel() {
+//		// init NN
+//		DefaultDriverGenome genome = new DefaultDriverGenome();
+//		genome.loadSavedNN();
+//		drivers[0] = genome;
+//
+//		// Start a race
+//		DefaultRace race = new DefaultRace();
+//		race.setTrack(AbstractRace.DefaultTracks.getTrack(0));
+//		race.laps = 1;
+//		// for speedup set withGUI to false
+//		results = race.runWithAccel(drivers, true);
+//
+//		// Save genome/nn
+//		DriversUtils.storeGenome(drivers[0]);
+//		// create a checkpoint this allows you to continue this run later
+//		DriversUtils.createCheckpoint(this);
+//		// DriversUtils.clearCheckpoint();
+//
+//	}
 
 	private void meRun() {
 		DefaultDriverGenome genome = new DefaultDriverGenome();

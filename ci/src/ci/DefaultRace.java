@@ -35,15 +35,15 @@ public class DefaultRace extends AbstractRace {
 		return runRace(driversList, withGUI, true);
 	}
 	
-	public int[] runWithAccel(DefaultDriverGenome[] drivers, boolean withGUI){
-		int size = Math.min(10, drivers.length);
-		DriverWithAccel[] driversList = new DriverWithAccel[size];
-		for(int i=0; i<size; i++){
-			driversList[i] = new DriverWithAccel();
-			driversList[i].loadGenome(drivers[i]);
-		}
-		return runRace(driversList, withGUI, true);
-	}
+//	public int[] runWithAccel(DefaultDriverGenome[] drivers, boolean withGUI){
+//		int size = Math.min(10, drivers.length);
+//		DriverWithAccel[] driversList = new DriverWithAccel[size];
+//		for(int i=0; i<size; i++){
+//			driversList[i] = new DriverWithAccel();
+//			driversList[i].loadGenome(drivers[i]);
+//		}
+//		return runRace(driversList, withGUI, true);
+//	}
 
 	public int[] trainGenome(DefaultDriverGenome[] drivers, boolean withGUI){
 		int size = Math.min(10, drivers.length);

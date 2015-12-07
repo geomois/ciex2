@@ -51,15 +51,12 @@ public class MeTheDriver extends AbstractDriver{
 			action.brake=currentAccel;
 		}
 		ArrayList<Double> temp = new ArrayList<Double>();
-		for (int i = 0; i < sensors.getTrackEdgeSensors().length; i++) {
+		for (int i = 0; i < sensors.getTrackEdgeSensors().length; i+=2) {
 			temp.add(sensors.getTrackEdgeSensors()[i]);
 		}
-		temp.add(sensors.getTrackPosition());
 		input.add(temp);
 		ArrayList<Double> temp2 = new ArrayList<Double>();
-		temp2.add(action.accelerate);
-//		temp2.add(sensors.getSpeed());
-		temp2.add(0.0);
+		temp2.add(sensors.getSpeed());
 		output.add(temp2);
 	}
 
@@ -90,7 +87,6 @@ public class MeTheDriver extends AbstractDriver{
 		// TODO Auto-generated method stub
 		return 0;
 	}
-
 
 	public ArrayList<ArrayList<Double>> getInput() {
 		return input;

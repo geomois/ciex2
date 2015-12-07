@@ -20,12 +20,11 @@ public class NeuralNetwork implements Serializable {
 	// Setting hidden nodes to be 2 can be related to acceleration and braking
 	// Setting hidden nodes to be 3 can be related to turn right or left or go
 	// straight
-	private static int hiddenLNo = 2;
-	private static int outputLNo = 2;
-	private static int Adding = 0;
+	private static int hiddenLNo = 4;
+	private static int outputLNo = 1;
+	private static int Adding = 1;
 	private static double learningRate = 0.1;
 	private static double bias = 1; // Activates the sigmoid
-	private double maxSpeed;
 	private Double Dmin;
 	private Double Dmax;
 	private Queue<ArrayList<Double[][]>> lastTrainedWeights;
@@ -74,7 +73,7 @@ public class NeuralNetwork implements Serializable {
 			tempOutput[i] = output.get(i).toArray(tempOutput[i]);
 		}
 
-		for (int j = 0; j < 400; j++) {
+		for (int j = 0; j < 200; j++) {
 			for (int i = 0; i < input.size(); i++) {
 				train(tempInput[i], scale(tempOutput[i], 0.0, 1.0, Dmin, Dmax));
 				// train(tempInput, tempOutput);
@@ -295,7 +294,7 @@ public class NeuralNetwork implements Serializable {
 //			f_in = new
 			// FileInputStream("C:/Users/George/git/ciex2/ci/memory/mydriver.mem");
 			 f_in = new
-			FileInputStream("C:/Users/11126957/git/ciex2/ci/memory\\mydriver.mem");
+			FileInputStream("C:\\Users\\11126957\\git\\ciex2\\ci\\memory\\mydriver.mem");
 			// f_in = new
 			// FileInputStream("C:\\Users\\11126957\\git\\ciex2\\ci\\memory\\mydriver.mem");
 		} catch (FileNotFoundException e) {
