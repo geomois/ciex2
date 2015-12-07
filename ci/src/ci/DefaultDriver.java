@@ -23,6 +23,7 @@ public class DefaultDriver extends AbstractDriver {
 	private Double prevSteering;
 	Double desiredSpeed;
 	private Queue<Double> moSteer;
+	private Double lapTime;
 	DefaultDriver() {
 		initialize();
 	}
@@ -85,6 +86,7 @@ public class DefaultDriver extends AbstractDriver {
 			action.accelerate = 1.0D;
 			action.brake = 0.0D;
 		}
+		lapTime = sensors.getCurrentLapTime();
 
 	}
 	private Double getCurrentSteering(SensorModel sensors) {
@@ -187,5 +189,10 @@ public class DefaultDriver extends AbstractDriver {
 	public double getSteering(SensorModel arg0) {
 		// TODO Auto-generated method stub
 		return 0;
+	}
+
+	public Double getLapTime() {
+		// TODO Auto-generated method stub
+		return lapTime;
 	}
 }

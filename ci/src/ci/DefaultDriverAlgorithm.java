@@ -42,7 +42,7 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
 			race.setTrack(AbstractRace.DefaultTracks.getTrack(0));
 			race.laps = 1;
 			// for speedup set withGUI to false
-			results = race.runRace(drivers, true);
+			Double result = race.runRace(drivers, true);
 
 			// Save genome/nn
 			DriversUtils.storeGenome(drivers[0]);
