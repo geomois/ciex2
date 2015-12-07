@@ -46,9 +46,11 @@ public class DefaultDriver extends AbstractDriver {
 	public void control(Action action, SensorModel sensors) {
 		Double[] NNOutput = new Double[2];
 		input.clear();
-		for (int i = 0; i < sensors.getTrackEdgeSensors().length; i++) {
+		for (int i = 0; i < sensors.getTrackEdgeSensors().length; i+=2) {
 			input.add(sensors.getTrackEdgeSensors()[i]);
 		}
+		//central sensor
+		input.add(sensors.getTrackEdgeSensors()[9]);
 		NNOutput = driverGenome.getNNValue(input);
 		desiredSpeed = NNOutput[0];
 		

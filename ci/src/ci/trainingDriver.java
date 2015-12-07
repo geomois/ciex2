@@ -71,9 +71,11 @@ public class trainingDriver extends AbstractDriver {
 		// temp.add(sensors.getTrackEdgeSensors()[8]);
 		// temp.add(sensors.getTrackEdgeSensors()[10]);
 		// temp.add(sensors.getTrackEdgeSensors()[9]);
-		for (int i = 0; i < sensors.getTrackEdgeSensors().length; i++) {
+		for (int i = 0; i < sensors.getTrackEdgeSensors().length; i+=2) {
 			temp.add(sensors.getTrackEdgeSensors()[i]);
 		}
+		//central sensor
+		temp.add(sensors.getTrackEdgeSensors()[9]);
 		input.add(temp);
 		ArrayList<Double> temp2 = new ArrayList<Double>();
 		temp2.add(sensors.getSpeed());
