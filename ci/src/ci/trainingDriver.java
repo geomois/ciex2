@@ -46,14 +46,15 @@ public class trainingDriver extends AbstractDriver {
 	public void control(Action action, SensorModel sensors) {
 		// Example of a bot that drives pretty well; you can use this to
 		// generate data
-		desiredSpeed=60.0;
-		action.steering = getSteering(0.0,sensors);
-		
+
+		desiredSpeed = 60.0;
+		action.steering = getSteering(0.0, sensors);
+
 		if (sensors.getSpeed() > desiredSpeed) {
 			action.accelerate = 0.0D;
 			action.brake = 0.0D;
 		}
-		if (sensors.getSpeed() > desiredSpeed+20.0) {
+		if (sensors.getSpeed() > desiredSpeed + 20.0) {
 			action.accelerate = 0.0D;
 			action.brake = 1.0D;
 		}
@@ -61,7 +62,7 @@ public class trainingDriver extends AbstractDriver {
 			action.accelerate = (150.0D - sensors.getSpeed()) / 150.0D;
 			action.brake = 0.0D;
 		}
-		if (sensors.getSpeed() < desiredSpeed/3) {
+		if (sensors.getSpeed() < desiredSpeed / 3) {
 			action.accelerate = 1.0D;
 			action.brake = 0.0D;
 		}

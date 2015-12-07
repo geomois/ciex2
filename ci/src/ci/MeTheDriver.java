@@ -40,11 +40,12 @@ public class MeTheDriver extends AbstractDriver{
 		f=new fooFrame();
 //		new Thread(f).start();
 	}
-
 	@Override
 	public void control(Action action, SensorModel sensors) {
+		
 		action.steering = f.getSteering();
 		currentAccel=f.getSpeed();
+		
 		if (currentAccel>=0.0) {
 			action.accelerate=currentAccel;
 		}else{
