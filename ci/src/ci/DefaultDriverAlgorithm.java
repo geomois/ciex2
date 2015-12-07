@@ -4,7 +4,9 @@ import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 import cicontest.algorithm.abstracts.AbstractAlgorithm;
 import cicontest.algorithm.abstracts.AbstractRace;
@@ -25,6 +27,8 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
 
 	public void run(boolean continue_from_checkpoint) {
 		if (!continue_from_checkpoint) {
+			ArrayList<ArrayList<Double>> inputDataToTrain = new ArrayList<ArrayList<Double>>();
+			ArrayList<ArrayList<Double>> outputDataToTrain = new ArrayList<ArrayList<Double>>();
 			// init NN
 			DefaultDriverGenome genome = new DefaultDriverGenome();
 			genome.loadSavedNN();
@@ -32,11 +36,15 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
 
 			// Start a race
 			DefaultRace race = new DefaultRace();
-			race.setTrack(AbstractRace.DefaultTracks.getTrack(0));
-			race.laps = 1;
-			// for speedup set withGUI to false
-			results = race.runRace(drivers, true);
-			saveToFile(((DefaultDriver) drivers[0].getDriver()).getInput(),((DefaultDriver) drivers[0].getDriver()).speed(),((DefaultDriver) drivers[0].getDriver()).getSteering());
+			for (int i = 0; i < 5; i++) {
+				race.setTrack(AbstractRace.DefaultTracks.getTrack(0));
+				race.laps = 1;
+				// for speedup set withGUI to false
+				results = race.runRace(drivers, true);
+				inputDataToTrain.addAll(((DefaultDriver) drivers[0].getDriver()).getInput());
+				outputDataToTrain.add(((DefaultDriver) drivers[0].getDriver()).speed());
+			}
+			saveToFile(inputDataToTrain,outputDataToTrain);
 			// Save genome/nn
 			DriversUtils.storeGenome(drivers[0]);
 		}
@@ -45,11 +53,13 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
 		// DriversUtils.clearCheckpoint();
 	}
 
-	private void saveToFile(ArrayList<ArrayList<Double>> input, ArrayList<Double> speed, ArrayList<Double> steering) {
+	private void saveToFile(ArrayList<ArrayList<Double>> input, ArrayList<ArrayList<Double>> speed) {
 		try {
 			FileWriter fw;
+			Calendar cal = Calendar.getInstance();
+	        SimpleDateFormat sdf = new SimpleDateFormat("HHmmss");
 
-			File file = new File("C:/Users/11126957/Desktop/traindata.txt");
+			File file = new File("C:/Users/11126957/Desktop/ci train data/traindata"+sdf.format(cal.getTime()).toString()+".txt");
 
 			// if file doesnt exists, then create it
 			if (!file.exists()) {
@@ -66,8 +76,8 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
 					bw.write(a.toString() + " ");
 				}
 				bw.write("\n");
-				bw.write(speed.get(i).toString() + " ");
-				bw.write(steering.get(i).toString() + " ");
+				bw.write(speed.get(i).get(0).toString());
+//				bw.write(steering.get(i).toString() + " ");
 				bw.write("\n");
 			}
 
