@@ -49,7 +49,7 @@ public class MeTheDriver extends AbstractDriver{
 		if (currentAccel>=0.0) {
 			action.accelerate=currentAccel;
 		}else{
-			action.brake=currentAccel;
+			action.brake=-currentAccel;
 		}
 		ArrayList<Double> temp = new ArrayList<Double>();
 		for (int i = 0; i < sensors.getTrackEdgeSensors().length; i+=2) {
