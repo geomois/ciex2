@@ -46,9 +46,19 @@ public class DefaultDriver extends AbstractDriver {
 	public void control(Action action, SensorModel sensors) {
 		Double[] NNOutput = new Double[2];
 		input.clear();
+		double count1,count2;
+		count1=count2=0.0;
 		for (int i = 0; i < sensors.getTrackEdgeSensors().length; i+=2) {
 			input.add(sensors.getTrackEdgeSensors()[i]);
+			if(i<10)
+				count1+=input.get(input.size()-1);
+			else 
+				count2+=input.get(input.size()-1);
 		}
+		
+//		System.out.println((count1/8.0)+" "+(count1/8.0));
+		System.out.println(input.get(4)+" "+sensors.getTrackPosition()+" "+input.get(5));
+
 		//central sensor
 		input.add(sensors.getTrackEdgeSensors()[9]);
 		NNOutput = driverGenome.getNNValue(input);
@@ -58,7 +68,7 @@ public class DefaultDriver extends AbstractDriver {
 		
 		action.steering = getCurrentSteering(sensors);
 		desiredSpeed = NNOutput[0];
-		System.out.println(desiredSpeed.toString());
+//		System.out.println(desiredSpeed.toString());
 		if (sensors.getSpeed() > desiredSpeed) {
 			action.accelerate = 0.0D;
 			action.brake = 0.0D;
@@ -79,48 +89,50 @@ public class DefaultDriver extends AbstractDriver {
 	}
 	private Double getCurrentSteering(SensorModel sensors) {
 		Double bias;
-		Double currentSteer;
-		System.out.println(sensors.getTrackPosition());
-		if (!(sensors.getTrackPosition()<-1.0 || sensors.getTrackPosition()>1.0)) {
-			System.out.println("in");
-			Double dif = sensors.getTrackEdgeSensors()[0] - sensors.getTrackEdgeSensors()[18];
-			if (dif > 0.7 && dif < 2.0) {
-				bias = -0.08;
-				desiredSpeed += 10.0;
-			} else if (dif < -0.7 && dif > -2.0) {
-				bias = 0.08;
-				desiredSpeed += 10.0;
-			} else if (dif < -3.0 && dif > -5.0) {
-				desiredSpeed += 5.0;
-				bias = 0.1;
-			} else if (dif > 3.0 && dif < 5.0) {
-				desiredSpeed += 5.0;
-				bias = -0.1;
-			} else if (dif < -5.0) {
-				desiredSpeed -= 20.0;
-				bias = 0.12;
-			} else if (dif > 5.0) {
-				desiredSpeed -= 20.0;
-				bias = -0.12;
-			} else {
-				desiredSpeed += 20;
-				bias = 0.0;
-			}
-			currentSteer = DriversUtils.alignToTrackAxis(sensors, 0.3D) + bias;
-			Double dif1 = dif;
-			dif = Math.abs(prevSteering) - Math.abs(currentSteer);
-			if (dif > 0.3)
-				if ((prevSteering > 0 && currentSteer < 0) || (prevSteering < 0 && currentSteer > 0))
-					currentSteer = currentSteer * 0.06;
-				else
-					currentSteer = currentSteer * 0.5;
-			else if (dif > 0.1)
-				if ((prevSteering > 0 && currentSteer < 0) || (prevSteering < 0 && currentSteer > 0))
-					currentSteer = currentSteer * 0.09;
-			this.addPrevSteering(currentSteer);
-		}else
-			currentSteer=getInTrack(sensors.getTrackPosition());
+		Double currentSteer=null;
+		System.out.println(sensors.getAngleToTrackAxis());
+////		System.out.println(sensors.getTrackPosition());
+//		if (!(sensors.getTrackPosition()<-1.0 || sensors.getTrackPosition()>1.0)) {
+//			Double dif = sensors.getTrackEdgeSensors()[0] - sensors.getTrackEdgeSensors()[18];
+//			if (dif > 0.7 && dif < 2.0) {
+//				bias = -0.08;
+//				desiredSpeed += 10.0;
+//			} else if (dif < -0.7 && dif > -2.0) {
+//				bias = 0.08;
+//				desiredSpeed += 10.0;
+//			} else if (dif < -3.0 && dif > -5.0) {
+//				desiredSpeed += 5.0;
+//				bias = 0.1;
+//			} else if (dif > 3.0 && dif < 5.0) {
+//				desiredSpeed += 5.0;
+//				bias = -0.1;
+//			} else if (dif < -5.0) {
+//				desiredSpeed -= 20.0;
+//				bias = 0.12;
+//			} else if (dif > 5.0) {
+//				desiredSpeed -= 20.0;
+//				bias = -0.12;
+//			} else {
+//				desiredSpeed += 20;
+//				bias = 0.0;
+//			}
+//			currentSteer = DriversUtils.alignToTrackAxis(sensors, 0.3D) + bias;
+//			Double dif1 = dif;
+//			dif = Math.abs(prevSteering) - Math.abs(currentSteer);
+//			if (dif > 0.3)
+//				if ((prevSteering > 0 && currentSteer < 0) || (prevSteering < 0 && currentSteer > 0))
+//					currentSteer = currentSteer * 0.06;
+//				else
+//					currentSteer = currentSteer * 0.5;
+//			else if (dif > 0.1)
+//				if ((prevSteering > 0 && currentSteer < 0) || (prevSteering < 0 && currentSteer > 0))
+//					currentSteer = currentSteer * 0.09;
+//			this.addPrevSteering(currentSteer);
+//		}else
+//			currentSteer=getInTrack(sensors.getTrackPosition());
 
+		
+		
 		return currentSteer;
 	}
 	
