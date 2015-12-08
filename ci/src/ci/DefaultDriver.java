@@ -26,6 +26,7 @@ public class DefaultDriver extends AbstractDriver {
 	private Double lapTime;
 	private double prevPosition;
 	private LinkedList<Double> prevPositions;
+	private double width;
 
 	DefaultDriver() {
 		initialize();
@@ -51,15 +52,10 @@ public class DefaultDriver extends AbstractDriver {
 	public void control(Action action, SensorModel sensors) {
 		Double[] NNOutput = new Double[2];
 		input.clear();
-		double count1, count2;
-		count1 = count2 = 0.0;
 		for (int i = 0; i < sensors.getTrackEdgeSensors().length; i += 2) {
 			input.add(sensors.getTrackEdgeSensors()[i]);
-			if (i < 10)
-				count1 += input.get(input.size() - 1);
-			else
-				count2 += input.get(input.size() - 1);
 		}
+		width = input.get(0) + input.get(9);
 
 		// System.out.println((count1/8.0)+" "+(count1/8.0));
 		// System.out.println(input.get(4) + " " + sensors.getTrackPosition() +
@@ -93,144 +89,197 @@ public class DefaultDriver extends AbstractDriver {
 
 	}
 
+	private boolean leftTurn(double left, double right, double mid,) {
+		if(Math.abs(mid-left)>Math.abs(mid-right)){
+			
+		}
+		if (left > right)
+			if(left>=mid)
+				return true;
+			else{
+				System.out.println("RED");
+				return false;
+			}
+		else
+			if(right>=mid)
+				return false;
+			else{
+				System.out.println("RED");
+				if (condition) {
+					return true;
+				}
+			}
+	}
+
+	private double moveRight(double grade) {
+		double grading = 1;
+		if (grade == 100)
+			grading = 0.8;
+		else if (grade == 50)
+			grading = 0.7;
+		else if (grade == 20)
+			grading = 0.6;
+		else if (grade == 10)
+			grading = 0.8;
+//		System.out.println("w: " + width + " " + "r:" + input.get(0) + " " + "g:" +grading);
+		if (input.get(9) > width - (width * grading))
+			return 0.3;
+		else
+			return 0.0;
+	}
+
+	private double moveLeft(double grade) {
+		double grading = 1;
+		if (grade == 100)
+			grading = 0.8;
+		else if (grade == 50)
+			grading = 0.8;
+		else if (grade == 20)
+			grading = 0.6;
+		else if (grade == 10)
+			grading = 0.8;
+
+//		System.out.println("w: " + width + " " + "l:" + input.get(0) + " " + "g:" +grading);
+		if (input.get(0) > width - (width * grading))
+			return -0.3;
+		else
+			return 0.0;
+	}
+
 	private Double getCurrentSteering(SensorModel sensors) {
 		Double currentSteer = null;
-		// System.out.println(sensors.getAngleToTrackAxis());
-		// System.out.println(sensors.getTrackPosition());
-		// if (!(sensors.getTrackPosition()<-1.0 ||
-		// sensors.getTrackPosition()>1.0)) {
-		// Double dif = sensors.getTrackEdgeSensors()[0] -
-		// sensors.getTrackEdgeSensors()[18];
-		// if (dif > 0.7 && dif < 2.0) {
-		// bias = -0.08;
-		// desiredSpeed += 10.0;
-		// } else if (dif < -0.7 && dif > -2.0) {
-		// bias = 0.08;
-		// desiredSpeed += 10.0;
-		// } else if (dif < -3.0 && dif > -5.0) {
-		// desiredSpeed += 5.0;
-		// bias = 0.1;
-		// } else if (dif > 3.0 && dif < 5.0) {
-		// desiredSpeed += 5.0;
-		// bias = -0.1;
-		// } else if (dif < -5.0) {
-		// desiredSpeed -= 20.0;
-		// bias = 0.12;
-		// } else if (dif > 5.0) {
-		// desiredSpeed -= 20.0;
-		// bias = -0.12;
-		// } else {
-		// desiredSpeed += 20;
-		// bias = 0.0;
-		// }
-		// currentSteer = DriversUtils.alignToTrackAxis(sensors, 0.3D) + bias;
-		// Double dif1 = dif;
-		// dif = Math.abs(prevSteering) - Math.abs(currentSteer);
-		// if (dif > 0.3)
-		// if ((prevSteering > 0 && currentSteer < 0) || (prevSteering < 0 &&
-		// currentSteer > 0))
-		// currentSteer = currentSteer * 0.06;
-		// else
-		// currentSteer = currentSteer * 0.5;
-		// else if (dif > 0.1)
-		// if ((prevSteering > 0 && currentSteer < 0) || (prevSteering < 0 &&
-		// currentSteer > 0))
-		// currentSteer = currentSteer * 0.09;
-		// this.addPrevSteering(currentSteer);
-		// }else
-		// currentSteer=getInTrack(sensors.getTrackPosition());
 		boolean verbose = true;
 		double leftFront = input.get(4);
 		double rightFront = input.get(5);
+		double mid=input.get(input.size()-1);
 		double position = sensors.getTrackPosition();
-		double bias = 1.0;
-		double base = -0.2;
 		double alignment = sensors.getAngleToTrackAxis();
+		double distance = (leftFront + mid+rightFront) / 3.0;
+		
+		double speed = 0;
 
-		if (prevPositions.size() == 5)
-			prevPositions.remove();
-		prevPositions.add(position);
-
-		// if((prevPosition> 0.45 && prevPosition< 0.9) || ((prevPosition<-0.45
-		// && prevPosition>-0.9))){
-		// if((prevPosition> 0.45) || ((prevPosition<-0.45))){
-		if (isChangingCourse()) {
-			System.out.println("T");
-			if ((alignment > (base + 0.035) && alignment < (base + 0.045))
-					|| (alignment < -(base + 0.035) && alignment > -(base + 0.045)))
-				bias = 1.1;
-			else if ((alignment > base + 0.045 && alignment < base + 0.055)
-					|| (alignment < -(base + 0.045) && alignment > -(base + 0.055)))
-				bias = 1.2;
-			else if ((alignment > base + 0.055 && alignment < base + 0.065)
-					|| (alignment < -(base + 0.055) && alignment > -(base + 0.065)))
-				bias = 1.3;
-			else if ((alignment > base + 0.065 && alignment < base + 0.075)
-					|| (alignment < -(base + 0.065) && alignment > -(base + 0.075)))
-				bias = 1.4;
-			else if (alignment > base + 0.075 || (alignment < -(base + 0.075)))
-				bias = 1.5;
+		// Consider width is the percentage, 0% is left, 100% is right
+		if (distance > 60) {
+			if (leftTurn(leftFront, rightFront,mid))
+				speed = moveRight(100);
+			else
+				speed = moveLeft(100);
+		} else if (distance < 60 && distance > 30) {
+			if (leftTurn(leftFront, rightFront,mid))
+					speed = moveLeft(50);
+				else
+					speed = moveRight(50);
+		} else if (distance < 30 && distance > 15) {
+			if (leftTurn(leftFront, rightFront,mid))
+					speed = moveLeft(20);
+				else
+					speed = moveRight(20);
+		} else if (distance < 15 && distance > 5) {
+			if (leftTurn(leftFront, rightFront,mid))
+					speed = moveLeft(10);
+				else
+					speed = moveRight(10);
 		}
-		System.out
-				.println(sensors.getAngleToTrackAxis() + " " + "bias: " + bias);
 
-		if (!(position > 0.45 || position < -0.45)) {
-			if (position > 0) {
-				currentSteer = -0.05 * bias;
-			} else {
-				currentSteer = 0.05 * bias;
-			}
-			if (!verbose)
-				System.out.println("in" + currentSteer);
-		} else if ((position > 0.65 && position < 0.7) || (position < -0.65 && position > -0.7)) {
-			if (position > 0) {
-				currentSteer = -0.1 * bias;
-			} else {
-				currentSteer = 0.1 * bias;
-			}
-			if (!verbose)
-				System.out.println("1mid" + currentSteer);
-		} else if ((position > 0.7 && position < 0.75) || (position < -0.7 && position > -0.75)) {
-			if (position > 0) {
-				currentSteer = -0.2 * bias;
-			} else {
-				currentSteer = 0.2 * bias;
-			}
-			if (!verbose)
-				System.out.println("2mid" + currentSteer);
-		} else if ((position > 0.75 && position < 0.85) || (position < -0.75 && position > -0.85)) {
-			if (position > 0) {
-				currentSteer = -0.3 * bias;
-			} else {
-				currentSteer = 0.3 * bias;
-			}
-			if (!verbose)
-				System.out.println("3mid" + currentSteer);
-		} else if (position > 0.9 || position < -0.9) {
-			if (position > 0) {
-				currentSteer = -0.4 * bias;
-			} else {
-				currentSteer = 0.4 * bias;
-			}
-			if (!verbose)
-				System.out.println("end" + currentSteer);
-		} else {
-			currentSteer = DriversUtils.alignToTrackAxis(sensors, 0.4D) * bias;
-			if (!verbose)
-				System.out.println("out" + currentSteer);
-		}
+		if (speed == 0.0)
+			currentSteer = DriversUtils.alignToTrackAxis(sensors, 0.5D);
+		else
+			currentSteer = speed;
+//		System.out.println(currentSteer + " " + leftFront + " " + rightFront);
+
+		// double bias = 1.0;
+		// double base = -0.2;
+		//
+		//
+		// if (prevPositions.size() == 5)
+		// prevPositions.remove();
+		// prevPositions.add(position);
+		//
+		// // if((prevPosition> 0.45 && prevPosition< 0.9) ||
+		// ((prevPosition<-0.45
+		// // && prevPosition>-0.9))){
+		// // if((prevPosition> 0.45) || ((prevPosition<-0.45))){
+		// if (isChangingCourse()) {
+		// System.out.println("T");
+		// if ((alignment > (base + 0.035) && alignment < (base + 0.045))
+		// || (alignment < -(base + 0.035) && alignment > -(base + 0.045)))
+		// bias = 1.1;
+		// else if ((alignment > base + 0.045 && alignment < base + 0.055)
+		// || (alignment < -(base + 0.045) && alignment > -(base + 0.055)))
+		// bias = 1.2;
+		// else if ((alignment > base + 0.055 && alignment < base + 0.065)
+		// || (alignment < -(base + 0.055) && alignment > -(base + 0.065)))
+		// bias = 1.3;
+		// else if ((alignment > base + 0.065 && alignment < base + 0.075)
+		// || (alignment < -(base + 0.065) && alignment > -(base + 0.075)))
+		// bias = 1.4;
+		// else if (alignment > base + 0.075 || (alignment < -(base + 0.075)))
+		// bias = 1.5;
+		// }
+		// System.out
+		// .println(position+" "+sensors.getAngleToTrackAxis() + " " + "bias: "
+		// + bias);
+		//
+		// if (!(position > 0.45 || position < -0.45)) {
+		// if (position > 0) {
+		// currentSteer = -0.05 * bias;
+		// } else {
+		// currentSteer = 0.05 * bias;
+		// }
+		// if (!verbose)
+		// System.out.println("in" + currentSteer);
+		// } else if ((position > 0.65 && position < 0.7) || (position < -0.65
+		// && position > -0.7)) {
+		// if (position > 0) {
+		// currentSteer = -0.1 * bias;
+		// } else {
+		// currentSteer = 0.1 * bias;
+		// }
+		// if (!verbose)
+		// System.out.println("1mid" + currentSteer);
+		// } else if ((position > 0.7 && position < 0.75) || (position < -0.7 &&
+		// position > -0.75)) {
+		// if (position > 0) {
+		// currentSteer = -0.2 * bias;
+		// } else {
+		// currentSteer = 0.2 * bias;
+		// }
+		// if (!verbose)
+		// System.out.println("2mid" + currentSteer);
+		// } else if ((position > 0.75 && position < 0.85) || (position < -0.75
+		// && position > -0.85)) {
+		// if (position > 0) {
+		// currentSteer = -0.3 * bias;
+		// } else {
+		// currentSteer = 0.3 * bias;
+		// }
+		// if (!verbose)
+		// System.out.println("3mid" + currentSteer);
+		// } else if (position > 0.9 || position < -0.9) {
+		// if (position > 0) {
+		// currentSteer = -0.4 * bias;
+		// } else {
+		// currentSteer = 0.4 * bias;
+		// }
+		// if (!verbose)
+		// System.out.println("end" + currentSteer);
+		// } else {
+		// currentSteer = DriversUtils.alignToTrackAxis(sensors, 0.4D) * bias;
+		// if (!verbose)
+		// System.out.println("out" + currentSteer);
+		// }
 		return currentSteer;
 	}
 
 	private boolean isChangingCourse() {
-		if (prevPositions.size()>4) {
+		if (prevPositions.size() > 4) {
 			int count = 0;
 			for (int i = 1; i < prevPositions.size(); i++) {
 				if (Math.abs(prevPositions.get(i)) - 0.45 < Math.abs(prevPositions.get(i - 1)) - 0.45) {
 					count++;
 				}
 			}
-			if (count / (prevPositions.size() - 1) > 0.2)
+			if (count / (prevPositions.size() - 1) > 0.5)
 				return true;
 			else
 				return false;

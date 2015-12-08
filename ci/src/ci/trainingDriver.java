@@ -54,12 +54,12 @@ public class trainingDriver extends AbstractDriver {
 			action.accelerate = 0.0D;
 			action.brake = 0.0D;
 		}
-		if (sensors.getSpeed() > desiredSpeed + 20.0) {
+		if (sensors.getSpeed() > desiredSpeed + 5.0) {
 			action.accelerate = 0.0D;
 			action.brake = 1.0D;
 		}
 		if (sensors.getSpeed() <= desiredSpeed) {
-			action.accelerate = (150.0D - sensors.getSpeed()) / 150.0D;
+			action.accelerate = (desiredSpeed+90 - sensors.getSpeed()) / (desiredSpeed+90 );
 			action.brake = 0.0D;
 		}
 		if (sensors.getSpeed() < desiredSpeed / 3) {
