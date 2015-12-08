@@ -52,9 +52,6 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
 			genome.loadSavedNN();
 			drivers[0] = genome;
 
-			// Start a race
-			setTrackinXML("alpine-1","road",".\\scenarios\\sc1.xml");
-			startBat();
 			DefaultRace race = new DefaultRace();
 			race.setTrack(AbstractRace.DefaultTracks.getTrack(0));
 			race.laps = 1;
@@ -171,8 +168,8 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
 			algorithm.train(false);
 		} else if (args.length > 0 && args[0].equals("-trainfromfile")) {
 			algorithm.train(true);
-//		} else if (args.length > 0 && args[0].equals("-traintofile")) {
-//			algorithm.();
+		} else if (args.length > 0 && args[0].equals("-trainGA")) {
+			algorithm.trainGA();
 		} else if (args.length > 0 && args[0].equals("-show-race")) {
 			new DefaultRace().showBestRace();
 		} else if (args.length > 0 && args[0].equals("-human")) {
@@ -187,6 +184,25 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
 			}
 		} else {
 			algorithm.run();
+		}
+	}
+
+	private void trainGA() {
+		// Start a race
+//		setTrackinXML("alpine-1","road",".\\scenarios\\sc1.xml");
+//		startBat();
+		DefaultDriverGenome genome = new DefaultDriverGenome();
+		genome.loadSavedNN();
+		drivers[0] = genome;
+
+		NNGA ga=new NNGA(drivers[0],100,0.02);
+		
+		String path = "C:/Users/11126957/git/ciex2/ci/scenarios";
+		File folder = new File(path);
+		String[] fileNames = folder.list();
+		
+		for (String s:fileNames) {
+			System.out.println("track "+s+": "+ga.GA(s));
 		}
 	}
 

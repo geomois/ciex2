@@ -31,6 +31,7 @@ public class NNGA {
 	private LinkedList<ArrayList<Double[][]>> weights;
 	private LinkedList<ArrayList<Double[][]>> ranks;
 	private Double mutationProb;
+	private String xmlFileName;
 
 	public NNGA(DefaultDriverGenome myDDG, int nIndividuals, Double mutationProb){
 		this.myDDG = myDDG;
@@ -38,7 +39,9 @@ public class NNGA {
 	    this.weights = myDDG.getMyNN().getLastTrainWeights();
 	    this.mutationProb = mutationProb;
 	}
-	public Double GA(){
+	
+	public Double GA(String fileName){
+		xmlFileName=fileName;
 		Double bestRun = rank();
 		mutate();
 		return bestRun;
@@ -91,6 +94,7 @@ public class NNGA {
 		
 		for (int i = 0; i < oweights.size(); i++){
 			if (Math.random() > mutationProb){
+				System.out.println("in");
 				w =  oweights.get(i);
 				for (int j = 0; j < w.length; j++){
 					for (int k = 0; k < w[0].length; k++){
@@ -108,17 +112,13 @@ public class NNGA {
 		Double result;
 		myDDG.getMyNN().setWeights(iWeights);
 
-		drivers[0] = myDDG;
-//		loop for several tracks
-		setTrackinXML("alpine-1","road",".\\scenarios\\sc1.xml");
-		startBat();
-		DefaultRace race = new DefaultRace();
-		race.setTrack(AbstractRace.DefaultTracks.getTrack(0));
-		race.laps = 1;
-		// for speedup set withGUI to false
-		result = race.runRace(drivers, true);
-
-		
+			drivers[0] = myDDG;
+			setTrackinXML("alpine-1","road",".\\scenarios\\"+this.xmlFileName);
+			startBat();
+			DefaultRace race = new DefaultRace();
+			race.setTrack(AbstractRace.DefaultTracks.getTrack(0));
+			race.laps = 1;
+			result = race.runRace(drivers, false);
 		return result;
 	}
 	private void startBat() {

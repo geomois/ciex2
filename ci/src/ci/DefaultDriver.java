@@ -29,6 +29,7 @@ public class DefaultDriver extends AbstractDriver {
 	private double width;
 	private double[] smooth = { 0.5, 0.65, 0.75, 0.8, 0.95 };
 	private double steerConstant = 0.4;
+	private static boolean verbose=false;
 
 	DefaultDriver() {
 		initialize();
@@ -59,10 +60,6 @@ public class DefaultDriver extends AbstractDriver {
 		}
 		width = input.get(0) + input.get(9);
 
-		// System.out.println((count1/8.0)+" "+(count1/8.0));
-		// System.out.println(input.get(4) + " " + sensors.getTrackPosition() +
-		// " " + input.get(5));
-
 		// central sensor
 		input.add(sensors.getTrackEdgeSensors()[9]);
 		NNOutput = driverGenome.getNNValue(input);
@@ -70,7 +67,8 @@ public class DefaultDriver extends AbstractDriver {
 
 		action.steering = getCurrentSteering(sensors);
 		desiredSpeed = NNOutput[0];
-		// System.out.println(desiredSpeed.toString());
+		if (verbose)
+			System.out.println(desiredSpeed.toString());
 		if (sensors.getSpeed() > desiredSpeed) {
 			action.accelerate = 0.0D;
 			action.brake = 0.0D;
@@ -198,7 +196,6 @@ public class DefaultDriver extends AbstractDriver {
 
 	private Double getCurrentSteering(SensorModel sensors) {
 		Double currentSteer = null;
-		boolean verbose = true;
 		double leftFront = input.get(4);
 		double rightFront = input.get(5);
 		double mid = input.get(input.size() - 1);

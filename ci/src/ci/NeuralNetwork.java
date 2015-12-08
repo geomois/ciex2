@@ -322,6 +322,5 @@ public class NeuralNetwork implements Serializable {
 	public void setWeights(ArrayList<Double[][]> iWeights) {
 		w1 = iWeights.get(0);
 		w2 = iWeights.get(1);
-		
 	}
 }
