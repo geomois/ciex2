@@ -24,7 +24,7 @@ public class DefaultDriver extends AbstractDriver {
 	Double desiredSpeed;
 	private Queue<Double> moSteer;
 	private Double lapTime;
-	private double prevPosition;
+	int prevDecision;
 	private LinkedList<Double> prevPositions;
 	private double width;
 
@@ -44,7 +44,7 @@ public class DefaultDriver extends AbstractDriver {
 		input = new ArrayList<Double>();
 		prevSteering = 0.0;
 		moSteer = new LinkedList<Double>();
-		prevPosition = 0.0;
+		prevDecision =0;
 		prevPositions = new LinkedList<Double>();
 	}
 
@@ -90,20 +90,31 @@ public class DefaultDriver extends AbstractDriver {
 	}
 
 	private int leftTurn(double left, double right, double mid) {
-		if (Math.abs(mid - left) > Math.abs(mid - right)) {
-
-		}
-		if (left > right)
+		int ret=0;
+	    if(mid>100){
+	    	ret=0;
+	    }else if (Math.abs(left - right) > 20) {
+			if (left > right)
+				ret= 1;
+			else
+				ret= 2;
+		}else if (left > right)
 			if (left >= mid)
-				return 1;
+				ret= 1;
 			else {
-				return -1;
+				ret= -1;
 			}
 		else if (right >= mid)
-			return 2;
+			ret= 2;
 		else {
-			return -2;
+			ret= -2;
 		}
+//		
+//		if(prevDecision!=0){
+//			ret=prevDecision;
+//			prevDecision=0;
+//		}
+		return ret;
 	}
 
 	private double moveRight(double grade) {
@@ -111,15 +122,17 @@ public class DefaultDriver extends AbstractDriver {
 		if (grade == 100)
 			grading = 0.7;
 		else if (grade == 50)
-			grading = 0.7;
+			grading = 0.8;
 		else if (grade == 20)
 			grading = 0.85;
 		else if (grade == 10)
 			grading = 0.8;
-		 System.out.println("w: " + width + " " + "r:" + input.get(0) + " " +
-		 "g:" +grading);
+		else
+			grading = 1;
+		
+		System.out.println("w: " + width + " " + "r:" + input.get(0) + " " + "g:" + grading);
 		if (input.get(9) > width - (width * grading))
-			return 0.3;
+			return 0.45;
 		else
 			return 0.0;
 	}
@@ -129,16 +142,17 @@ public class DefaultDriver extends AbstractDriver {
 		if (grade == 100)
 			grading = 0.7;
 		else if (grade == 50)
-			grading = 0.7;
+			grading = 0.8;
 		else if (grade == 20)
 			grading = 0.85;
 		else if (grade == 10)
 			grading = 0.9;
+		else
+			grading = 1;
 
-		 System.out.println("w: " + width + " " + "l:" + input.get(0) + " " +
-		 "g:" +grading);
+		System.out.println("w: " + width + " " + "l:" + input.get(0) + " " + "g:" + grading);
 		if (input.get(0) > width - (width * grading))
-			return -0.3;
+			return -0.45;
 		else
 			return 0.0;
 	}
@@ -157,131 +171,55 @@ public class DefaultDriver extends AbstractDriver {
 
 		// Consider width is the percentage, 0% is left, 100% is right
 		if (distance > 60) {
-			if (leftTurn(leftFront, rightFront, mid)==1)
+			if (leftTurn(leftFront, rightFront, mid) == 1)
 				speed = moveRight(100);
-			else if(leftTurn(leftFront, rightFront, mid)==2)
+			else if (leftTurn(leftFront, rightFront, mid) == 2)
 				speed = moveLeft(100);
-			else if(leftTurn(leftFront, rightFront, mid)==-2)
-				speed=moveLeft(50);
+			else if (leftTurn(leftFront, rightFront, mid) == -2)
+				speed = moveLeft(100);
+			else if(leftTurn(leftFront, rightFront, mid) == -1)
+				speed = moveRight(100);
 			else
-				speed=moveRight(50);
+				speed =0.0;
 		} else if (distance < 60 && distance > 30) {
-			if (leftTurn(leftFront, rightFront, mid)==1)
+			if (leftTurn(leftFront, rightFront, mid) == 1)
 				speed = moveLeft(50);
-			else if(leftTurn(leftFront, rightFront, mid)==2)
+			else if (leftTurn(leftFront, rightFront, mid) == 2)
 				speed = moveRight(50);
-			else if(leftTurn(leftFront, rightFront, mid)==-2)
-				speed=moveRight(50);
+			else if (leftTurn(leftFront, rightFront, mid) == -2)
+				speed = moveRight(50);
+			else if(leftTurn(leftFront, rightFront, mid) == -1)
+				speed = moveLeft(50);
 			else
-				speed=moveLeft(50);
+				speed =0.0;
 		} else if (distance < 30 && distance > 15) {
-			if (leftTurn(leftFront, rightFront, mid)==1)
-				speed = moveLeft(50);
-			else if(leftTurn(leftFront, rightFront, mid)==2)
-				speed = moveRight(50);
-			else if(leftTurn(leftFront, rightFront, mid)==-2)
-				speed=moveRight(50);
+			if (leftTurn(leftFront, rightFront, mid) == 1)
+				speed = moveLeft(20);
+			else if (leftTurn(leftFront, rightFront, mid) == 2)
+				speed = moveRight(20);
+			else if (leftTurn(leftFront, rightFront, mid) == -2)
+				speed = moveRight(20);
+			else if(leftTurn(leftFront, rightFront, mid) == -1)
+				speed = moveLeft(20);
 			else
-				speed=moveLeft(20);
+				speed =0.0;
 		} else if (distance < 15 && distance > 5) {
-			if (leftTurn(leftFront, rightFront, mid)==1)
+			if (leftTurn(leftFront, rightFront, mid) == 1)
 				speed = moveLeft(10);
-			else if(leftTurn(leftFront, rightFront, mid)==2)
+			else if (leftTurn(leftFront, rightFront, mid) == 2)
 				speed = moveRight(10);
-			else if(leftTurn(leftFront, rightFront, mid)==-2)
-				speed=moveRight(50);
+			else if (leftTurn(leftFront, rightFront, mid) == -2)
+				speed = moveRight(10);
+			else if(leftTurn(leftFront, rightFront, mid) == -1)
+				speed = moveLeft(10);
 			else
-				speed=moveLeft(50);
+				speed =0.0;
 		}
 
 		if (speed == 0.0)
-			currentSteer = DriversUtils.alignToTrackAxis(sensors, 0.5D);
+			currentSteer = DriversUtils.alignToTrackAxis(sensors, 0.3D);
 		else
 			currentSteer = speed;
-		// System.out.println(currentSteer + " " + leftFront + " " +
-		// rightFront);
-
-		// double bias = 1.0;
-		// double base = -0.2;
-		//
-		//
-		// if (prevPositions.size() == 5)
-		// prevPositions.remove();
-		// prevPositions.add(position);
-		//
-		// // if((prevPosition> 0.45 && prevPosition< 0.9) ||
-		// ((prevPosition<-0.45
-		// // && prevPosition>-0.9))){
-		// // if((prevPosition> 0.45) || ((prevPosition<-0.45))){
-		// if (isChangingCourse()) {
-		// System.out.println("T");
-		// if ((alignment > (base + 0.035) && alignment < (base + 0.045))
-		// || (alignment < -(base + 0.035) && alignment > -(base + 0.045)))
-		// bias = 1.1;
-		// else if ((alignment > base + 0.045 && alignment < base + 0.055)
-		// || (alignment < -(base + 0.045) && alignment > -(base + 0.055)))
-		// bias = 1.2;
-		// else if ((alignment > base + 0.055 && alignment < base + 0.065)
-		// || (alignment < -(base + 0.055) && alignment > -(base + 0.065)))
-		// bias = 1.3;
-		// else if ((alignment > base + 0.065 && alignment < base + 0.075)
-		// || (alignment < -(base + 0.065) && alignment > -(base + 0.075)))
-		// bias = 1.4;
-		// else if (alignment > base + 0.075 || (alignment < -(base + 0.075)))
-		// bias = 1.5;
-		// }
-		// System.out
-		// .println(position+" "+sensors.getAngleToTrackAxis() + " " + "bias: "
-		// + bias);
-		//
-		// if (!(position > 0.45 || position < -0.45)) {
-		// if (position > 0) {
-		// currentSteer = -0.05 * bias;
-		// } else {
-		// currentSteer = 0.05 * bias;
-		// }
-		// if (!verbose)
-		// System.out.println("in" + currentSteer);
-		// } else if ((position > 0.65 && position < 0.7) || (position < -0.65
-		// && position > -0.7)) {
-		// if (position > 0) {
-		// currentSteer = -0.1 * bias;
-		// } else {
-		// currentSteer = 0.1 * bias;
-		// }
-		// if (!verbose)
-		// System.out.println("1mid" + currentSteer);
-		// } else if ((position > 0.7 && position < 0.75) || (position < -0.7 &&
-		// position > -0.75)) {
-		// if (position > 0) {
-		// currentSteer = -0.2 * bias;
-		// } else {
-		// currentSteer = 0.2 * bias;
-		// }
-		// if (!verbose)
-		// System.out.println("2mid" + currentSteer);
-		// } else if ((position > 0.75 && position < 0.85) || (position < -0.75
-		// && position > -0.85)) {
-		// if (position > 0) {
-		// currentSteer = -0.3 * bias;
-		// } else {
-		// currentSteer = 0.3 * bias;
-		// }
-		// if (!verbose)
-		// System.out.println("3mid" + currentSteer);
-		// } else if (position > 0.9 || position < -0.9) {
-		// if (position > 0) {
-		// currentSteer = -0.4 * bias;
-		// } else {
-		// currentSteer = 0.4 * bias;
-		// }
-		// if (!verbose)
-		// System.out.println("end" + currentSteer);
-		// } else {
-		// currentSteer = DriversUtils.alignToTrackAxis(sensors, 0.4D) * bias;
-		// if (!verbose)
-		// System.out.println("out" + currentSteer);
-		// }
 		return currentSteer;
 	}
 
