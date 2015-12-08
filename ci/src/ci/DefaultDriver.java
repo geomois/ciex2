@@ -109,13 +109,13 @@ public class DefaultDriver extends AbstractDriver {
 	private double moveRight(double grade) {
 		double grading = 1;
 		if (grade == 100)
-			grading = 0.8;
+			grading = 0.7;
 		else if (grade == 50)
-			grading = 0.6;
+			grading = 0.7;
 		else if (grade == 20)
-			grading = 0.5;
-		else if (grade == 10)
 			grading = 0.85;
+		else if (grade == 10)
+			grading = 0.8;
 		 System.out.println("w: " + width + " " + "r:" + input.get(0) + " " +
 		 "g:" +grading);
 		if (input.get(9) > width - (width * grading))
@@ -127,13 +127,13 @@ public class DefaultDriver extends AbstractDriver {
 	private double moveLeft(double grade) {
 		double grading = 1;
 		if (grade == 100)
-			grading = 0.8;
+			grading = 0.7;
 		else if (grade == 50)
-			grading = 0.6;
+			grading = 0.7;
 		else if (grade == 20)
-			grading = 0.5;
-		else if (grade == 10)
 			grading = 0.85;
+		else if (grade == 10)
+			grading = 0.9;
 
 		 System.out.println("w: " + width + " " + "l:" + input.get(0) + " " +
 		 "g:" +grading);
@@ -162,25 +162,25 @@ public class DefaultDriver extends AbstractDriver {
 			else if(leftTurn(leftFront, rightFront, mid)==2)
 				speed = moveLeft(100);
 			else if(leftTurn(leftFront, rightFront, mid)==-2)
-				speed=moveLeft(20);
+				speed=moveLeft(50);
 			else
-				speed=moveRight(20);
+				speed=moveRight(50);
 		} else if (distance < 60 && distance > 30) {
 			if (leftTurn(leftFront, rightFront, mid)==1)
 				speed = moveLeft(50);
 			else if(leftTurn(leftFront, rightFront, mid)==2)
 				speed = moveRight(50);
 			else if(leftTurn(leftFront, rightFront, mid)==-2)
-				speed=moveRight(20);
+				speed=moveRight(50);
 			else
-				speed=moveLeft(20);
+				speed=moveLeft(50);
 		} else if (distance < 30 && distance > 15) {
 			if (leftTurn(leftFront, rightFront, mid)==1)
-				speed = moveLeft(20);
+				speed = moveLeft(50);
 			else if(leftTurn(leftFront, rightFront, mid)==2)
-				speed = moveRight(20);
+				speed = moveRight(50);
 			else if(leftTurn(leftFront, rightFront, mid)==-2)
-				speed=moveRight(20);
+				speed=moveRight(50);
 			else
 				speed=moveLeft(20);
 		} else if (distance < 15 && distance > 5) {
@@ -189,9 +189,9 @@ public class DefaultDriver extends AbstractDriver {
 			else if(leftTurn(leftFront, rightFront, mid)==2)
 				speed = moveRight(10);
 			else if(leftTurn(leftFront, rightFront, mid)==-2)
-				speed=moveRight(20);
+				speed=moveRight(50);
 			else
-				speed=moveLeft(20);
+				speed=moveLeft(50);
 		}
 
 		if (speed == 0.0)
