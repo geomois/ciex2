@@ -49,13 +49,16 @@ public class MeTheDriver extends AbstractDriver{
 		if (currentAccel>=0.0) {
 			action.accelerate=currentAccel;
 		}else{
-			action.brake=currentAccel;
+			action.brake=-currentAccel;
 		}
 		ArrayList<Double> temp = new ArrayList<Double>();
 		for (int i = 0; i < sensors.getTrackEdgeSensors().length; i+=2) {
 			temp.add(sensors.getTrackEdgeSensors()[i]);
 		}
-		System.out.println(temp.get(4)+" "+sensors.getTrackPosition()+" "+temp.get(5));
+		double leftFront=temp.get(4);
+		double rightFront=temp.get(5);
+		
+		System.out.println(rightFront+" "+leftFront);
 		temp.add(sensors.getTrackEdgeSensors()[9]);
 		input.add(temp);
 		ArrayList<Double> temp2 = new ArrayList<Double>();

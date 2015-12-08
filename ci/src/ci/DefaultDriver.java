@@ -24,13 +24,16 @@ public class DefaultDriver extends AbstractDriver {
 	Double desiredSpeed;
 	private Queue<Double> moSteer;
 	private Double lapTime;
+	int prevDecision;
+	private LinkedList<Double> prevPositions;
+	private double width;
+
 	DefaultDriver() {
 		initialize();
 	}
 
 	public void loadGenome(IGenome genome) {
 		driverGenome = (DefaultDriverGenome) genome;
-		TopSpeed=driverGenome.getMyNN().getMaxSpeed();
 	}
 
 	public void initialize() {
@@ -39,37 +42,33 @@ public class DefaultDriver extends AbstractDriver {
 		this.enableExtras(new AutomatedRecovering());
 		this.enableExtras(new ABS());
 		input = new ArrayList<Double>();
-		prevSteering=0.0;
-		moSteer=new LinkedList<Double>();
+		prevSteering = 0.0;
+		moSteer = new LinkedList<Double>();
+		prevDecision =0;
+		prevPositions = new LinkedList<Double>();
 	}
 
 	@Override
 	public void control(Action action, SensorModel sensors) {
 		Double[] NNOutput = new Double[2];
 		input.clear();
-		double count1,count2;
-		count1=count2=0.0;
-		for (int i = 0; i < sensors.getTrackEdgeSensors().length; i+=2) {
+		for (int i = 0; i < sensors.getTrackEdgeSensors().length; i += 2) {
 			input.add(sensors.getTrackEdgeSensors()[i]);
-			if(i<10)
-				count1+=input.get(input.size()-1);
-			else 
-				count2+=input.get(input.size()-1);
 		}
-		
-//		System.out.println((count1/8.0)+" "+(count1/8.0));
-		System.out.println(input.get(4)+" "+sensors.getTrackPosition()+" "+input.get(5));
+		width = input.get(0) + input.get(9);
 
-		//central sensor
+		// System.out.println((count1/8.0)+" "+(count1/8.0));
+		// System.out.println(input.get(4) + " " + sensors.getTrackPosition() +
+		// " " + input.get(5));
+
+		// central sensor
 		input.add(sensors.getTrackEdgeSensors()[9]);
 		NNOutput = driverGenome.getNNValue(input);
 		desiredSpeed = NNOutput[0];
-		
-		
-		
+
 		action.steering = getCurrentSteering(sensors);
 		desiredSpeed = NNOutput[0];
-//		System.out.println(desiredSpeed.toString());
+		// System.out.println(desiredSpeed.toString());
 		if (sensors.getSpeed() > desiredSpeed) {
 			action.accelerate = 0.0D;
 			action.brake = 0.0D;
@@ -89,80 +88,180 @@ public class DefaultDriver extends AbstractDriver {
 		lapTime = sensors.getCurrentLapTime();
 
 	}
-	private Double getCurrentSteering(SensorModel sensors) {
-		Double bias;
-		Double currentSteer=null;
-		System.out.println(sensors.getAngleToTrackAxis());
-////		System.out.println(sensors.getTrackPosition());
-//		if (!(sensors.getTrackPosition()<-1.0 || sensors.getTrackPosition()>1.0)) {
-//			Double dif = sensors.getTrackEdgeSensors()[0] - sensors.getTrackEdgeSensors()[18];
-//			if (dif > 0.7 && dif < 2.0) {
-//				bias = -0.08;
-//				desiredSpeed += 10.0;
-//			} else if (dif < -0.7 && dif > -2.0) {
-//				bias = 0.08;
-//				desiredSpeed += 10.0;
-//			} else if (dif < -3.0 && dif > -5.0) {
-//				desiredSpeed += 5.0;
-//				bias = 0.1;
-//			} else if (dif > 3.0 && dif < 5.0) {
-//				desiredSpeed += 5.0;
-//				bias = -0.1;
-//			} else if (dif < -5.0) {
-//				desiredSpeed -= 20.0;
-//				bias = 0.12;
-//			} else if (dif > 5.0) {
-//				desiredSpeed -= 20.0;
-//				bias = -0.12;
-//			} else {
-//				desiredSpeed += 20;
-//				bias = 0.0;
-//			}
-//			currentSteer = DriversUtils.alignToTrackAxis(sensors, 0.3D) + bias;
-//			Double dif1 = dif;
-//			dif = Math.abs(prevSteering) - Math.abs(currentSteer);
-//			if (dif > 0.3)
-//				if ((prevSteering > 0 && currentSteer < 0) || (prevSteering < 0 && currentSteer > 0))
-//					currentSteer = currentSteer * 0.06;
-//				else
-//					currentSteer = currentSteer * 0.5;
-//			else if (dif > 0.1)
-//				if ((prevSteering > 0 && currentSteer < 0) || (prevSteering < 0 && currentSteer > 0))
-//					currentSteer = currentSteer * 0.09;
-//			this.addPrevSteering(currentSteer);
-//		}else
-//			currentSteer=getInTrack(sensors.getTrackPosition());
 
+	private int leftTurn(double left, double right, double mid) {
+		int ret=0;
+	    if(mid>100){
+	    	ret=0;
+	    }else if (Math.abs(left - right) > 20) {
+			if (left > right)
+				ret= 1;
+			else
+				ret= 2;
+		}else if (left > right)
+			if (left >= mid)
+				ret= 1;
+			else {
+				ret= -1;
+			}
+		else if (right >= mid)
+			ret= 2;
+		else {
+			ret= -2;
+		}
+//		
+//		if(prevDecision!=0){
+//			ret=prevDecision;
+//			prevDecision=0;
+//		}
+		return ret;
+	}
+
+	private double moveRight(double grade) {
+		double grading = 1;
+		if (grade == 100)
+			grading = 0.7;
+		else if (grade == 50)
+			grading = 0.8;
+		else if (grade == 20)
+			grading = 0.85;
+		else if (grade == 10)
+			grading = 0.8;
+		else
+			grading = 1;
 		
-		
+		System.out.println("w: " + width + " " + "r:" + input.get(0) + " " + "g:" + grading);
+		if (input.get(9) > width - (width * grading))
+			return 0.45;
+		else
+			return 0.0;
+	}
+
+	private double moveLeft(double grade) {
+		double grading = 1;
+		if (grade == 100)
+			grading = 0.7;
+		else if (grade == 50)
+			grading = 0.8;
+		else if (grade == 20)
+			grading = 0.85;
+		else if (grade == 10)
+			grading = 0.9;
+		else
+			grading = 1;
+
+		System.out.println("w: " + width + " " + "l:" + input.get(0) + " " + "g:" + grading);
+		if (input.get(0) > width - (width * grading))
+			return -0.45;
+		else
+			return 0.0;
+	}
+
+	private Double getCurrentSteering(SensorModel sensors) {
+		Double currentSteer = null;
+		boolean verbose = true;
+		double leftFront = input.get(4);
+		double rightFront = input.get(5);
+		double mid = input.get(input.size() - 1);
+		double position = sensors.getTrackPosition();
+		double alignment = sensors.getAngleToTrackAxis();
+		double distance = (leftFront + mid + rightFront) / 3.0;
+		double extra = sensors.getAngleToTrackAxis();
+		double speed = 0;
+
+		// Consider width is the percentage, 0% is left, 100% is right
+		if (distance > 60) {
+			if (leftTurn(leftFront, rightFront, mid) == 1)
+				speed = moveRight(100);
+			else if (leftTurn(leftFront, rightFront, mid) == 2)
+				speed = moveLeft(100);
+			else if (leftTurn(leftFront, rightFront, mid) == -2)
+				speed = moveLeft(100);
+			else if(leftTurn(leftFront, rightFront, mid) == -1)
+				speed = moveRight(100);
+			else
+				speed =0.0;
+		} else if (distance < 60 && distance > 30) {
+			if (leftTurn(leftFront, rightFront, mid) == 1)
+				speed = moveLeft(50);
+			else if (leftTurn(leftFront, rightFront, mid) == 2)
+				speed = moveRight(50);
+			else if (leftTurn(leftFront, rightFront, mid) == -2)
+				speed = moveRight(50);
+			else if(leftTurn(leftFront, rightFront, mid) == -1)
+				speed = moveLeft(50);
+			else
+				speed =0.0;
+		} else if (distance < 30 && distance > 15) {
+			if (leftTurn(leftFront, rightFront, mid) == 1)
+				speed = moveLeft(20);
+			else if (leftTurn(leftFront, rightFront, mid) == 2)
+				speed = moveRight(20);
+			else if (leftTurn(leftFront, rightFront, mid) == -2)
+				speed = moveRight(20);
+			else if(leftTurn(leftFront, rightFront, mid) == -1)
+				speed = moveLeft(20);
+			else
+				speed =0.0;
+		} else if (distance < 15 && distance > 5) {
+			if (leftTurn(leftFront, rightFront, mid) == 1)
+				speed = moveLeft(10);
+			else if (leftTurn(leftFront, rightFront, mid) == 2)
+				speed = moveRight(10);
+			else if (leftTurn(leftFront, rightFront, mid) == -2)
+				speed = moveRight(10);
+			else if(leftTurn(leftFront, rightFront, mid) == -1)
+				speed = moveLeft(10);
+			else
+				speed =0.0;
+		}
+
+		if (speed == 0.0)
+			currentSteer = DriversUtils.alignToTrackAxis(sensors, 0.3D);
+		else
+			currentSteer = speed;
 		return currentSteer;
 	}
-	
-	
+
+	private boolean isChangingCourse() {
+		if (prevPositions.size() > 4) {
+			int count = 0;
+			for (int i = 1; i < prevPositions.size(); i++) {
+				if (Math.abs(prevPositions.get(i)) - 0.45 < Math.abs(prevPositions.get(i - 1)) - 0.45) {
+					count++;
+				}
+			}
+			if (count / (prevPositions.size() - 1) > 0.5)
+				return true;
+			else
+				return false;
+		}
+		return false;
+	}
 
 	private double getInTrack(double trackPosition) {
-		double steering=0.0;
-		desiredSpeed-=30.0;
-		if(trackPosition>1){
-			steering=-0.1;
-		}else if(trackPosition<-1){
-			steering=0.1;
+		double steering = 0.0;
+		desiredSpeed -= 30.0;
+		if (trackPosition > 1) {
+			steering = -0.1;
+		} else if (trackPosition < -1) {
+			steering = 0.1;
 		}
 		return steering;
 	}
 
-	private void addPrevSteering(double current){
-		if (moSteer.size()==3) {
+	private void addPrevSteering(double current) {
+		if (moSteer.size() == 3) {
 			moSteer.remove();
 		}
 		moSteer.add(current);
-		prevSteering=0.0;
-		for(Double d:moSteer){
-			prevSteering+=d;
+		prevSteering = 0.0;
+		for (Double d : moSteer) {
+			prevSteering += d;
 		}
-		prevSteering=prevSteering/(double)moSteer.size();
+		prevSteering = prevSteering / (double) moSteer.size();
 	}
-	
+
 	public String getDriverName() {
 		return "XVII";
 	}
