@@ -148,8 +148,10 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
 	public static void main(String[] args) {
 
 		// Set path to torcs.properties
+//		 TorcsConfiguration.getInstance().initialize(new
+//		 File("C:/Users/George/git/ciex2/ci/torcs.properties"));
 		 TorcsConfiguration.getInstance().initialize(new
-		 File("C:/Users/George/git/ciex2/ci/torcs.properties"));
+				 File("C:/Users/11126957/git/ciex2/ci/torcs.properties"));
 //		TorcsConfiguration.getInstance()
 //				.initialize(new File("C:\\yoel\\java\\ciex2\\ci\\torcs.properties"));
 		/*
@@ -187,27 +189,6 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
 			algorithm.run();
 		}
 	}
-
-//	private void runWithAccel() {
-//		// init NN
-//		DefaultDriverGenome genome = new DefaultDriverGenome();
-//		genome.loadSavedNN();
-//		drivers[0] = genome;
-//
-//		// Start a race
-//		DefaultRace race = new DefaultRace();
-//		race.setTrack(AbstractRace.DefaultTracks.getTrack(0));
-//		race.laps = 1;
-//		// for speedup set withGUI to false
-//		results = race.runWithAccel(drivers, true);
-//
-//		// Save genome/nn
-//		DriversUtils.storeGenome(drivers[0]);
-//		// create a checkpoint this allows you to continue this run later
-//		DriversUtils.createCheckpoint(this);
-//		// DriversUtils.clearCheckpoint();
-//
-//	}
 
 	private void meRun() {
 		DefaultDriverGenome genome = new DefaultDriverGenome();

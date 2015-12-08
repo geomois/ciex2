@@ -22,11 +22,13 @@ public class DefaultDriver extends AbstractDriver {
 	private DefaultDriverGenome driverGenome;
 	private Double prevSteering;
 	Double desiredSpeed;
-	private Queue<Double> moSteer;
 	private Double lapTime;
-	int prevDecision;
-	private LinkedList<Double> prevPositions;
+	private LinkedList<Double> prevReadingLeft;
+	private LinkedList<Double> prevReadingMid;
+	private LinkedList<Double> prevReadingRight;
 	private double width;
+	private double[] smooth = { 0.5, 0.65, 0.75, 0.8, 0.95 };
+	private double steerConstant = 0.4;
 
 	DefaultDriver() {
 		initialize();
@@ -43,9 +45,9 @@ public class DefaultDriver extends AbstractDriver {
 		this.enableExtras(new ABS());
 		input = new ArrayList<Double>();
 		prevSteering = 0.0;
-		moSteer = new LinkedList<Double>();
-		prevDecision =0;
-		prevPositions = new LinkedList<Double>();
+		prevReadingLeft = new LinkedList<Double>();
+		prevReadingMid = new LinkedList<Double>();
+		prevReadingRight = new LinkedList<Double>();
 	}
 
 	@Override
@@ -89,72 +91,109 @@ public class DefaultDriver extends AbstractDriver {
 
 	}
 
+	private double getMo(LinkedList<Double> queue, double lastObject) {
+		double mo = 0.0;
+		if (queue.size() <= 10 && !queue.isEmpty())
+			queue.remove();
+		queue.add(lastObject);
+		for (int i = 0; i < queue.size(); i++) {
+			mo += queue.get(i);
+		}
+		return mo / (double) queue.size();
+	}
+
 	private int leftTurn(double left, double right, double mid) {
-		int ret=0;
-	    if(mid>100){
-	    	ret=0;
-	    }else if (Math.abs(left - right) > 20) {
+		int ret = 0;
+		left = getMo(prevReadingLeft, left);
+		mid = getMo(prevReadingMid, mid);
+		right = getMo(prevReadingRight, right);
+		if (mid > 100) {
+			ret = 0;
+		} else if (Math.abs(left - right) > 20) {
 			if (left > right)
-				ret= 1;
+				ret = 1;
 			else
-				ret= 2;
-		}else if (left > right)
+				ret = 2;
+		} else if (left > right)
 			if (left >= mid)
-				ret= 1;
+				ret = 1;
 			else {
-				ret= -1;
+				ret = -1;
 			}
 		else if (right >= mid)
-			ret= 2;
+			ret = 2;
 		else {
-			ret= -2;
+			ret = -2;
 		}
-//		
-//		if(prevDecision!=0){
-//			ret=prevDecision;
-//			prevDecision=0;
-//		}
 		return ret;
 	}
 
 	private double moveRight(double grade) {
 		double grading = 1;
+		double diff;
 		if (grade == 100)
-			grading = 0.7;
+			grading = 0.8;
 		else if (grade == 50)
-			grading = 0.8;
+			grading = 0.88;
 		else if (grade == 20)
-			grading = 0.85;
+			grading = 0.9;
 		else if (grade == 10)
-			grading = 0.8;
+			grading = 0.95;
 		else
 			grading = 1;
-		
-		System.out.println("w: " + width + " " + "r:" + input.get(0) + " " + "g:" + grading);
-		if (input.get(9) > width - (width * grading))
-			return 0.45;
-		else
-			return 0.0;
+		if (grade != 200) {
+
+			if (input.get(9) > width - (width * grading)) {
+				diff = input.get(9) - (width - (width * grading));
+				System.out.println("w: " + diff / width + " " + "r:" + diff + " " + "g:" + grading);
+				if (Math.abs(diff / width) > 0.8)
+					return steerConstant * smooth[smooth.length - 1];
+				else if (Math.abs(diff / width) > 0.6)
+					return steerConstant * smooth[3];
+				else if (Math.abs(diff / width) > 0.4)
+					return steerConstant * smooth[2];
+				else if (Math.abs(diff / width) > 0.25)
+					return steerConstant * smooth[1];
+				else
+					return steerConstant * smooth[0];
+			} else
+				return 0.0;
+		} else
+			return 0.2 * smooth[0];
 	}
 
 	private double moveLeft(double grade) {
 		double grading = 1;
+		double diff;
 		if (grade == 100)
-			grading = 0.7;
-		else if (grade == 50)
 			grading = 0.8;
+		else if (grade == 50)
+			grading = 0.88;
 		else if (grade == 20)
-			grading = 0.85;
-		else if (grade == 10)
 			grading = 0.9;
+		else if (grade == 10)
+			grading = 0.95;
 		else
 			grading = 1;
 
-		System.out.println("w: " + width + " " + "l:" + input.get(0) + " " + "g:" + grading);
-		if (input.get(0) > width - (width * grading))
-			return -0.45;
-		else
-			return 0.0;
+		if (grade != 200) {
+			if (input.get(0) > width - (width * grading)) {
+				diff = input.get(0) - (width - (width * grading));
+				System.out.println("w: " + diff / width + " " + "l:" + diff + " " + "g:" + grading);
+				if (Math.abs(diff / width) > 0.8)
+					return -steerConstant * smooth[smooth.length - 1];
+				else if (Math.abs(diff / width) > 0.6)
+					return -steerConstant * smooth[3];
+				else if (Math.abs(diff / width) > 0.4)
+					return -steerConstant * smooth[2];
+				else if (Math.abs(diff / width) > 0.25)
+					return -steerConstant * smooth[1];
+				else
+					return -steerConstant * smooth[0];
+			} else
+				return 0.0;
+		} else
+			return -0.08 * smooth[0];
 	}
 
 	private Double getCurrentSteering(SensorModel sensors) {
@@ -165,55 +204,64 @@ public class DefaultDriver extends AbstractDriver {
 		double mid = input.get(input.size() - 1);
 		double position = sensors.getTrackPosition();
 		double alignment = sensors.getAngleToTrackAxis();
-		double distance = (leftFront + mid + rightFront) / 3.0;
+		double distance = (getMo(prevReadingRight, leftFront) + getMo(prevReadingRight, mid)
+				+ getMo(prevReadingRight, rightFront)) / 3.0;
 		double extra = sensors.getAngleToTrackAxis();
 		double speed = 0;
 
-		// Consider width is the percentage, 0% is left, 100% is right
-		if (distance > 60) {
-			if (leftTurn(leftFront, rightFront, mid) == 1)
-				speed = moveRight(100);
-			else if (leftTurn(leftFront, rightFront, mid) == 2)
-				speed = moveLeft(100);
-			else if (leftTurn(leftFront, rightFront, mid) == -2)
-				speed = moveLeft(100);
-			else if(leftTurn(leftFront, rightFront, mid) == -1)
-				speed = moveRight(100);
-			else
-				speed =0.0;
-		} else if (distance < 60 && distance > 30) {
-			if (leftTurn(leftFront, rightFront, mid) == 1)
-				speed = moveLeft(50);
-			else if (leftTurn(leftFront, rightFront, mid) == 2)
-				speed = moveRight(50);
-			else if (leftTurn(leftFront, rightFront, mid) == -2)
-				speed = moveRight(50);
-			else if(leftTurn(leftFront, rightFront, mid) == -1)
-				speed = moveLeft(50);
-			else
-				speed =0.0;
-		} else if (distance < 30 && distance > 15) {
-			if (leftTurn(leftFront, rightFront, mid) == 1)
-				speed = moveLeft(20);
-			else if (leftTurn(leftFront, rightFront, mid) == 2)
-				speed = moveRight(20);
-			else if (leftTurn(leftFront, rightFront, mid) == -2)
-				speed = moveRight(20);
-			else if(leftTurn(leftFront, rightFront, mid) == -1)
-				speed = moveLeft(20);
-			else
-				speed =0.0;
-		} else if (distance < 15 && distance > 5) {
-			if (leftTurn(leftFront, rightFront, mid) == 1)
-				speed = moveLeft(10);
-			else if (leftTurn(leftFront, rightFront, mid) == 2)
-				speed = moveRight(10);
-			else if (leftTurn(leftFront, rightFront, mid) == -2)
-				speed = moveRight(10);
-			else if(leftTurn(leftFront, rightFront, mid) == -1)
-				speed = moveLeft(10);
-			else
-				speed =0.0;
+		if (position < 0.95 && position > -0.95) {
+			// Consider width is the percentage, 0% is left, 100% is right
+			if (distance > 60) {
+				if (leftTurn(leftFront, rightFront, mid) == 1)
+					speed = moveRight(100);
+				else if (leftTurn(leftFront, rightFront, mid) == 2)
+					speed = moveLeft(100);
+				else if (leftTurn(leftFront, rightFront, mid) == -2)
+					speed = moveLeft(100);
+				else if (leftTurn(leftFront, rightFront, mid) == -1)
+					speed = moveRight(100);
+				else
+					speed = 0.0;
+			} else if (distance < 60 && distance > 30) {
+				if (leftTurn(leftFront, rightFront, mid) == 1)
+					speed = moveLeft(50);
+				else if (leftTurn(leftFront, rightFront, mid) == 2)
+					speed = moveRight(50);
+				else if (leftTurn(leftFront, rightFront, mid) == -2)
+					speed = moveRight(50);
+				else if (leftTurn(leftFront, rightFront, mid) == -1)
+					speed = moveLeft(50);
+				else
+					speed = 0.0;
+			} else if (distance < 30 && distance > 15) {
+				if (leftTurn(leftFront, rightFront, mid) == 1)
+					speed = moveLeft(20);
+				else if (leftTurn(leftFront, rightFront, mid) == 2)
+					speed = moveRight(20);
+				else if (leftTurn(leftFront, rightFront, mid) == -2)
+					speed = moveRight(20);
+				else if (leftTurn(leftFront, rightFront, mid) == -1)
+					speed = moveLeft(20);
+				else
+					speed = 0.0;
+			} else if (distance < 15 && distance > 5) {
+				if (leftTurn(leftFront, rightFront, mid) == 1)
+					speed = moveLeft(10);
+				else if (leftTurn(leftFront, rightFront, mid) == 2)
+					speed = moveRight(10);
+				else if (leftTurn(leftFront, rightFront, mid) == -2)
+					speed = moveRight(10);
+				else if (leftTurn(leftFront, rightFront, mid) == -1)
+					speed = moveLeft(10);
+				else
+					speed = 0.0;
+			}
+		} else {
+			if (position > 0.95)
+				speed = DriversUtils.alignToTrackAxis(sensors, 0.3D) - 0.09;
+			else if (position < -0.95)
+				speed = DriversUtils.alignToTrackAxis(sensors, 0.3D) + 0.09;
+			System.out.println("out of track: " + position + speed);
 		}
 
 		if (speed == 0.0)
@@ -221,22 +269,6 @@ public class DefaultDriver extends AbstractDriver {
 		else
 			currentSteer = speed;
 		return currentSteer;
-	}
-
-	private boolean isChangingCourse() {
-		if (prevPositions.size() > 4) {
-			int count = 0;
-			for (int i = 1; i < prevPositions.size(); i++) {
-				if (Math.abs(prevPositions.get(i)) - 0.45 < Math.abs(prevPositions.get(i - 1)) - 0.45) {
-					count++;
-				}
-			}
-			if (count / (prevPositions.size() - 1) > 0.5)
-				return true;
-			else
-				return false;
-		}
-		return false;
 	}
 
 	private double getInTrack(double trackPosition) {
@@ -248,18 +280,6 @@ public class DefaultDriver extends AbstractDriver {
 			steering = 0.1;
 		}
 		return steering;
-	}
-
-	private void addPrevSteering(double current) {
-		if (moSteer.size() == 3) {
-			moSteer.remove();
-		}
-		moSteer.add(current);
-		prevSteering = 0.0;
-		for (Double d : moSteer) {
-			prevSteering += d;
-		}
-		prevSteering = prevSteering / (double) moSteer.size();
 	}
 
 	public String getDriverName() {
