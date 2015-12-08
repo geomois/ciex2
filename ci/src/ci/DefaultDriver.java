@@ -29,7 +29,7 @@ public class DefaultDriver extends AbstractDriver {
 	private double width;
 	private double[] smooth = { 0.5, 0.65, 0.75, 0.8, 0.95 };
 	private double steerConstant = 0.4;
-	private static boolean verbose=false;
+	private static boolean verbose = false;
 
 	DefaultDriver() {
 		initialize();
@@ -143,7 +143,8 @@ public class DefaultDriver extends AbstractDriver {
 
 			if (input.get(9) > width - (width * grading)) {
 				diff = input.get(9) - (width - (width * grading));
-				System.out.println("w: " + diff / width + " " + "r:" + diff + " " + "g:" + grading);
+				if (verbose)
+					System.out.println("w: " + diff / width + " " + "r:" + diff + " " + "g:" + grading);
 				if (Math.abs(diff / width) > 0.8)
 					return steerConstant * smooth[smooth.length - 1];
 				else if (Math.abs(diff / width) > 0.6)
@@ -177,7 +178,8 @@ public class DefaultDriver extends AbstractDriver {
 		if (grade != 200) {
 			if (input.get(0) > width - (width * grading)) {
 				diff = input.get(0) - (width - (width * grading));
-				System.out.println("w: " + diff / width + " " + "l:" + diff + " " + "g:" + grading);
+				if (verbose)
+					System.out.println("w: " + diff / width + " " + "l:" + diff + " " + "g:" + grading);
 				if (Math.abs(diff / width) > 0.8)
 					return -steerConstant * smooth[smooth.length - 1];
 				else if (Math.abs(diff / width) > 0.6)
@@ -258,7 +260,8 @@ public class DefaultDriver extends AbstractDriver {
 				speed = DriversUtils.alignToTrackAxis(sensors, 0.3D) - 0.09;
 			else if (position < -0.95)
 				speed = DriversUtils.alignToTrackAxis(sensors, 0.3D) + 0.09;
-			System.out.println("out of track: " + position + speed);
+			if (verbose)
+				System.out.println("out of track: " + position + speed);
 		}
 
 		if (speed == 0.0)
