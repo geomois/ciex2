@@ -9,6 +9,20 @@ import java.util.ArrayList;
 
 import java.util.LinkedList;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
+import org.xml.sax.SAXException;
+
 import cicontest.algorithm.abstracts.AbstractRace;
 
 public class NNGA {
@@ -95,6 +109,7 @@ public class NNGA {
 		myDDG.getMyNN().setWeights(iWeights);
 
 		drivers[0] = myDDG;
+		//change track
 		startBat();
 		DefaultRace race = new DefaultRace();
 		race.setTrack(AbstractRace.DefaultTracks.getTrack(0));
@@ -125,4 +140,76 @@ public class NNGA {
 		}
 		
 	}
+	private void setTrackinXML(String nameTrack, String categoryTrack, String filepath) {
+        try 
+        {
+            DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
+            Document doc = docBuilder.parse(filepath);
+
+            // Get the root element
+            Node quickRace = doc.getFirstChild();
+
+            NodeList sections = doc.getElementsByTagName("section");
+            for(int i = 0; i < sections.getLength(); i++)
+            {
+                for(int j = 0; j < sections.item(i).getAttributes().getLength(); j++)
+                {
+                    //System.out.println(sections.item(i).getAttributes().item(j));
+                    //System.out.println(sections.item(i).getAttributes().item(j).getNodeName());
+                    //System.out.println(sections.item(i).getAttributes().item(j).getNodeValue());
+                    if(sections.item(i).getAttributes().item(j).getNodeValue().equals("Tracks"))
+                    {
+                        NodeList childs = sections.item(i).getChildNodes();
+                        for(int k = 0; k < childs.getLength(); k++)
+                        {
+                            if(childs.item(k).getNodeName().equals("section"))
+                            {
+                                
+                                NodeList trackProperties = childs.item(k).getChildNodes();
+                                for(int l = 0; l < trackProperties.getLength(); l++)
+                                {   
+                                    if(trackProperties.item(l).getNodeName().equals("attstr"))
+                                    {
+                                        if(trackProperties.item(l).getAttributes().item(0).getNodeValue().equals("name"))
+                                        {
+                                            trackProperties.item(l).getAttributes().getNamedItem("val").setNodeValue(nameTrack);
+                                        }
+                                        else if( trackProperties.item(l).getAttributes().item(0).getNodeValue().equals("category"))
+                                        {
+                                            trackProperties.item(l).getAttributes().getNamedItem("val").setNodeValue(categoryTrack);
+                                        }
+                                    }
+
+                                }
+                            }
+                            
+                        }
+    
+                    }
+                }
+            }
+
+            // write the content into xml file
+            TransformerFactory transformerFactory = TransformerFactory.newInstance();
+            Transformer transformer;
+            try {
+                transformer = transformerFactory.newTransformer();
+           
+                DOMSource source = new DOMSource(doc);
+                StreamResult result = new StreamResult(new File(filepath));
+                transformer.transform(source, result);
+            } catch (TransformerException ex) {
+                ex.printStackTrace();
+            }
+     
+
+       } catch (ParserConfigurationException pce) {
+            pce.printStackTrace();
+       } catch (IOException ioe) {
+            ioe.printStackTrace();
+       } catch (SAXException sae) {
+            sae.printStackTrace();
+       }
+    }
 }
