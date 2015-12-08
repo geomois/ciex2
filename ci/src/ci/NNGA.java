@@ -109,14 +109,15 @@ public class NNGA {
 		myDDG.getMyNN().setWeights(iWeights);
 
 		drivers[0] = myDDG;
-		//change track
+//		loop for several tracks
+		setTrackinXML("alpine-1","road",".\\scenarios\\sc1.xml");
 		startBat();
 		DefaultRace race = new DefaultRace();
 		race.setTrack(AbstractRace.DefaultTracks.getTrack(0));
 		race.laps = 1;
 		// for speedup set withGUI to false
 		result = race.runRace(drivers, true);
-        System.out.println(result);
+
 		
 		return result;
 	}
