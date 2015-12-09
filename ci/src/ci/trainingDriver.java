@@ -95,7 +95,6 @@ public class trainingDriver extends AbstractDriver {
 			action.brake = 0.0D;
 		}
 	}
-
 	private void getElev(SensorModel sensors) {
 		Double dif = sensors.getTrackEdgeSensors()[9];
 		if (dif > 60) {
@@ -126,26 +125,13 @@ public class trainingDriver extends AbstractDriver {
 
 	private int leftTurn(double left, double right, double mid) {
 		int ret = 0;
-		left = getMo(prevReadingLeft, left);
-		mid = getMo(prevReadingMid, mid);
-		right = getMo(prevReadingRight, right);
 		if (mid > 60) {
 			ret = 0;
-		} else if (Math.abs(left - right) > 20) {
+		} else {
 			if (left > right)
 				ret = 1;
 			else
 				ret = 2;
-		} else if (left > right)
-			if (left >= mid)
-				ret = 1;
-			else {
-				ret = -1;
-			}
-		else if (right >= mid)
-			ret = 2;
-		else {
-			ret = -2;
 		}
 		return ret;
 	}
@@ -156,102 +142,41 @@ public class trainingDriver extends AbstractDriver {
 		if (this.temp.get(9) > temp) {
 			diffScale = Math.abs((this.temp.get(9) - temp) / width);
 			// scale
-			return (steerConstant * (0.5 + 0.45 * diffScale));
-		} else
-			return 0.0;
-	}
-
-	private double moveLeft(double grading) {
-		// double grading = 1;
-		// double diff;
-		// if (grade == 100)
-		// grading = 0.8;
-		// else if (grade == 50)
-		// grading = 0.88;
-		// else if (grade == 20)
-		// grading = 0.9;
-		// else if (grade == 10)
-		// grading = 0.95;
-		// else
-		// grading = 1;
-
-		// if (input.get(0) > width - (width * grading)) {
-		// diff = input.get(0) - (width - (width * grading));
-		// if (Math.abs(diff / width) > 0.8)
-		// return -steerConstant * smooth[smooth.length - 1];
-		// else if (Math.abs(diff / width) > 0.6)
-		// return -steerConstant * smooth[3];
-		// else if (Math.abs(diff / width) > 0.4)
-		// return -steerConstant * smooth[2];
-		// else if (Math.abs(diff / width) > 0.25)
-		// return -steerConstant * smooth[1];
-		// else
-		// return -steerConstant * smooth[0];
-		double diffScale;
-		double temp = width - (width * grading);
-		if (this.temp.get(9) > temp) {
-			diffScale = Math.abs((this.temp.get(9) - temp) / width);
-			// scale
-			return -(steerConstant * (0.5 + 0.45 * diffScale));
+			return (steerConstant * (0.5 + (0.90 - 0.5) * diffScale));
 		} else
 			return 0.0;
 	}
 
 	private Double getCurrentSteering(SensorModel sensors) {
-		Double currentSteer = null;
-		boolean verbose = true;
-		double leftFront = temp.get(4);
-		double rightFront = temp.get(5);
-		double mid = temp.get(temp.size() - 1);
+		double leftFront = getMo(prevReadingRight, temp.get(4));
+		double rightFront = getMo(prevReadingRight, temp.get(5));
+		double mid = getMo(prevReadingRight, temp.get(temp.size() - 1));
 		double position = sensors.getTrackPosition();
-		double alignment = sensors.getAngleToTrackAxis();
-		double distance = (getMo(prevReadingRight, leftFront) + getMo(prevReadingRight, mid)
-				+ getMo(prevReadingRight, rightFront)) / 3.0;
-		double extra = sensors.getAngleToTrackAxis();
+		double distance = (leftFront + mid + rightFront) / 3.0;
 		double speed = 0;
-
+		// Consider width is the percentage, 0% is left, 100% is right
 
 		if (position < 0.95 && position > -0.95) {
-			// Consider width is the percentage, 0% is left, 100% is right
-			if (distance > 100) {
-				if (leftTurn(leftFront, rightFront, mid) == 1)
+			if (distance > 60) {
+				speed = 0.0;
+			} else {
+				int pick = leftTurn(leftFront, rightFront, mid);
+				if (distance > 50) {
 					speed = moveRight(grade[0]);
-				else if (leftTurn(leftFront, rightFront, mid) == 2)
-					speed = moveLeft(grade[0]);
-				else if (leftTurn(leftFront, rightFront, mid) == -2)
-					speed = moveLeft(grade[0]);
-				else if (leftTurn(leftFront, rightFront, mid) == -1)
-					speed = moveRight(grade[0]);
-				else
-					speed = 0.0;
-			} else if (distance < 60 && distance > 30) {
-				if (leftTurn(leftFront, rightFront, mid) == 1)
-					speed = moveLeft(grade[1]);
-				else if (leftTurn(leftFront, rightFront, mid) == 2)
+					speed = pick * (Math.abs(pick - 2) * speed + ((pick - 1) / 2) * -speed);
+				} else if (distance > 30) {
 					speed = moveRight(grade[1]);
-				else if (leftTurn(leftFront, rightFront, mid) == -2)
-					speed = moveRight(grade[1]);
-				else if (leftTurn(leftFront, rightFront, mid) == -1)
-					speed = moveLeft(grade[1]);
-				else
-					speed = 0.0;
-			} else if (distance < 30 && distance > 15) {
-				if (leftTurn(leftFront, rightFront, mid) == 1)
-					speed = moveLeft(grade[2]);
-				else if (leftTurn(leftFront, rightFront, mid) == 2)
+					speed = pick * (Math.abs(pick - 2) * -speed + ((pick - 1) / 2) * speed);
+				} else if (distance < 30 && distance > 15) {
 					speed = moveRight(grade[2]);
-				else if (leftTurn(leftFront, rightFront, mid) == -2)
-					speed = moveRight(grade[2]);
-				else if (leftTurn(leftFront, rightFront, mid) == -1)
-					speed = moveLeft(grade[2]);
-				else
-					speed = 0.0;
+					speed = pick * (Math.abs(pick - 2) * -speed + ((pick - 1) / 2) * speed);
+				}
 			}
 		} else {
-			if (position >0)
-				speed = DriversUtils.alignToTrackAxis(sensors, 0.3D) - 0.1;
+			if (position > 0)
+				return DriversUtils.alignToTrackAxis(sensors, 0.3D) - 0.1;
 			else
-				speed = DriversUtils.alignToTrackAxis(sensors, 0.3D) + 0.1;
+				return DriversUtils.alignToTrackAxis(sensors, 0.3D) + 0.1;
 		}
 		if (speed == 0.0)
 			return DriversUtils.alignToTrackAxis(sensors, 0.3D);
