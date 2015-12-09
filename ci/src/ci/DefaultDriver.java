@@ -24,7 +24,7 @@ public class DefaultDriver extends AbstractDriver {
 	private LinkedList<Double> prevReadingMid;
 	private LinkedList<Double> prevReadingRight;
 	private double width;
-//	private double[] smooth = { 0.5, 0.65, 0.75, 0.8, 0.95 };
+	private double[] smooth = { 0.7, 0.75, 0.8, 0.88, 0.95 };
 	private double[] grade = { 0.8, 0.88, 0.9 };
 	private double steerConstant = 0.4;
 	private static boolean verbose = false;
@@ -100,9 +100,10 @@ public class DefaultDriver extends AbstractDriver {
 		return mo / (double) queue.size();
 	}
 
+
 	private int leftTurn(double left, double right, double mid) {
 		int ret = 0;
-		if (mid > 100) {
+		if (mid > 150) {
 			ret = 0;
 		} else {
 			if (left > right)
@@ -119,7 +120,7 @@ public class DefaultDriver extends AbstractDriver {
 		if (this.input.get(9) > temp) {
 			diffScale = Math.abs((this.input.get(9) - temp) / width);
 			// scale
-			return (steerConstant * (0.5 + (0.90 - 0.5) * diffScale));
+			return (steerConstant * (smooth[0] + (smooth[smooth.length-1] - smooth[0]) * diffScale));
 		} else
 			return 0.0;
 	}
@@ -133,8 +134,8 @@ public class DefaultDriver extends AbstractDriver {
 		double speed = 0;
 		// Consider width is the percentage, 0% is left, 100% is right
 
-		if (position < 0.95 && position > -0.95) {
-			if (distance > 100) {
+		if (position < 0.9 && position > -0.9) {
+			if (mid > 150) {
 				speed = 0.0;
 			} else {
 				int pick = leftTurn(leftFront, rightFront, mid);
@@ -150,16 +151,18 @@ public class DefaultDriver extends AbstractDriver {
 				}
 			}
 		} else {
+//			double bias=(Math.abs(position)-0.8)*1.9;
 			if (position > 0)
-				return DriversUtils.alignToTrackAxis(sensors, 0.3D) - 0.1;
+				return DriversUtils.alignToTrackAxis(sensors, 0.3D) - 0.3;
 			else
-				return DriversUtils.alignToTrackAxis(sensors, 0.3D) + 0.1;
+				return DriversUtils.alignToTrackAxis(sensors, 0.3D) + 0.3;
 		}
 		if (speed == 0.0)
 			return DriversUtils.alignToTrackAxis(sensors, 0.3D);
 		else
 			return speed;
 	}
+
 	public String getDriverName() {
 		return "XVII";
 	}

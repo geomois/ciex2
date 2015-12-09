@@ -287,7 +287,7 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
 			// File file = new File("C:/Users/11126957/Desktop/ci train
 			// data/traindata"+sdf.format(cal.getTime()).toString()+".txt");
 			File file = new File(
-					"C:/Users/George/Desktop/train/traindata" + sdf.format(cal.getTime()).toString() + ".txt");
+					"./traindata" + sdf.format(cal.getTime()).toString() + ".txt");
 			// if file doesnt exists, then create it
 			if (!file.exists()) {
 				file.createNewFile();
