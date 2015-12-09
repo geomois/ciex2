@@ -203,36 +203,53 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
 	}
 
 	private void trainGA() {
-		// Start a race
-		Double bestResult = 0.0;
-		Double result = 0.0;
-		boolean improved = true;
-		int i = 0;
+		DefaultDriverGenome genome;
 
-		DefaultDriverGenome genome = new DefaultDriverGenome();
-		genome.loadSavedNN();
+		String path = "D:/java torcs/torcs/config/raceman/";
+		File folder = new File(path);
+		String[] fileNames = folder.list();
+		ArrayList<String> files = new ArrayList<String>();
 
-		NNGA ga = new NNGA(genome, 10, 0.5);
-
-		ArrayList<ArrayList<Double[][]>> w = new ArrayList<ArrayList<Double[][]>>();
-		while (improved || i < 10) {
-			result = ga.GA();
-			if (bestResult == 0.0) {
-				bestResult = result;
-			} else if (result < bestResult) {
-				improved = false;
-			} else {
-				bestResult = result;
-				improved = true;
-			}
-			i++;
-			w.add(genome.getMyNN().getWeights());
-			System.out.println(bestResult);
-			genome.saveGA(i);
-
+		for (String name : fileNames) {
+			if (name.startsWith("r"))
+				files.add(name);
 		}
+		File nf;
+		File quick;
+		for (int j = 0; j < files.size(); j++) {
+			nf = new File(path + "q" + j + ".xml");
+			quick = new File(path + "quickrace.xml");
+			if (quick.exists()) {
+				quick.renameTo(nf);
+			}
+			nf = new File(path + files.get(j));
+			nf.renameTo(quick);
 
-		genome.saveNN();
+			Double bestResult = 0.0;
+			Double result = 0.0;
+			boolean improved = true;
+			int i = 0;
+			genome = new DefaultDriverGenome();
+			genome.loadSavedNN();
+			NNGA ga = new NNGA(genome, 10, 0.5);
+			ArrayList<ArrayList<Double[][]>> w = new ArrayList<ArrayList<Double[][]>>();
+			while (improved || i < 10) {
+				result = ga.GA();
+				if (bestResult == 0.0) {
+					bestResult = result;
+				} else if (result < bestResult) {
+					improved = false;
+				} else {
+					bestResult = result;
+					improved = true;
+				}
+				i++;
+				w.add(genome.getMyNN().getWeights());
+				System.out.println(bestResult);
+				genome.saveGA(i);
+			}
+			genome.saveNN();
+		}
 	}
 
 	private void meRun() {
@@ -286,8 +303,7 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
 
 			// File file = new File("C:/Users/11126957/Desktop/ci train
 			// data/traindata"+sdf.format(cal.getTime()).toString()+".txt");
-			File file = new File(
-					"./traindata" + sdf.format(cal.getTime()).toString() + ".txt");
+			File file = new File("./traindata" + sdf.format(cal.getTime()).toString() + ".txt");
 			// if file doesnt exists, then create it
 			if (!file.exists()) {
 				file.createNewFile();
