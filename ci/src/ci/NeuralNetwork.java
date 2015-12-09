@@ -319,4 +319,30 @@ public class NeuralNetwork implements Serializable {
 		w1 = iWeights.get(0);
 		w2 = iWeights.get(1);
 	}
+	public ArrayList<Double[][]> getWeights() {
+		ArrayList<Double[][]> w = new ArrayList<Double[][]>();
+		w.add(w1);
+		w.add(w2);
+		return w;
+	}
+
+	public void storeGA() {
+		ObjectOutputStream out = null;
+		try {
+			// create the memory folder manually
+			// out = new ObjectOutputStream(new
+			// FileOutputStream("/users/edwinlima/git/ci/memory/mydriver.mem"));
+			// out = new ObjectOutputStream(new
+			// FileOutputStream("C:/Users/George/git/ciex2/ci/memory/mydriver.mem"));
+			out = new ObjectOutputStream(new FileOutputStream("./memory/mydriverGA.mem"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		try {
+			out.writeObject(this);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
+	}
 }
