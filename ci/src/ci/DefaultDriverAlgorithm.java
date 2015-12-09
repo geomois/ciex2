@@ -145,12 +145,8 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
 	public static void main(String[] args) {
 
 		// Set path to torcs.properties
-//		 TorcsConfiguration.getInstance().initialize(new
-//		 File("C:/Users/George/git/ciex2/ci/torcs.properties"));
-		 TorcsConfiguration.getInstance().initialize(new
-				 File("C:/Users/11126957/git/ciex2/ci/torcs.properties"));
-//		TorcsConfiguration.getInstance()
-//				.initialize(new File("C:\\yoel\\java\\ciex2\\ci\\torcs.properties"));
+		TorcsConfiguration.getInstance()
+				.initialize(new File("./torcs.properties"));
 		/*
 		 *
 		 * Start without arguments to run the algorithm Start with -train train
@@ -189,15 +185,12 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
 
 	private void trainGA() {
 		// Start a race
-//		setTrackinXML("alpine-1","road",".\\scenarios\\sc1.xml");
-//		startBat();
 		DefaultDriverGenome genome = new DefaultDriverGenome();
 		genome.loadSavedNN();
-		drivers[0] = genome;
 
-		NNGA ga=new NNGA(drivers[0],10,0.02);
+		NNGA ga=new NNGA(genome,10,0.5);
 		
-		String path = "C:/Users/11126957/git/ciex2/ci/scenarios";
+		String path = "./scenarios";
 		File folder = new File(path);
 		String[] fileNames = folder.list();
 		
@@ -287,80 +280,9 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
 			e.printStackTrace();
 		}
 	}
-	private void setTrackinXML(String nameTrack, String categoryTrack, String filepath) {
-        try 
-        {
-            DocumentBuilderFactory docFactory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder docBuilder = docFactory.newDocumentBuilder();
-            Document doc = docBuilder.parse(filepath);
-
-            // Get the root element
-            Node quickRace = doc.getFirstChild();
-
-            NodeList sections = doc.getElementsByTagName("section");
-            for(int i = 0; i < sections.getLength(); i++)
-            {
-                for(int j = 0; j < sections.item(i).getAttributes().getLength(); j++)
-                {
-                    //System.out.println(sections.item(i).getAttributes().item(j));
-                    //System.out.println(sections.item(i).getAttributes().item(j).getNodeName());
-                    //System.out.println(sections.item(i).getAttributes().item(j).getNodeValue());
-                    if(sections.item(i).getAttributes().item(j).getNodeValue().equals("Tracks"))
-                    {
-                        NodeList childs = sections.item(i).getChildNodes();
-                        for(int k = 0; k < childs.getLength(); k++)
-                        {
-                            if(childs.item(k).getNodeName().equals("section"))
-                            {
-                                
-                                NodeList trackProperties = childs.item(k).getChildNodes();
-                                for(int l = 0; l < trackProperties.getLength(); l++)
-                                {   
-                                    if(trackProperties.item(l).getNodeName().equals("attstr"))
-                                    {
-                                        if(trackProperties.item(l).getAttributes().item(0).getNodeValue().equals("name"))
-                                        {
-                                            trackProperties.item(l).getAttributes().getNamedItem("val").setNodeValue(nameTrack);
-                                        }
-                                        else if( trackProperties.item(l).getAttributes().item(0).getNodeValue().equals("category"))
-                                        {
-                                            trackProperties.item(l).getAttributes().getNamedItem("val").setNodeValue(categoryTrack);
-                                        }
-                                    }
-
-                                }
-                            }
-                            
-                        }
-    
-                    }
-                }
-            }
-
-            // write the content into xml file
-            TransformerFactory transformerFactory = TransformerFactory.newInstance();
-            Transformer transformer;
-            try {
-                transformer = transformerFactory.newTransformer();
-           
-                DOMSource source = new DOMSource(doc);
-                StreamResult result = new StreamResult(new File(filepath));
-                transformer.transform(source, result);
-            } catch (TransformerException ex) {
-                ex.printStackTrace();
-            }
-     
-
-       } catch (ParserConfigurationException pce) {
-            pce.printStackTrace();
-       } catch (IOException ioe) {
-            ioe.printStackTrace();
-       } catch (SAXException sae) {
-            sae.printStackTrace();
-       }
-    }
+	
 	private void startBat() {
-		String pathScriptFile = new File("").getAbsolutePath() + "\\textmode.bat";
+		String pathScriptFile = "./textmode.bat";
 
         Process process;
 		try {

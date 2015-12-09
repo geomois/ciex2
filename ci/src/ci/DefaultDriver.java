@@ -49,6 +49,7 @@ public class DefaultDriver extends AbstractDriver {
 		prevReadingLeft = new LinkedList<Double>();
 		prevReadingMid = new LinkedList<Double>();
 		prevReadingRight = new LinkedList<Double>();
+		lapTime = 0.0;
 	}
 
 	@Override
@@ -85,7 +86,10 @@ public class DefaultDriver extends AbstractDriver {
 			action.accelerate = 1.0D;
 			action.brake = 0.0D;
 		}
-		lapTime = sensors.getCurrentLapTime();
+		
+		Double currTime = sensors.getCurrentLapTime();
+		if (currTime > lapTime)
+			lapTime = currTime;
 
 	}
 

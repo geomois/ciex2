@@ -297,7 +297,7 @@ public class NeuralNetwork implements Serializable {
 //			 out = new ObjectOutputStream(new
 //			 FileOutputStream("C:/Users/George/git/ciex2/ci/memory/mydriver.mem"));
 			out = new ObjectOutputStream(
-					new FileOutputStream("C:\\Users\\11126957\\git\\ciex2\\ci\\memory\\mydriver.mem"));
+					new FileOutputStream("./memory/mydriver.mem"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -314,14 +314,8 @@ public class NeuralNetwork implements Serializable {
 		// Read from disk using FileInputStream
 		FileInputStream f_in = null;
 		try {
-			// f_in = new
-			// FileInputStream("/users/edwinlima/git/ci/memory/mydriver.mem");
-//			f_in = new
-//			 FileInputStream("C:/Users/George/git/ciex2/ci/memory/mydriver.mem");
-//			 f_in = new
-//			FileInputStream("C:\\yoel\\java\\ciex2\\ci\\memory\\mydriver.mem");
 			 f_in = new
-			 FileInputStream("C:\\Users\\11126957\\git\\ciex2\\ci\\memory\\mydriver.mem");
+			 FileInputStream("./memory/mydriver.mem");
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}

@@ -110,7 +110,7 @@ public class NNGA {
 		DefaultDriverGenome[] drivers = new DefaultDriverGenome[1];
 		Double result;
 		myDDG.getMyNN().setWeights(iWeights);
-
+       //todoo
 			drivers[0] = myDDG;
 			setTrackinXML("alpine-1","road",".\\scenarios\\"+this.xmlFileName);
 			startBat();
@@ -121,7 +121,7 @@ public class NNGA {
 		return result;
 	}
 	private void startBat() {
-		String pathScriptFile = new File("").getAbsolutePath() + "\\textmode.bat";
+		String pathScriptFile = "./textmode.bat";
 
         Process process;
 		try {
