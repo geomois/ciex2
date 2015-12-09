@@ -105,7 +105,7 @@ public class DefaultDriver extends AbstractDriver {
 		left = getMo(prevReadingLeft, left);
 		mid = getMo(prevReadingMid, mid);
 		right = getMo(prevReadingRight, right);
-		if (mid > 100) {
+		if (mid > 60) {
 			ret = 0;
 		} else if (Math.abs(left - right) > 20) {
 			if (left > right)

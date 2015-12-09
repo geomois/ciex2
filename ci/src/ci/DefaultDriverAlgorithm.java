@@ -74,7 +74,7 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
 		// Start a race
 		DefaultRace race = new DefaultRace();
 		if (!file) {
-			int nTracks = 1;
+			int nTracks = 5;
 			for (int i = 0; i < nTracks; i++) {
 				race.setTrack(AbstractRace.DefaultTracks.getTrack(0));
 				race.laps = 1;
@@ -195,7 +195,7 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
 		genome.loadSavedNN();
 		drivers[0] = genome;
 
-		NNGA ga=new NNGA(drivers[0],100,0.02);
+		NNGA ga=new NNGA(drivers[0],10,0.02);
 		
 		String path = "C:/Users/11126957/git/ciex2/ci/scenarios";
 		File folder = new File(path);

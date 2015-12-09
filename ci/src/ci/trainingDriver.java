@@ -50,7 +50,6 @@ public class trainingDriver extends AbstractDriver {
 		prevReadingLeft = new LinkedList<Double>();
 		prevReadingMid = new LinkedList<Double>();
 		prevReadingRight = new LinkedList<Double>();
-
 	}
 
 	@Override
@@ -74,14 +73,15 @@ public class trainingDriver extends AbstractDriver {
 		temp2.add(action.steering);
 		output.add(temp2);
 
-		desiredSpeed = 100.0;
+		desiredSpeed = 80.0;
+		getElev(sensors);
 		action.steering = getCurrentSteering(sensors);
 
 		if (sensors.getSpeed() > desiredSpeed) {
 			action.accelerate = 0.0D;
 			action.brake = 0.0D;
 		}
-		if (sensors.getSpeed() > desiredSpeed + 5.0) {
+		if (sensors.getSpeed() > desiredSpeed + 20.0) {
 			action.accelerate = 0.0D;
 			action.brake = 1.0D;
 		}
@@ -92,6 +92,22 @@ public class trainingDriver extends AbstractDriver {
 		if (sensors.getSpeed() < desiredSpeed / 3) {
 			action.accelerate = 1.0D;
 			action.brake = 0.0D;
+		}
+	}
+	private void getElev(SensorModel sensors) {
+		Double dif =sensors.getTrackEdgeSensors()[9];
+		if (dif >60) {
+			desiredSpeed += 60.0;
+		} else if (dif>50) {
+			desiredSpeed += 40.0;
+		} else if (dif>40) {
+			desiredSpeed += 30.0;
+		} else if (dif>30) {
+			desiredSpeed += 20.0;
+		} else if (dif > 20) {
+			desiredSpeed += 10.0;
+		} else {
+			desiredSpeed += 10;
 		}
 	}
 
@@ -111,7 +127,7 @@ public class trainingDriver extends AbstractDriver {
 		left = getMo(prevReadingLeft, left);
 		mid = getMo(prevReadingMid, mid);
 		right = getMo(prevReadingRight, right);
-		if (mid > 100) {
+		if (mid > 60) {
 			ret = 0;
 		} else if (Math.abs(left - right) > 20) {
 			if (left > right)

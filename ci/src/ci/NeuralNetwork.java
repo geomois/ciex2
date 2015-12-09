@@ -27,7 +27,7 @@ public class NeuralNetwork implements Serializable {
 	private static double bias = 1; // Activates the sigmoid
 	private Double Dmin;
 	private Double Dmax;
-	private Queue<ArrayList<Double[][]>> lastTrainedWeights;
+	private LinkedList<ArrayList<Double[][]>> lastTrainedWeights;
 
 	public NeuralNetwork() {
 		inputNodes = new ArrayList<Double>();
@@ -73,11 +73,17 @@ public class NeuralNetwork implements Serializable {
 			tempOutput[i] = output.get(i).toArray(tempOutput[i]);
 		}
 
-		for (int j = 0; j < 200; j++) {
+		for (int j = 0; j < 100; j++) {
 			for (int i = 0; i < input.size(); i++) {
 				train(tempInput[i], scale(tempOutput[i], 0.0, 1.0, Dmin, Dmax));
 				// train(tempInput, tempOutput);
 			}
+			
+//			if(lastTrainedWeights.size()==50 && !(isLearning(w1,input.get(0).size() + 1,hiddenLNo) || isLearning(w2,hiddenLNo + 1,outputLNo))){
+//				System.out.println(j);
+//				break;
+//			}
+			
 			if(lastTrainedWeights.size()==10){
 				lastTrainedWeights.remove();
 			}
@@ -91,7 +97,26 @@ public class NeuralNetwork implements Serializable {
 		inputNodes.clear();
 		sumErrorDerivWeight.clear();
 	}
-
+	
+	private boolean isLearning(Double[][] w,int a, int b){
+		for(int i=0;i<a;i++){
+			for(int j=0;j<b;j++){
+				if (b==hiddenLNo) {
+					if(w[i][j]!=lastTrainedWeights.getLast().get(0)[i][j])
+						return true;
+					else
+						return false;
+				}else{
+					if(w[i][j]!=lastTrainedWeights.getLast().get(1)[i][j])
+						return true;
+					else
+						return false;
+				}
+			}
+		}
+		return false;
+	}
+	
 	private void train(Double[] input, Double[] output) {
 
 		inputNodes.clear();

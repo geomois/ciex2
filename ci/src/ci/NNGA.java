@@ -118,7 +118,7 @@ public class NNGA {
 			DefaultRace race = new DefaultRace();
 			race.setTrack(AbstractRace.DefaultTracks.getTrack(0));
 			race.laps = 1;
-			result = race.runRace(drivers, false);
+			result = race.runRace(drivers, true);
 		return result;
 	}
 	private void startBat() {
