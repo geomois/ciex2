@@ -73,7 +73,7 @@ public class NeuralNetwork implements Serializable {
 			tempOutput[i] = output.get(i).toArray(tempOutput[i]);
 		}
 
-		for (int j = 0; j < 100; j++) {
+		for (int j = 0; j < 400; j++) {
 			for (int i = 0; i < input.size(); i++) {
 				train(tempInput[i], scale(tempOutput[i], 0.0, 1.0, Dmin, Dmax));
 				// train(tempInput, tempOutput);
@@ -339,7 +339,7 @@ public class NeuralNetwork implements Serializable {
 		return null;
 	}
 	public void setWeights(ArrayList<Double[][]> iWeights) {
-		w1 = iWeights.get(0);
-		w2 = iWeights.get(1);
+		w1 = iWeights.get(0).clone();
+		w2 = iWeights.get(1).clone();
 	}
 }
