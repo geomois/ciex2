@@ -204,6 +204,7 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
 		for (String s:fileNames) {
 			System.out.println("track "+s+": "+ga.GA(s));
 		}
+		genome.saveNN();
 	}
 
 	private void meRun() {
