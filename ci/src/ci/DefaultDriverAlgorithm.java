@@ -74,15 +74,34 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
 		// Start a race
 		DefaultRace race = new DefaultRace();
 		if (!file) {
-			int nTracks = 1;
+			int nTracks = 10;
+			BufferedReader br = null;
 			for (int i = 0; i < nTracks; i++) {
 				race.setTrack(AbstractRace.DefaultTracks.getTrack(0));
 				race.laps = 1;
 				// for speedup set withGUI to false
 
 				results = race.trainGenome(drivers, true);
-				inputDataToTrain.addAll(((trainingDriver) drivers[0].getDriver()).getInput());
-				outputDataToTrain.addAll(((trainingDriver) drivers[0].getDriver()).getOutput());
+				try {
+					br = new BufferedReader(new InputStreamReader(System.in));
+					String s;
+					System.out.println("Save? :");
+					while ((s = br.readLine()) == null) {
+						System.out.println("Save? :");
+					}
+					if (s.equals("y")) {
+						inputDataToTrain.addAll(((trainingDriver) drivers[0].getDriver()).getInput());
+						outputDataToTrain.addAll(((trainingDriver) drivers[0].getDriver()).getOutput());
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			try {
+				br.close();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 			drivers[0].trainNN(inputDataToTrain, outputDataToTrain);
 			saveToFile(inputDataToTrain, outputDataToTrain);
@@ -91,7 +110,8 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
 			ArrayList<ArrayList<Double>> output = new ArrayList<ArrayList<Double>>();
 			ArrayList<ArrayList<Double>> input = new ArrayList<ArrayList<Double>>();
 			// String path = "C:/Users/George/Desktop/ci train data";
-			String path = "C:/Users/11126957/Desktop/ci train data";
+			// String path = "C:/Users/11126957/Desktop/ci train data";
+			String path = "C:/Users/George/Desktop/train";
 			File folder = new File(path);
 			String[] fileNames = folder.list();
 
@@ -145,8 +165,7 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
 	public static void main(String[] args) {
 
 		// Set path to torcs.properties
-		TorcsConfiguration.getInstance()
-				.initialize(new File("./torcs.properties"));
+		TorcsConfiguration.getInstance().initialize(new File("./torcs.properties"));
 		/*
 		 *
 		 * Start without arguments to run the algorithm Start with -train train
@@ -189,22 +208,20 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
 		Double result = 0.0;
 		boolean improved = true;
 		int i = 0;
-		
+
 		DefaultDriverGenome genome = new DefaultDriverGenome();
 		genome.loadSavedNN();
 
-		NNGA ga=new NNGA(genome,10,0.5);
-		
-		
-		
+		NNGA ga = new NNGA(genome, 10, 0.5);
+
 		ArrayList<ArrayList<Double[][]>> w = new ArrayList<ArrayList<Double[][]>>();
-		while (improved || i < 10){
+		while (improved || i < 10) {
 			result = ga.GA();
-			if (bestResult == 0.0){
+			if (bestResult == 0.0) {
 				bestResult = result;
-			}else if(result<bestResult){
+			} else if (result < bestResult) {
 				improved = false;
-			}else{
+			} else {
 				bestResult = result;
 				improved = true;
 			}
@@ -212,9 +229,9 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
 			w.add(genome.getMyNN().getWeights());
 			System.out.println(bestResult);
 			genome.saveGA(i);
-			
+
 		}
-		
+
 		genome.saveNN();
 	}
 
@@ -225,7 +242,7 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
 		ArrayList<ArrayList<Double>> outputDataToTrain = new ArrayList<ArrayList<Double>>();
 		// Start a race
 		DefaultRace race = new DefaultRace();
-		int nTracks =10;
+		int nTracks = 10;
 		BufferedReader br = null;
 		for (int i = 0; i < nTracks; i++) {
 			race.setTrack(AbstractRace.DefaultTracks.getTrack(0));
@@ -252,7 +269,7 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		saveToFile(inputDataToTrain,outputDataToTrain);
+		saveToFile(inputDataToTrain, outputDataToTrain);
 		drivers[0].trainNN(inputDataToTrain, outputDataToTrain);
 
 		drivers[0].saveNN();
@@ -260,15 +277,17 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
 		DriversUtils.storeGenome(drivers[0]);
 		System.exit(0);
 	}
-	
+
 	private void saveToFile(ArrayList<ArrayList<Double>> input, ArrayList<ArrayList<Double>> speed) {
 		try {
 			FileWriter fw;
 			Calendar cal = Calendar.getInstance();
-	        SimpleDateFormat sdf = new SimpleDateFormat("HHmmss");
+			SimpleDateFormat sdf = new SimpleDateFormat("HHmmss");
 
-//			File file = new File("C:/Users/11126957/Desktop/ci train data/traindata"+sdf.format(cal.getTime()).toString()+".txt");
-			File file = new File("C:/Users/George/Desktop/train/traindata"+sdf.format(cal.getTime()).toString()+".txt");
+			// File file = new File("C:/Users/11126957/Desktop/ci train
+			// data/traindata"+sdf.format(cal.getTime()).toString()+".txt");
+			File file = new File(
+					"C:/Users/George/Desktop/train/traindata" + sdf.format(cal.getTime()).toString() + ".txt");
 			// if file doesnt exists, then create it
 			if (!file.exists()) {
 				file.createNewFile();
@@ -279,16 +298,15 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
 
 			BufferedWriter bw = new BufferedWriter(fw);
 
-			for (int i=0;i<input.size();i++) {
+			for (int i = 0; i < input.size(); i++) {
 				for (Double a : input.get(i)) {
 					bw.write(a.toString() + " ");
 				}
 				bw.write("\n");
 				bw.write(speed.get(i).get(0).toString());
-//				bw.write(steering.get(i).toString() + " ");
+				// bw.write(steering.get(i).toString() + " ");
 				bw.write("\n");
 			}
-
 
 			bw.close();
 
@@ -298,26 +316,26 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
 			e.printStackTrace();
 		}
 	}
-	
+
 	private void startBat() {
 		String pathScriptFile = "./textmode.bat";
 
-        Process process;
+		Process process;
 		try {
-			 process = new ProcessBuilder(pathScriptFile).start();
-			 InputStream is = process.getInputStream();
-		     InputStreamReader isr = new InputStreamReader(is);
-		     BufferedReader br = new BufferedReader(isr);
-		     String line;
-		    
-		     while ((line = br.readLine()) != null) {
-		    	 System.out.println(line);
-		     }
+			process = new ProcessBuilder(pathScriptFile).start();
+			InputStream is = process.getInputStream();
+			InputStreamReader isr = new InputStreamReader(is);
+			BufferedReader br = new BufferedReader(isr);
+			String line;
+
+			while ((line = br.readLine()) != null) {
+				System.out.println(line);
+			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+
 	}
 
 }
