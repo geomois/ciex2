@@ -74,7 +74,7 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
 		// Start a race
 		DefaultRace race = new DefaultRace();
 		if (!file) {
-			int nTracks = 5;
+			int nTracks = 1;
 			for (int i = 0; i < nTracks; i++) {
 				race.setTrack(AbstractRace.DefaultTracks.getTrack(0));
 				race.laps = 1;
@@ -249,8 +249,8 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
 			Calendar cal = Calendar.getInstance();
 	        SimpleDateFormat sdf = new SimpleDateFormat("HHmmss");
 
-			File file = new File("C:/Users/11126957/Desktop/ci train data/traindata"+sdf.format(cal.getTime()).toString()+".txt");
-
+//			File file = new File("C:/Users/11126957/Desktop/ci train data/traindata"+sdf.format(cal.getTime()).toString()+".txt");
+			File file = new File("C:/Users/George/Desktop/train/traindata"+sdf.format(cal.getTime()).toString()+".txt");
 			// if file doesnt exists, then create it
 			if (!file.exists()) {
 				file.createNewFile();

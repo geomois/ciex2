@@ -58,7 +58,6 @@ public class DefaultDriver extends AbstractDriver {
 		for (int i = 0; i < sensors.getTrackEdgeSensors().length; i += 2) {
 			input.add(sensors.getTrackEdgeSensors()[i]);
 		}
-		System.out.println(sensors.getTrackEdgeSensors().length);
 		input.add(sensors.getTrackEdgeSensors()[9]);
 		width = input.get(0) + input.get(9);
 

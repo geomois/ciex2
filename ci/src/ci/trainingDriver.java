@@ -148,72 +148,51 @@ public class trainingDriver extends AbstractDriver {
 		return ret;
 	}
 
-	private double moveRight(double grade) {
-		double grading = 1;
-		double diff;
-		if (grade == 100)
-			grading = 0.8;
-		else if (grade == 50)
-			grading = 0.88;
-		else if (grade == 20)
-			grading = 0.9;
-		else if (grade == 10)
-			grading = 0.95;
-		else
-			grading = 1;
-		if (grade != 200) {
-			
-			if (temp.get(9) > width - (width * grading)) {
-				diff = temp.get(9) - (width - (width * grading));
-				System.out.println("w: " + diff / width + " " + "r:" + diff + " " + "g:" + grading);
-				if (Math.abs(diff / width) > 0.8)
-					return steerConstant * smooth[smooth.length - 1];
-				else if (Math.abs(diff / width) > 0.6)
-					return steerConstant * smooth[3];
-				else if (Math.abs(diff / width) > 0.4)
-					return steerConstant * smooth[2];
-				else if (Math.abs(diff / width) > 0.25)
-					return steerConstant * smooth[1];
-				else
-					return steerConstant * smooth[0];
-			} else
-				return 0.0;
+	private double moveRight(double grading) {
+		double diffScale;
+		double temp = width - (width * grading);
+		if (this.temp.get(9) > temp) {
+			diffScale = Math.abs((this.temp.get(9) - temp) / width);
+			// scale
+			return (steerConstant * (0.5 + 0.45 * diffScale));
 		} else
-			return 0.2 * smooth[0];
+			return 0.0;
 	}
 
-	private double moveLeft(double grade) {
-		double grading = 1;
-		double diff;
-		if (grade == 100)
-			grading = 0.8;
-		else if (grade == 50)
-			grading = 0.88;
-		else if (grade == 20)
-			grading = 0.9;
-		else if (grade == 10)
-			grading = 0.95;
-		else
-			grading = 1;
+	private double moveLeft(double grading) {
+//		double grading = 1;
+//		double diff;
+//		if (grade == 100)
+//			grading = 0.8;
+//		else if (grade == 50)
+//			grading = 0.88;
+//		else if (grade == 20)
+//			grading = 0.9;
+//		else if (grade == 10)
+//			grading = 0.95;
+//		else
+//			grading = 1;
 
-		if (grade != 200) {
-			if (temp.get(0) > width - (width * grading)) {
-				diff = temp.get(0) - (width - (width * grading));
-				System.out.println("w: " + diff / width + " " + "l:" + diff+ " " + "g:" + grading);
-				if (Math.abs(diff / width) > 0.8)
-					return -steerConstant * smooth[smooth.length - 1];
-				else if (Math.abs(diff / width) > 0.6)
-					return -steerConstant * smooth[3];
-				else if (Math.abs(diff / width) > 0.4)
-					return -steerConstant * smooth[2];
-				else if (Math.abs(diff / width) > 0.25)
-					return -steerConstant * smooth[1];
-				else
-					return -steerConstant * smooth[0];
-			} else
-				return 0.0;
+		// if (input.get(0) > width - (width * grading)) {
+		// diff = input.get(0) - (width - (width * grading));
+		// if (Math.abs(diff / width) > 0.8)
+		// return -steerConstant * smooth[smooth.length - 1];
+		// else if (Math.abs(diff / width) > 0.6)
+		// return -steerConstant * smooth[3];
+		// else if (Math.abs(diff / width) > 0.4)
+		// return -steerConstant * smooth[2];
+		// else if (Math.abs(diff / width) > 0.25)
+		// return -steerConstant * smooth[1];
+		// else
+		// return -steerConstant * smooth[0];
+		double diffScale;
+		double temp = width - (width * grading);
+		if (this.temp.get(9) > temp) {
+			diffScale = Math.abs((this.temp.get(9) - temp) / width);
+			// scale
+			return -(steerConstant * (0.5 + 0.45 * diffScale));
 		} else
-			return -0.08 * smooth[0];
+			return 0.0;
 	}
 
 	private Double getCurrentSteering(SensorModel sensors) {
@@ -231,7 +210,7 @@ public class trainingDriver extends AbstractDriver {
 
 		if (position < 0.95 && position > -0.95) {
 			// Consider width is the percentage, 0% is left, 100% is right
-			if (distance > 60) {
+			if (distance > 100) {
 				if (leftTurn(leftFront, rightFront, mid) == 1)
 					speed = moveRight(100);
 				else if (leftTurn(leftFront, rightFront, mid) == 2)
@@ -281,7 +260,6 @@ public class trainingDriver extends AbstractDriver {
 				speed = DriversUtils.alignToTrackAxis(sensors, 0.3D)-0.09;
 			else if (position < -0.95)
 				speed = DriversUtils.alignToTrackAxis(sensors, 0.3D)+0.09;
-			System.out.println("out of track: " + position + speed);
 		}
 
 		if (speed == 0.0)
