@@ -28,6 +28,7 @@ public class trainingDriver extends AbstractDriver {
 	private LinkedList<Double> prevReadingRight;
 	private double width;
 	private double[] smooth = { 0.5, 0.65, 0.75, 0.8, 0.95 };
+	private double[] grade = { 0.8, 0.88, 0.9 };
 	private double steerConstant = 0.5;
 	ArrayList<Double> temp;
 
@@ -94,15 +95,16 @@ public class trainingDriver extends AbstractDriver {
 			action.brake = 0.0D;
 		}
 	}
+
 	private void getElev(SensorModel sensors) {
-		Double dif =sensors.getTrackEdgeSensors()[9];
-		if (dif >60) {
+		Double dif = sensors.getTrackEdgeSensors()[9];
+		if (dif > 60) {
 			desiredSpeed += 60.0;
-		} else if (dif>50) {
+		} else if (dif > 50) {
 			desiredSpeed += 40.0;
-		} else if (dif>40) {
+		} else if (dif > 40) {
 			desiredSpeed += 30.0;
-		} else if (dif>30) {
+		} else if (dif > 30) {
 			desiredSpeed += 20.0;
 		} else if (dif > 20) {
 			desiredSpeed += 10.0;
@@ -160,18 +162,18 @@ public class trainingDriver extends AbstractDriver {
 	}
 
 	private double moveLeft(double grading) {
-//		double grading = 1;
-//		double diff;
-//		if (grade == 100)
-//			grading = 0.8;
-//		else if (grade == 50)
-//			grading = 0.88;
-//		else if (grade == 20)
-//			grading = 0.9;
-//		else if (grade == 10)
-//			grading = 0.95;
-//		else
-//			grading = 1;
+		// double grading = 1;
+		// double diff;
+		// if (grade == 100)
+		// grading = 0.8;
+		// else if (grade == 50)
+		// grading = 0.88;
+		// else if (grade == 20)
+		// grading = 0.9;
+		// else if (grade == 10)
+		// grading = 0.95;
+		// else
+		// grading = 1;
 
 		// if (input.get(0) > width - (width * grading)) {
 		// diff = input.get(0) - (width - (width * grading));
@@ -208,65 +210,53 @@ public class trainingDriver extends AbstractDriver {
 		double extra = sensors.getAngleToTrackAxis();
 		double speed = 0;
 
+
 		if (position < 0.95 && position > -0.95) {
 			// Consider width is the percentage, 0% is left, 100% is right
 			if (distance > 100) {
 				if (leftTurn(leftFront, rightFront, mid) == 1)
-					speed = moveRight(100);
+					speed = moveRight(grade[0]);
 				else if (leftTurn(leftFront, rightFront, mid) == 2)
-					speed = moveLeft(100);
+					speed = moveLeft(grade[0]);
 				else if (leftTurn(leftFront, rightFront, mid) == -2)
-					speed = moveLeft(100);
+					speed = moveLeft(grade[0]);
 				else if (leftTurn(leftFront, rightFront, mid) == -1)
-					speed = moveRight(100);
+					speed = moveRight(grade[0]);
 				else
 					speed = 0.0;
 			} else if (distance < 60 && distance > 30) {
 				if (leftTurn(leftFront, rightFront, mid) == 1)
-					speed = moveLeft(50);
+					speed = moveLeft(grade[1]);
 				else if (leftTurn(leftFront, rightFront, mid) == 2)
-					speed = moveRight(50);
+					speed = moveRight(grade[1]);
 				else if (leftTurn(leftFront, rightFront, mid) == -2)
-					speed = moveRight(50);
+					speed = moveRight(grade[1]);
 				else if (leftTurn(leftFront, rightFront, mid) == -1)
-					speed = moveLeft(50);
+					speed = moveLeft(grade[1]);
 				else
 					speed = 0.0;
 			} else if (distance < 30 && distance > 15) {
 				if (leftTurn(leftFront, rightFront, mid) == 1)
-					speed = moveLeft(20);
+					speed = moveLeft(grade[2]);
 				else if (leftTurn(leftFront, rightFront, mid) == 2)
-					speed = moveRight(20);
+					speed = moveRight(grade[2]);
 				else if (leftTurn(leftFront, rightFront, mid) == -2)
-					speed = moveRight(20);
+					speed = moveRight(grade[2]);
 				else if (leftTurn(leftFront, rightFront, mid) == -1)
-					speed = moveLeft(20);
-				else
-					speed = 0.0;
-			} else if (distance < 15 && distance > 5) {
-				if (leftTurn(leftFront, rightFront, mid) == 1)
-					speed = moveLeft(10);
-				else if (leftTurn(leftFront, rightFront, mid) == 2)
-					speed = moveRight(10);
-				else if (leftTurn(leftFront, rightFront, mid) == -2)
-					speed = moveRight(10);
-				else if (leftTurn(leftFront, rightFront, mid) == -1)
-					speed = moveLeft(10);
+					speed = moveLeft(grade[2]);
 				else
 					speed = 0.0;
 			}
 		} else {
-			if (position > 0.95)
-				speed = DriversUtils.alignToTrackAxis(sensors, 0.3D)-0.09;
-			else if (position < -0.95)
-				speed = DriversUtils.alignToTrackAxis(sensors, 0.3D)+0.09;
+			if (position >0)
+				speed = DriversUtils.alignToTrackAxis(sensors, 0.3D) - 0.1;
+			else
+				speed = DriversUtils.alignToTrackAxis(sensors, 0.3D) + 0.1;
 		}
-
 		if (speed == 0.0)
-			currentSteer = DriversUtils.alignToTrackAxis(sensors, 0.3D);
+			return DriversUtils.alignToTrackAxis(sensors, 0.3D);
 		else
-			currentSteer = speed;
-		return currentSteer;
+			return speed;
 	}
 
 	public String getDriverName() {

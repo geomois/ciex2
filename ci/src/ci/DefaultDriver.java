@@ -187,46 +187,35 @@ public class DefaultDriver extends AbstractDriver {
 			// Consider width is the percentage, 0% is left, 100% is right
 			if (distance > 100) {
 				if (leftTurn(leftFront, rightFront, mid) == 1)
-					speed = moveRight(100);
+					speed = moveRight(grade[0]);
 				else if (leftTurn(leftFront, rightFront, mid) == 2)
-					speed = moveLeft(100);
+					speed = moveLeft(grade[0]);
 				else if (leftTurn(leftFront, rightFront, mid) == -2)
-					speed = moveLeft(100);
+					speed = moveLeft(grade[0]);
 				else if (leftTurn(leftFront, rightFront, mid) == -1)
-					speed = moveRight(100);
+					speed = moveRight(grade[0]);
 				else
 					speed = 0.0;
 			} else if (distance < 60 && distance > 30) {
 				if (leftTurn(leftFront, rightFront, mid) == 1)
-					speed = moveLeft(50);
+					speed = moveLeft(grade[1]);
 				else if (leftTurn(leftFront, rightFront, mid) == 2)
-					speed = moveRight(50);
+					speed = moveRight(grade[1]);
 				else if (leftTurn(leftFront, rightFront, mid) == -2)
-					speed = moveRight(50);
+					speed = moveRight(grade[1]);
 				else if (leftTurn(leftFront, rightFront, mid) == -1)
-					speed = moveLeft(50);
+					speed = moveLeft(grade[1]);
 				else
 					speed = 0.0;
 			} else if (distance < 30 && distance > 15) {
 				if (leftTurn(leftFront, rightFront, mid) == 1)
-					speed = moveLeft(20);
+					speed = moveLeft(grade[2]);
 				else if (leftTurn(leftFront, rightFront, mid) == 2)
-					speed = moveRight(20);
+					speed = moveRight(grade[2]);
 				else if (leftTurn(leftFront, rightFront, mid) == -2)
-					speed = moveRight(20);
+					speed = moveRight(grade[2]);
 				else if (leftTurn(leftFront, rightFront, mid) == -1)
-					speed = moveLeft(20);
-				else
-					speed = 0.0;
-			} else if (distance < 15 && distance > 5) {
-				if (leftTurn(leftFront, rightFront, mid) == 1)
-					speed = moveLeft(10);
-				else if (leftTurn(leftFront, rightFront, mid) == 2)
-					speed = moveRight(10);
-				else if (leftTurn(leftFront, rightFront, mid) == -2)
-					speed = moveRight(10);
-				else if (leftTurn(leftFront, rightFront, mid) == -1)
-					speed = moveLeft(10);
+					speed = moveLeft(grade[2]);
 				else
 					speed = 0.0;
 			}
