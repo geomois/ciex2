@@ -16,18 +16,16 @@ import cicontest.torcs.controller.extras.AutomatedRecovering;
 
 public class DefaultDriver extends AbstractDriver {
 
-	private static Double TopSpeed;
-	// private NeuralNetwork neuralNetwork = new NeuralNetwork();
 	private ArrayList<Double> input;
 	private DefaultDriverGenome driverGenome;
-	private Double prevSteering;
 	Double desiredSpeed;
 	private Double lapTime;
 	private LinkedList<Double> prevReadingLeft;
 	private LinkedList<Double> prevReadingMid;
 	private LinkedList<Double> prevReadingRight;
 	private double width;
-	private double[] smooth = { 0.5, 0.65, 0.75, 0.8, 0.95 };
+//	private double[] smooth = { 0.5, 0.65, 0.75, 0.8, 0.95 };
+	private double[] grade = { 0.8, 0.88, 0.9 };
 	private double steerConstant = 0.4;
 	private static boolean verbose = false;
 
@@ -44,8 +42,8 @@ public class DefaultDriver extends AbstractDriver {
 		this.enableExtras(new AutomatedGearbox());
 		this.enableExtras(new AutomatedRecovering());
 		this.enableExtras(new ABS());
-		input = new ArrayList<Double>();
-		prevSteering = 0.0;
+		input = new ArrayList<Double>(11);
+//		prevSteering = 0.0;
 		prevReadingLeft = new LinkedList<Double>();
 		prevReadingMid = new LinkedList<Double>();
 		prevReadingRight = new LinkedList<Double>();
@@ -54,20 +52,19 @@ public class DefaultDriver extends AbstractDriver {
 
 	@Override
 	public void control(Action action, SensorModel sensors) {
-		Double[] NNOutput = new Double[2];
-		input.clear();
+		double NNOutput;
+		input = new ArrayList<Double>(11);
+
 		for (int i = 0; i < sensors.getTrackEdgeSensors().length; i += 2) {
 			input.add(sensors.getTrackEdgeSensors()[i]);
 		}
+		System.out.println(sensors.getTrackEdgeSensors().length);
+		input.add(sensors.getTrackEdgeSensors()[9]);
 		width = input.get(0) + input.get(9);
 
-		// central sensor
-		input.add(sensors.getTrackEdgeSensors()[9]);
 		NNOutput = driverGenome.getNNValue(input);
-		desiredSpeed = NNOutput[0];
-
 		action.steering = getCurrentSteering(sensors);
-		desiredSpeed = NNOutput[0];
+		desiredSpeed = NNOutput;
 		if (verbose)
 			System.out.println(desiredSpeed.toString());
 		if (sensors.getSpeed() > desiredSpeed) {
@@ -86,7 +83,7 @@ public class DefaultDriver extends AbstractDriver {
 			action.accelerate = 1.0D;
 			action.brake = 0.0D;
 		}
-		
+
 		Double currTime = sensors.getCurrentLapTime();
 		if (currTime > lapTime)
 			lapTime = currTime;
@@ -130,92 +127,66 @@ public class DefaultDriver extends AbstractDriver {
 		return ret;
 	}
 
-	private double moveRight(double grade) {
-		double grading = 1;
-		double diff;
-		if (grade == 100)
-			grading = 0.8;
-		else if (grade == 50)
-			grading = 0.88;
-		else if (grade == 20)
-			grading = 0.9;
-		else if (grade == 10)
-			grading = 0.95;
-		else
-			grading = 1;
-		if (grade != 200) {
-
-			if (input.get(9) > width - (width * grading)) {
-				diff = input.get(9) - (width - (width * grading));
-				if (verbose)
-					System.out.println("w: " + diff / width + " " + "r:" + diff + " " + "g:" + grading);
-				if (Math.abs(diff / width) > 0.8)
-					return steerConstant * smooth[smooth.length - 1];
-				else if (Math.abs(diff / width) > 0.6)
-					return steerConstant * smooth[3];
-				else if (Math.abs(diff / width) > 0.4)
-					return steerConstant * smooth[2];
-				else if (Math.abs(diff / width) > 0.25)
-					return steerConstant * smooth[1];
-				else
-					return steerConstant * smooth[0];
-			} else
-				return 0.0;
+	private double moveRight(double grading) {
+		double diffScale;
+		double temp = width - (width * grading);
+		if (input.get(9) > temp) {
+			diffScale = Math.abs((input.get(9) - temp) / width);
+			// scale
+			return (steerConstant * (0.5 + 0.45 * diffScale));
 		} else
-			return 0.2 * smooth[0];
+			return 0.0;
 	}
 
-	private double moveLeft(double grade) {
-		double grading = 1;
-		double diff;
-		if (grade == 100)
-			grading = 0.8;
-		else if (grade == 50)
-			grading = 0.88;
-		else if (grade == 20)
-			grading = 0.9;
-		else if (grade == 10)
-			grading = 0.95;
-		else
-			grading = 1;
+	private double moveLeft(double grading) {
+//		double grading = 1;
+//		double diff;
+//		if (grade == 100)
+//			grading = 0.8;
+//		else if (grade == 50)
+//			grading = 0.88;
+//		else if (grade == 20)
+//			grading = 0.9;
+//		else if (grade == 10)
+//			grading = 0.95;
+//		else
+//			grading = 1;
 
-		if (grade != 200) {
-			if (input.get(0) > width - (width * grading)) {
-				diff = input.get(0) - (width - (width * grading));
-				if (verbose)
-					System.out.println("w: " + diff / width + " " + "l:" + diff + " " + "g:" + grading);
-				if (Math.abs(diff / width) > 0.8)
-					return -steerConstant * smooth[smooth.length - 1];
-				else if (Math.abs(diff / width) > 0.6)
-					return -steerConstant * smooth[3];
-				else if (Math.abs(diff / width) > 0.4)
-					return -steerConstant * smooth[2];
-				else if (Math.abs(diff / width) > 0.25)
-					return -steerConstant * smooth[1];
-				else
-					return -steerConstant * smooth[0];
-			} else
-				return 0.0;
+		// if (input.get(0) > width - (width * grading)) {
+		// diff = input.get(0) - (width - (width * grading));
+		// if (Math.abs(diff / width) > 0.8)
+		// return -steerConstant * smooth[smooth.length - 1];
+		// else if (Math.abs(diff / width) > 0.6)
+		// return -steerConstant * smooth[3];
+		// else if (Math.abs(diff / width) > 0.4)
+		// return -steerConstant * smooth[2];
+		// else if (Math.abs(diff / width) > 0.25)
+		// return -steerConstant * smooth[1];
+		// else
+		// return -steerConstant * smooth[0];
+		double diffScale;
+		double temp = width - (width * grading);
+		if (input.get(9) > temp) {
+			diffScale = Math.abs((input.get(9) - temp) / width);
+			// scale
+			return -(steerConstant * (0.5 + 0.45 * diffScale));
 		} else
-			return -0.08 * smooth[0];
+			return 0.0;
 	}
 
 	private Double getCurrentSteering(SensorModel sensors) {
-		Double currentSteer = null;
-		boolean verbose = true;
 		double leftFront = input.get(4);
 		double rightFront = input.get(5);
 		double mid = input.get(input.size() - 1);
 		double position = sensors.getTrackPosition();
-		double alignment = sensors.getAngleToTrackAxis();
+//		double alignment = sensors.getAngleToTrackAxis();
 		double distance = (getMo(prevReadingRight, leftFront) + getMo(prevReadingRight, mid)
 				+ getMo(prevReadingRight, rightFront)) / 3.0;
-		double extra = sensors.getAngleToTrackAxis();
 		double speed = 0;
 
 		if (position < 0.95 && position > -0.95) {
 			// Consider width is the percentage, 0% is left, 100% is right
-			if (distance > 60) {
+			if (distance > 100) {
 				if (leftTurn(leftFront, rightFront, mid) == 1)
 					speed = moveRight(100);
 				else if (leftTurn(leftFront, rightFront, mid) == 2)
@@ -261,19 +232,15 @@ public class DefaultDriver extends AbstractDriver {
 					speed = 0.0;
 			}
 		} else {
-			if (position > 0.95)
-				speed = DriversUtils.alignToTrackAxis(sensors, 0.3D) - 0.09;
-			else if (position < -0.95)
-				speed = DriversUtils.alignToTrackAxis(sensors, 0.3D) + 0.09;
-			if (verbose)
-				System.out.println("out of track: " + position + speed);
+			if (position >0)
+				speed = DriversUtils.alignToTrackAxis(sensors, 0.3D) - 0.1;
+			else
+				speed = DriversUtils.alignToTrackAxis(sensors, 0.3D) + 0.1;
 		}
-
 		if (speed == 0.0)
-			currentSteer = DriversUtils.alignToTrackAxis(sensors, 0.3D);
+			return DriversUtils.alignToTrackAxis(sensors, 0.3D);
 		else
-			currentSteer = speed;
-		return currentSteer;
+			return speed;
 	}
 
 	public String getDriverName() {

@@ -17,10 +17,9 @@ public class DefaultDriverGenome implements IGenome {
 		myNN.trainNetwork(input, output);
 	}
 	
-	public Double[] getNNValue(ArrayList<Double> input){
+	public double getNNValue(ArrayList<Double> input){
 			Double[] temp=new Double[input.size()];
-			temp=myNN.getValues(input.toArray(temp));
-			return temp;
+			return myNN.getValues(input.toArray(temp));
 	}
 	
 	public void setDriver(Driver trainingDriver) {
