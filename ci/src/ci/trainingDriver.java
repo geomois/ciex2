@@ -125,7 +125,7 @@ public class trainingDriver extends AbstractDriver {
 
 	private int leftTurn(double left, double right, double mid) {
 		int ret = 0;
-		if (mid > 60) {
+		if (mid > 100) {
 			ret = 0;
 		} else {
 			if (left > right)
@@ -157,7 +157,7 @@ public class trainingDriver extends AbstractDriver {
 		// Consider width is the percentage, 0% is left, 100% is right
 
 		if (position < 0.95 && position > -0.95) {
-			if (distance > 60) {
+			if (distance > 100) {
 				speed = 0.0;
 			} else {
 				int pick = leftTurn(leftFront, rightFront, mid);
