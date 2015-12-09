@@ -37,5 +37,9 @@ public class DefaultDriverGenome implements IGenome {
 	public void saveNN(){
 		myNN.storeGenome();
 	}
+	public void saveGA(int i) {
+		myNN.storeGA();
+		
+	}
 }
 

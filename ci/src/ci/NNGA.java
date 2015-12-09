@@ -2,9 +2,12 @@ package ci;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.util.ArrayList;
 
 import java.util.LinkedList;
@@ -31,7 +34,6 @@ public class NNGA {
 	private LinkedList<ArrayList<Double[][]>> weights;
 	private LinkedList<ArrayList<Double[][]>> ranks;
 	private Double mutationProb;
-	private String xmlFileName;
 
 	public NNGA(DefaultDriverGenome myDDG, int nIndividuals, Double mutationProb){
 		this.myDDG = myDDG;
@@ -41,8 +43,7 @@ public class NNGA {
 	    ranks=new LinkedList<ArrayList<Double[][]>>();
 	}
 	
-	public Double GA(String fileName){
-		xmlFileName=fileName;
+	public Double GA(){
 		Double bestRun = rank();
 		mutate();
 		return bestRun;
@@ -52,7 +53,9 @@ public class NNGA {
 		int r1,r2;
 		
 		for (int i = 0; i < nIndividuals; i++){
+			System.out.println("Start individual: " + Integer.toString(i+1));
 			lapTime[i] = raceIndividual(weights.get(i));
+			System.out.println("End individual: " + Integer.toString(i+1));
 		}
 
 		if (lapTime[0] < lapTime[1]){
@@ -106,39 +109,52 @@ public class NNGA {
 		}
 		return oweights;
 	}
-	private Double raceIndividual(ArrayList<Double[][]> iWeights) {
+	private Double raceIndividual(ArrayList<Double[][]> iWeights){
 		DefaultDriverGenome[] drivers = new DefaultDriverGenome[1];
-		Double result;
+		Double result = 0.0;
 		myDDG.getMyNN().setWeights(iWeights);
-       //todoo
-			drivers[0] = myDDG;
-			setTrackinXML("alpine-1","road",".\\scenarios\\"+this.xmlFileName);
-			startBat();
+     
+		drivers[0] = myDDG;
+	//	String path = "./scenarios";
+		//File folder = new File(path);
+	//	String[] fileNames = folder.list();
+		//String[] trackNames = {"ole-road-1","g-track-3","g-track-2","g-track-1","ruudskogen"};
+		for (int i = 0; i < 5; i++) {
+			
+		//	String s = fileNames[i];
+			//copyFileUsingStream("./scenarios/"+s,"C:\\Program Files (x86)\\torcs\\config\\raceman\\quickrace.xml");
 			DefaultRace race = new DefaultRace();
-			race.setTrack(AbstractRace.DefaultTracks.getTrack(0));
-			race.laps = 1;
-			result = race.runRace(drivers, true);
-		return result;
+			Process p = startBat();
+			
+			System.out.println("Start lap: " + Integer.toString(i+1));
+			Double lapresult = race.runRace(drivers, true);
+			System.out.println("lap " + Integer.toString(i+1)+ ": " +  lapresult);
+			result+= lapresult;
+			
+		}
+
+		return result/5.0;
 	}
-	private void startBat() {
+	private Process startBat() {
 		String pathScriptFile = "./textmode.bat";
 
-        Process process;
+        Process process = null;
 		try {
 			 process = new ProcessBuilder(pathScriptFile).start();
 			 InputStream is = process.getInputStream();
 		     InputStreamReader isr = new InputStreamReader(is);
 		     BufferedReader br = new BufferedReader(isr);
 		     String line;
+		     
 		    
 		     while ((line = br.readLine()) != null) {
-//		    	 System.out.println(line);
+		    	// System.out.println(line);
 		     }
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+		return process;
 	}
 	private void setTrackinXML(String nameTrack, String categoryTrack, String filepath) {
         try 
@@ -212,4 +228,23 @@ public class NNGA {
             sae.printStackTrace();
        }
     }
+	private static void copyFileUsingStream(String source, String dest){
+	    InputStream is = null;
+	    OutputStream os = null;
+	    try {
+	        is = new FileInputStream(new File(source));
+	        os = new FileOutputStream(new File(dest));
+	        byte[] buffer = new byte[1024];
+	        int length;
+	        while ((length = is.read(buffer)) > 0) {
+	            os.write(buffer, 0, length);
+	        }
+	        is.close();
+	        os.close();
+	    } catch (IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+	    }
+	}
+	
 }
