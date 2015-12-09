@@ -38,6 +38,7 @@ public class NNGA {
 	    this.nIndividuals = nIndividuals;
 	    this.weights = myDDG.getMyNN().getLastTrainWeights();
 	    this.mutationProb = mutationProb;
+	    ranks=new LinkedList<ArrayList<Double[][]>>();
 	}
 	
 	public Double GA(String fileName){
