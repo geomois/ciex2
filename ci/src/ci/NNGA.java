@@ -95,7 +95,6 @@ public class NNGA {
 		
 		for (int i = 0; i < oweights.size(); i++){
 			if (Math.random() > mutationProb){
-				System.out.println("in");
 				w =  oweights.get(i);
 				for (int j = 0; j < w.length; j++){
 					for (int k = 0; k < w[0].length; k++){
@@ -104,7 +103,6 @@ public class NNGA {
 				}
 				oweights.set(i,w);
 			}
-			
 		}
 		return oweights;
 	}
@@ -134,7 +132,7 @@ public class NNGA {
 		     String line;
 		    
 		     while ((line = br.readLine()) != null) {
-		    	 System.out.println(line);
+//		    	 System.out.println(line);
 		     }
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
