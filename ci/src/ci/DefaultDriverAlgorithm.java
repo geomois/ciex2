@@ -203,36 +203,47 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
 	}
 
 	private void trainGA() {
-		// Start a race
-		Double bestResult = 0.0;
-		Double result = 0.0;
-		boolean improved = true;
-		int i = 0;
-
-		DefaultDriverGenome genome = new DefaultDriverGenome();
-		genome.loadSavedNN();
-
-		NNGA ga = new NNGA(genome, 10, 0.5);
-
-		ArrayList<ArrayList<Double[][]>> w = new ArrayList<ArrayList<Double[][]>>();
-		while (improved || i < 10) {
-			result = ga.GA();
-			if (bestResult == 0.0) {
-				bestResult = result;
-			} else if (result < bestResult) {
-				improved = false;
-			} else {
-				bestResult = result;
-				improved = true;
-			}
-			i++;
-			w.add(genome.getMyNN().getWeights());
-			System.out.println(bestResult);
-			genome.saveGA(i);
-
+		DefaultDriverGenome genome;
+		
+		String path = "C:/Users/George/Desktop/train";
+		File folder = new File(path);
+		String[] fileNames = folder.list();
+		ArrayList<String> files=new ArrayList<String>();
+		
+		for (String name : fileNames) {
+			if(name.startsWith("r"))
+				files.add(name);
 		}
-
-		genome.saveNN();
+		
+		for (int j = 0; j < files.size(); j++) {
+			File raceFile=new File(files.get(j));
+			File quickFile=new 
+			
+			Double bestResult = 0.0;
+			Double result = 0.0;
+			boolean improved = true;
+			int i = 0;
+			genome = new DefaultDriverGenome();
+			genome.loadSavedNN();
+			NNGA ga = new NNGA(genome, 10, 0.5);
+			ArrayList<ArrayList<Double[][]>> w = new ArrayList<ArrayList<Double[][]>>();
+			while (improved || i < 10) {
+				result = ga.GA();
+				if (bestResult == 0.0) {
+					bestResult = result;
+				} else if (result < bestResult) {
+					improved = false;
+				} else {
+					bestResult = result;
+					improved = true;
+				}
+				i++;
+				w.add(genome.getMyNN().getWeights());
+				System.out.println(bestResult);
+				genome.saveGA(i);
+			} 
+			genome.saveNN();
+		}
 	}
 
 	private void meRun() {
