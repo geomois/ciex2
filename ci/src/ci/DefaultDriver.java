@@ -198,6 +198,7 @@ public class DefaultDriver extends AbstractDriver {
 
 	private Double getCurrentSteering(SensorModel sensors) {
 		Double currentSteer = null;
+		boolean verbose = true;
 		double leftFront = input.get(4);
 		double rightFront = input.get(5);
 		double mid = input.get(input.size() - 1);
@@ -269,17 +270,6 @@ public class DefaultDriver extends AbstractDriver {
 		else
 			currentSteer = speed;
 		return currentSteer;
-	}
-
-	private double getInTrack(double trackPosition) {
-		double steering = 0.0;
-		desiredSpeed -= 30.0;
-		if (trackPosition > 1) {
-			steering = -0.1;
-		} else if (trackPosition < -1) {
-			steering = 0.1;
-		}
-		return steering;
 	}
 
 	public String getDriverName() {

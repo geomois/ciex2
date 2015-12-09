@@ -291,18 +291,6 @@ public class trainingDriver extends AbstractDriver {
 		return currentSteer;
 	}
 
-	private void addPrevSteering(double current) {
-		if (moSteer.size() == 3) {
-			moSteer.remove();
-		}
-		moSteer.add(current);
-		prevSteering = 0.0;
-		for (Double d : moSteer) {
-			prevSteering += d;
-		}
-		prevSteering = prevSteering / (double) moSteer.size();
-	}
-
 	public String getDriverName() {
 		return "XVII training";
 	}
