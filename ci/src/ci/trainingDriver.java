@@ -71,10 +71,10 @@ public class trainingDriver extends AbstractDriver {
 		input.add(temp);
 		ArrayList<Double> temp2 = new ArrayList<Double>();
 		temp2.add(sensors.getSpeed());
-		temp2.add(action.steering);
+
 		output.add(temp2);
 
-		desiredSpeed = 80.0;
+		desiredSpeed = 100.0;
 		getElev(sensors);
 		action.steering = getCurrentSteering(sensors);
 

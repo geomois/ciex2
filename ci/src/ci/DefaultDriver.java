@@ -24,7 +24,7 @@ public class DefaultDriver extends AbstractDriver {
 	private LinkedList<Double> prevReadingMid;
 	private LinkedList<Double> prevReadingRight;
 	private double width;
-	private double[] smooth = { 0.7, 0.75, 0.8, 0.88, 0.95 };
+	private double[] smooth = { 0.7, 0.75, 0.8, 0.88, 0.95  };
 	private double[] grade = { 0.8, 0.88, 0.9 };
 	private double steerConstant = 0.4;
 	private static boolean verbose = false;
@@ -58,12 +58,13 @@ public class DefaultDriver extends AbstractDriver {
 		for (int i = 0; i < sensors.getTrackEdgeSensors().length; i += 2) {
 			input.add(sensors.getTrackEdgeSensors()[i]);
 		}
+		
 		input.add(sensors.getTrackEdgeSensors()[9]);
 		width = input.get(0) + input.get(9);
 
 		NNOutput = driverGenome.getNNValue(input);
 		action.steering = getCurrentSteering(sensors);
-		desiredSpeed = NNOutput;
+		desiredSpeed = NNOutput-NNOutput*Math.abs(action.steering)*0.5;
 		if (verbose)
 			System.out.println(desiredSpeed.toString());
 		if (sensors.getSpeed() > desiredSpeed) {
@@ -134,29 +135,29 @@ public class DefaultDriver extends AbstractDriver {
 		double speed = 0;
 		// Consider width is the percentage, 0% is left, 100% is right
 
-//		if (position < 0.9 && position > -0.9) {
+		if (position < 0.9 && position > -0.9) {
 			if (mid > 150) {
 				speed = 0.0;
 			} else {
 				int pick = leftTurn(leftFront, rightFront, mid);
 				if (distance > 50) {
-//					speed = moveRight(grade[0]);
-					speed = pick * (Math.abs(pick - 2) * DriversUtils.moveTowardsTrackPosition(sensors, 0.5, 0.8) + ((pick - 1) / 2) * DriversUtils.moveTowardsTrackPosition(sensors, 0.5, -0.8));
+					speed = moveRight(grade[0]);
+					speed = pick * (Math.abs(pick - 2) * speed + ((pick - 1) / 2) * -speed);
 				} else if (distance > 30) {
 					speed = moveRight(grade[1]);
-					speed = pick * (Math.abs(pick - 2) * DriversUtils.moveTowardsTrackPosition(sensors, 0.5, -0.8) + ((pick - 1) / 2) * DriversUtils.moveTowardsTrackPosition(sensors, 0.5, 0.8));
-				} else if ( distance > 15) {
+					speed = pick * (Math.abs(pick - 2) * -speed + ((pick - 1) / 2) * speed);
+				} else if (distance < 30 && distance > 15) {
 					speed = moveRight(grade[2]);
-					speed = pick * (Math.abs(pick - 2) * DriversUtils.moveTowardsTrackPosition(sensors, 0.5, -0.8) + ((pick - 1) / 2) * DriversUtils.moveTowardsTrackPosition(sensors, 0.5, 0.8));
+					speed = pick * (Math.abs(pick - 2) * -speed + ((pick - 1) / 2) * speed);
 				}
 			}
-//		} else {
-////			double bias=(Math.abs(position)-0.8)*1.9;
-//			if (position > 0)
-//				return DriversUtils.alignToTrackAxis(sensors, 0.3D) - 0.3;
-//			else
-//				return DriversUtils.alignToTrackAxis(sensors, 0.3D) + 0.3;
-//		}
+		} else {
+//			double bias=(Math.abs(position)-0.8)*1.9;
+			if (position > 0)
+				return DriversUtils.alignToTrackAxis(sensors, 0.3D) - 0.3;
+			else
+				return DriversUtils.alignToTrackAxis(sensors, 0.3D) + 0.3;
+		}
 		if (speed == 0.0)
 			return DriversUtils.alignToTrackAxis(sensors, 0.3D);
 		else
