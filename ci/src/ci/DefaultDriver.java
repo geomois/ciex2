@@ -86,7 +86,6 @@ public class DefaultDriver extends AbstractDriver {
 		Double currTime = sensors.getCurrentLapTime();
 		if (currTime > lapTime)
 			lapTime = currTime;
-
 	}
 
 	private double getMo(LinkedList<Double> queue, double lastObject) {
@@ -99,7 +98,6 @@ public class DefaultDriver extends AbstractDriver {
 		}
 		return mo / (double) queue.size();
 	}
-
 
 	private int leftTurn(double left, double right, double mid) {
 		int ret = 0;
@@ -151,7 +149,6 @@ public class DefaultDriver extends AbstractDriver {
 				}
 			}
 		} else {
-//			double bias=(Math.abs(position)-0.8)*1.9;
 			if (position > 0)
 				return DriversUtils.alignToTrackAxis(sensors, 0.3D) - 0.3;
 			else
