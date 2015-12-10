@@ -205,7 +205,7 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
 	private void trainGA() {
 		DefaultDriverGenome genome;
 
-		String path = "D:/java torcs/torcs/config/raceman/";
+		String path = "C:\\Program Files (x86)\\torcs\\config\\raceman\\";
 		File folder = new File(path);
 		String[] fileNames = folder.list();
 		ArrayList<String> files = new ArrayList<String>();
