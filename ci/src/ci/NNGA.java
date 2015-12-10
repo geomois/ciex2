@@ -134,7 +134,7 @@ public class NNGA {
 			
 		}
 
-		return result/5.0;
+		return result/3.0;
 	}
 	private Process startBat() {
 		String pathScriptFile = "./textmode.bat";
