@@ -117,7 +117,7 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
 		// TorcsConfiguration.getInstance().initialize(new
 		// File("C:\\Users\\George\\git\\ci\\ci\\torcs.properties"));
 		TorcsConfiguration.getInstance()
-				.initialize(new File("E:\\eclipse java\\eclipse workspace\\ci\\torcs.properties"));
+				.initialize(new File("C:/Users/George/git/ciex2/ci/torcs.properties"));
 		/*
 		 *
 		 * Start without arguments to run the algorithm Start with -train train
