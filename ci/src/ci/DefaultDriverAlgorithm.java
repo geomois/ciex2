@@ -249,7 +249,7 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
 				}
 
 				i++;
-				System.out.println(bestResult);
+				System.out.println("RESLUTS: "+bestResult);
 
 			}
 			genome.getMyNN().setWeights(w);
