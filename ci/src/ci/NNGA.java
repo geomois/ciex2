@@ -126,9 +126,9 @@ public class NNGA {
 			DefaultRace race = new DefaultRace();
 			Process p = startBat();
 			
-			System.out.println("Start lap: " + Integer.toString(i+1));
+//			System.out.println("Start lap: " + Integer.toString(i+1));
 			Double lapresult = race.runRace(drivers, true);
-			System.out.println("lap " + Integer.toString(i+1)+ ": " +  lapresult);
+//			System.out.println("lap " + Integer.toString(i+1)+ ": " +  lapresult);
 			result+= lapresult;
 			
 		}
