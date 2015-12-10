@@ -46,6 +46,7 @@ public class NNGA {
 	public Double GA(){
 		Double bestRun = rank();
 		mutate();
+		myDDG.getMyNN().setWeights(ranks.get(0));
 		return bestRun;
 	}
 	private Double rank() {
@@ -119,7 +120,7 @@ public class NNGA {
 		//File folder = new File(path);
 	//	String[] fileNames = folder.list();
 		//String[] trackNames = {"ole-road-1","g-track-3","g-track-2","g-track-1","ruudskogen"};
-		for (int i = 0; i < 5; i++) {
+		for (int i = 0; i < 3; i++) {
 			
 		//	String s = fileNames[i];
 			//copyFileUsingStream("./scenarios/"+s,"C:\\Program Files (x86)\\torcs\\config\\raceman\\quickrace.xml");

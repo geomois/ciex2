@@ -203,9 +203,9 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
 	}
 
 	private void trainGA() {
-		DefaultDriverGenome genome;
+		DefaultDriverGenome genome = null;
 
-		String path = "C:\\Program Files (x86)\\torcs\\config\\raceman\\";
+		String path = "D:/java torcs/torcs/config/raceman/";
 		File folder = new File(path);
 		String[] fileNames = folder.list();
 		ArrayList<String> files = new ArrayList<String>();
@@ -216,6 +216,8 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
 		}
 		File nf;
 		File quick;
+		genome = new DefaultDriverGenome();
+		genome.loadSavedNN();
 		for (int j = 0; j < files.size(); j++) {
 			nf = new File(path + "q" + j + ".xml");
 			quick = new File(path + "quickrace.xml");
@@ -229,25 +231,29 @@ public class DefaultDriverAlgorithm extends AbstractAlgorithm {
 			Double result = 0.0;
 			boolean improved = true;
 			int i = 0;
-			genome = new DefaultDriverGenome();
-			genome.loadSavedNN();
+			int r = 0;
+
 			NNGA ga = new NNGA(genome, 10, 0.5);
-			ArrayList<ArrayList<Double[][]>> w = new ArrayList<ArrayList<Double[][]>>();
-			while (improved || i < 10) {
+			ArrayList<Double[][]> w = new ArrayList<Double[][]>();
+			while (improved || i < 5) {
 				result = ga.GA();
 				if (bestResult == 0.0) {
 					bestResult = result;
+					w = genome.getMyNN().getWeights();
 				} else if (result < bestResult) {
 					improved = false;
 				} else {
+					w = genome.getMyNN().getWeights();
 					bestResult = result;
 					improved = true;
 				}
+
 				i++;
-				w.add(genome.getMyNN().getWeights());
 				System.out.println(bestResult);
-				genome.saveGA(i);
+
 			}
+			genome.getMyNN().setWeights(w);
+
 			genome.saveNN();
 		}
 	}
